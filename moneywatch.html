@@ -1,0 +1,157 @@
+<!doctype html>
+<html>
+<head>
+    <title>Money Watch</title>
+    <link type="text/css" href="css/dot-luv/jquery-ui-1.8.16.custom.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="css/moneywatch.css">
+    <script language="javaScript" type="text/javascript">
+<!--
+    function runscroll() {
+        //var objDiv = document.getElementById("rightfixed");
+         //objDiv.scrollTop = objDiv.scrollHeight;
+         jQuery('#rightfixed').stop().animate({ scrollTop: jQuery('#rightbottom').offset().top },1600);
+    }
+
+    function showAddMenu(showwhat) {
+        if (showwhat === "bank entry") {
+            addPanel.show();
+        } else if (showwhat === "bulk interest") {
+            addIntBulk.show();
+        }
+    }
+
+// -->
+</script>
+
+</head>
+    <body class="yui3-skin-sam" onload="return init_loadaccounts();">
+    <div id="header">put mashups here</div>
+    <div id="container">
+        <div id="leftblock">
+        Investment:
+        <br><a href="#" onClick="return sendCommand('U.UPDATEQUOTES');">Get Quotes</a>
+        <br><a href="#" onClick="return sendCommand('I.BULKADD.EDIT');">Bulk Add</a>
+
+        <br><br>
+        Bank:
+        <br><a href="#" onClick="return sendCommand('U.UPDATEBANKTOTALS');">Total Bank Accounts</a>
+
+            <br><br><br>
+             <br><a href="#" onClick="return post_command('AJAX.BANK.MAKEBANKENTRY');">+bank entry</a>
+             <br><a href="#" onClick="return post_command('AJAX.BANK.MAKEBULKINTEREST');">+bulk interest</a>
+            <br><a href="#" onClick="return runAction('BANK.MAKEBULKINTEREST');">+bulk interest - test</a>
+            <br><a href="#" onClick="return runAction('ACTION.IMPORTMENU');">+Import Menu</a>
+             <br><a href="#" id="getquotes">Get Quotes</a>
+             <br><a href="#" onClick="return bank_gettransactions('ING - Orange Checking');">Get Trans</a><br><br>
+             <br><a href="#" onClick="return post_command('AJAX.INVESTMENT.GETACCOUNTS');">get invs</a>
+             <br><a href="#" onClick="return post_command('AJAX.ALL.GETACCOUNTS');">get all</a>
+             <br><a href="#" onClick="return post_command('AJAX.INVESTMENT.MAKEEDITSETTINGS');">Inv Settings</a>
+
+             <div id="investmentaccounts"></div>
+
+        </div>
+        <div id="rightblock">
+        <div id="rightfixed">
+            <div id="righttop"></div>
+            <div id="rightcontent1"></div>
+            <div id="rightcontent2"></div>
+            <div id="rightbottom"></div>
+        </div>
+        </div>
+
+    </div>
+    <div class="clear"></div>
+    <div id="quotes"></div>
+    <div id="histQuotes"></div>
+    <div id="histQuotes2"></div>
+
+    <!-- PANEL: Add New Bank Entry -->
+    <div id="paneladdbank" style="display: block;">
+        <form name="bankentry" method="POST">
+        <table cellpadding="5" width="100%">
+          <tr><td width="275" style="text-align:right; vertical-align: top;">
+            <select name="addtype" id="addbanktype">
+            <option value="deposit">Deposit</option>
+            <option value="withdraw">Withdraw</option>
+            <option value="transfer">Transfer</option>
+            </select>
+            Date: <input type="text" name="entrydate" id="datepicker1"><br>
+
+            <!-- inner start -->
+            <div id="bankentryinner"></div>
+            <!-- inner end -->
+
+          </td><td width="300" style="text-align:right; vertical-align: top;">
+            Whom: <input type="text" name="whom" id="addbackpayee" size="35" /><br>
+            <input type="text" name="memo" placeholder="Memo (optional)" size="35" /><br>
+            Category: <input type="text" name="category" id="autocategories" size="35" />
+           </td><td width="150" style="text-align:right; vertical-align: top;">
+            Num: <input type="text" name="num" placeholder="Num" id="addbanknum" size="8" /><br>
+            $: <input type="text" name="amt" id="addbankamt" size="8" />
+           </td></tr>
+        </table>
+            <input type="hidden" name="account" value="<?php echo $_REQUEST['account']; ?>">
+            <input type="hidden" name="job" value="BANKENTRY">
+            <div style="text-align:right;"><input type="submit" name="doit" VALUE="Save"></div>
+        </form>
+    </div>
+    <!-- PANEL: Bulk Interest Entry -->
+    <div id="panelbulkinterest" style="display: block;">
+        <form name="bulkinterest" method="POST">
+            Date: <input type="text" name="interestdate" id="datepicker2">
+            <p>
+            <!-- inner start -->
+            <div id="bulkinterestinner"></div>
+            <!-- inner end -->
+            </p>
+            <input type="hidden" name="job" value="BULKINTEREST">
+            <input type="submit" name="doit" VALUE="Save">
+        </form>
+    </div>
+    <!-- PANEL: Investment Settings -->
+    <div id="panelinvestmentsettings" style="display: block;">
+        <form name="investmentsettings">
+        <div class="tickerheader">Ticker</div>
+            <p>
+            <!-- inner start -->
+            <div id="investmentsettingsinner"></div>
+            <!-- inner end -->
+            </p>
+            <input type="hidden" name="job" value="AJAX.INVESTMENT.SUBMITSETTINGS">
+            <input type="button" name="doit" VALUE="Save" onClick="return post_jqueryajax('investmentsettings');">
+        </form>
+    </div>
+
+
+    <!-- PANEL: universal -->
+    <div id="paneluniversal" style="display: block;">
+        <div id="paneluniversal-inner"></div>
+    </div>
+
+    <!-- PANEL: transactions -->
+    <div id="paneltransactions" style="display: block;">
+         <div id="transactionsblock">
+            <div id="transactionsleft"></div>
+            <div id="transactionsright"></div>
+            <div class="clear"></div>
+        </div>
+    </div>
+
+
+<script src="http://yui.yahooapis.com/3.4.1/build/yui/yui-min.js"></script>
+<script type="text/javascript" src="js/jquery-1.6.2.min.js"></script>
+<script type="text/javascript" src="js/jquery-ui-1.8.16.custom.min.js"></script><!-- jQuery UI, datepicker -->
+<script type="text/javascript" src="js/moneywatch.js"></script>
+<script type="text/javascript">
+   $(document).ready( function(){
+       // Register listeners
+       jQuery('#addbanktype').change(function(){ addbank_typechange(); });
+       jQuery('#addbackpayee').focusout(function(){addbank_payeechange(); });
+       //jQuery('#getquotes').click(function(){
+       //   var symbols = ["FSEMX", "FSTMX", "FTBFX", "VFINX", "VBINX", "VHDYX", "VWEHX", "VISVX", "VIVAX"];
+       //   Y.YQL.Finance.getQuotes(symbols);
+       //});
+   });
+</script>
+    </body>
+</html>

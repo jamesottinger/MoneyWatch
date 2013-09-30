@@ -1,0 +1,288 @@
+body {
+margin:0;
+padding:0;
+font: 12px Helvetica;
+}
+#header{
+    width: 1124px;
+    height: 30px;
+    background-color: #CCCCCC;
+    margin: 0 auto;
+}  
+#container{
+    width: 1124px;
+    margin: 0 auto;
+}
+#leftblock{
+    float: left;
+    padding: 10px;
+    font: 14px "Helvetica Neue", Helvetica;
+    color: #707070;
+    text-shadow: #CCCCCC 0 1px 1px;
+}
+#bankaccounts{
+    border: solid 1px #cccccc;
+    width:  100%;
+    padding: 10px;
+    -moz-border-radius: 12px;
+    -webkit-border-radius: 12px;
+    border-radius: 12px;
+    -moz-box-shadow:0 6px 24px #d5d5d5;
+    -webkit-box-shadow: 0 6px 24px #d5d5d5;
+    box-shadow: 0 6px 24px #d5d5d5;
+}
+
+#rightblock{
+    float: right;
+    overflow: auto;
+    /* padding: 10px; */
+    width: 900px;
+    height: 900px;
+    font: 12px "Helvetica Neue", Helvetica;
+    color: #707070;
+    text-shadow: #CCCCCC 0 1px 1px;
+ 
+}
+#rightfixed{
+    overflow: auto;
+    height: 900px;
+}
+#righttop, #rightbottom{
+    height: 1px;
+    background-color: #d5d5d5;
+   -moz-box-shadow:0 10px 20px #d5d5d5;
+    -webkit-box-shadow: 0 10px 20px #d5d5d5;
+    box-shadow: 0 10px 20px #d5d5d5;
+    border-left: solid 1px #CCCCCC;
+}
+
+
+
+.clear{
+    clear: both;
+}
+.recordodd{
+    border-bottom: solid 1px #CCCCCC;
+    padding: 4px;
+    background-color: #FFFFFF;
+}
+.recordeven{
+    border-bottom: solid 1px #CCCCCC;
+    padding: 4px;
+    background-color: #EFEFEF;
+}
+.recordoddfuture{
+    border-bottom: solid 1px #CCCCCC;
+    padding: 4px;
+    background-color: #56ace2;
+}
+.recordevenfuture{
+    border-bottom: solid 1px #CCCCCC;
+    padding: 4px;
+    background-color: #56ace2;
+}
+
+.recordeven.hover, .recordeven:hover{
+    background-color: #d5e7fe;
+}
+.recordodd.hover, .recordodd:hover{
+    background-color: #d5e7fe;
+}
+.rdate{
+    display:  inline-block;
+    width: 80px;
+}
+.rnum{
+    display:  inline-block;
+    font: 10px "Helvetica Neue", Helvetica;
+    color: #A0A0A0;
+    width: 80px;
+}
+
+.invinfo {
+    color: #A0A0A0;
+    display: inline-block;
+    font: 11px "Helvetica Neue",Helvetica;
+    width: 250px;
+}
+.rwhom{
+    display:  inline-block;
+    width: 270px;
+    color: #707070;
+    text-shadow: #CCCCCC 0 1px 1px;
+}
+.rwhomtrans{
+    display:  inline-block;
+    width: 270px;
+    color: #191970;
+    text-shadow: #CCCCCC 0 1px 1px;
+}
+.rup{
+    display:  inline-block;
+    width: 80px;
+    text-shadow: #7ffe79 0 1px 2px;
+}
+.rdown{
+    display:  inline-block;
+    width: 80px;
+    text-shadow: #CD5C5C 0 1px 2px;
+}
+.rbalpos{
+    display:  inline-block;
+    width: 80px;
+    text-align: right;
+    font-weight: bold;
+    color: #3B6AA0; /* #3B4990; */
+    text-shadow: #CCCCCC 0 1px 1px;
+}
+.rbalneg{
+    display:  inline-block;
+    width: 80px;
+    text-align: right;
+    font-weight: bold;  
+    color: #707070;
+    text-shadow: #CCCCCC 1px 1px;
+}
+
+.interestaccount{
+    text-align: right;
+    display:  inline-block;
+    font: 14px "Helvetica Neue", Helvetica;
+    color: #A0A0A0;
+    width: 280px;
+    padding-right: 20px;
+    padding-bottom: 12px;
+}
+.interestamount{
+    display:  inline-block;
+    width: 100px;
+}
+#hidetransfer{
+    display: none;
+}
+
+/* === [ Account Summary ] ==*/
+.summary1heading{
+    width: 90%;    
+    font: 16px "Helvetica Neue", Helvetica;
+    border-bottom: solid 2px #cccccc;
+    color: #56ace2;
+    padding-top: 20px;
+    padding-left: 10px;
+}
+.summary1bank{
+    width: 90%;
+    padding: 4px;
+    border-bottom: solid 1px #efefef;
+}
+.summary1bankcol1{
+    display:  inline-block;
+    width: 150px;
+}
+.summary1bankcol2{
+    display:  inline-block;
+    width: 100px;
+}
+.summary1bankcol3{
+    display:  inline-block;
+    width: 100px;
+}
+.summary1bankcol4{
+    display:  inline-block;
+    width: 80px;
+}
+/* === [ Investment Settings ] ==*/
+.ticker{
+  display:  inline-block;
+  width: 80px;  
+}
+.tickerheader{
+    text-align: right;
+    font: bold 16px "Helvetica Neue", Helvetica;
+    color: #2049af; /* dark blue */
+    padding-right: 43px; 
+    text-shadow: #CCCCCC 0 2px 1px;
+}
+.investmentparent{
+    text-align: right;
+    font: bold 16px "Helvetica Neue", Helvetica;
+    color: #2049af;  /* dark blue */
+    text-shadow: #CCCCCC 0 2px 1px;
+    padding: 4px 100px 8px 4px;
+}
+.investmentelection{
+  text-align: right;
+  display:  inline-block;
+  font: 14px "Helvetica Neue", Helvetica;
+  color: #6d6d6d;
+  width: 300px;
+  padding-right: 20px;
+  padding-bottom: 12px;  
+}
+#paneluniversal-inner{
+    padding: 10px;
+}
+.invtable{
+    border-collapse: collapse;
+}
+.invtable td{
+    padding: 6px;
+    border-right-color: #cccccc;
+    border-right-style: solid;
+    border-right-width: 1px;
+}
+.invtablehead{
+    border-bottom-color: #cccccc;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    border-top-color: #cccccc;
+    border-top-style: solid;
+    border-top-width: 1px;
+    background-color: #efefef;
+}
+.numpos{
+    text-shadow: #7ffe79 0 1px 2px;
+}
+.numneg{
+    text-shadow: #CD5C5C 0 1px 2px;
+}
+.invtotalsbottom{
+    text-align: right;
+    color: #3B6AA0; /* #3B4990; */
+    text-shadow: #CCCCCC 0 1px 1px;
+    background-color: #efefef;
+    border-top-color: #cccccc;
+    border-top-style: double;
+    border-top-width: 2px;
+}
+/* Popup Transactions */
+
+#transactionsblock{
+    overflow: auto;
+    height: 800px;
+    padding: 10px;
+}
+#transactionsleft{
+    float: transactionsleft;
+    overflow: auto;
+    width: 800px;
+    /* height: 800px; */
+    font: 12px "Helvetica Neue", Helvetica;
+    color: #707070;
+    text-shadow: #CCCCCC 0 1px 1px;
+}
+#transactionsright{
+    float: transactionsleft;
+    overflow: auto;
+    width: 180px;
+    /* height: 800px; */
+    font: 12px "Helvetica Neue", Helvetica;
+    color: #707070;
+    text-shadow: #CCCCCC 0 1px 1px;
+}
+.bigbluetext{
+    text-align: left;
+    font: bold 16px "Helvetica Neue", Helvetica;
+    color: #2049af;  /* dark blue */
+    text-shadow: #CCCCCC 0 2px 1px;
+}
