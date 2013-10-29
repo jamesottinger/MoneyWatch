@@ -4,13 +4,13 @@ padding:0;
 font: 12px Helvetica;
 }
 #header{
-    width: 1124px;
+    width: 1324px;
     height: 30px;
-    background-color: #CCCCCC;
+    background-color: #ffffff;
     margin: 0 auto;
 }  
 #container{
-    width: 1124px;
+    width: 1324px;
     margin: 0 auto;
 }
 #leftblock{
@@ -36,7 +36,7 @@ font: 12px Helvetica;
     float: right;
     overflow: auto;
     /* padding: 10px; */
-    width: 900px;
+    width: 1100px;
     height: 900px;
     font: 12px "Helvetica Neue", Helvetica;
     color: #707070;
@@ -240,6 +240,18 @@ font: 12px Helvetica;
     border-top-width: 1px;
     background-color: #efefef;
 }
+.cleantable{
+    border-collapse: collapse;
+}
+.cleantable td{
+    padding: 6px;
+}
+.tdborderright{
+    border-right-color: #cccccc;
+    border-right-style: solid;
+    border-right-width: 1px;
+}
+
 .numpos{
     text-shadow: #7ffe79 0 1px 2px;
 }
@@ -257,28 +269,38 @@ font: 12px Helvetica;
 }
 /* Popup Transactions */
 
-#transactionsblock{
-    overflow: auto;
-    height: 800px;
+#transactionsblock {
+    position: relative;
+    height: 568px;
     padding: 10px;
 }
-#transactionsleft{
-    float: transactionsleft;
-    overflow: auto;
-    width: 800px;
-    /* height: 800px; */
-    font: 12px "Helvetica Neue", Helvetica;
-    color: #707070;
-    text-shadow: #CCCCCC 0 1px 1px;
+#transactionsleft {
+    float: left;
+    width: 850px;
 }
-#transactionsright{
-    float: transactionsleft;
-    overflow: auto;
-    width: 180px;
-    /* height: 800px; */
-    font: 12px "Helvetica Neue", Helvetica;
+#transactionsright {
+    float: right;
+    width: 320px;
+}
+#transactionslist {
     color: #707070;
-    text-shadow: #CCCCCC 0 1px 1px;
+    font: 12px "Helvetica Neue",Helvetica;
+    overflow: auto;
+    text-shadow: 0px 1px 1px #CCCCCC;
+    width: 840px;
+    height: 540px;
+    border: 1px solid #CCCCCC;
+}
+#transactionsrightedit {
+     color: #707070;
+     font: 12px "Helvetica Neue",Helvetica;
+     text-shadow: 0px 1px 1px #CCCCCC;
+     background-color: #EFEFEF;
+     padding: 10px;
+     box-shadow: 0px 3px 4px #999999;
+}
+#transactionsrightchart {
+     text-align: center;
 }
 .bigbluetext{
     text-align: left;
@@ -286,3 +308,108 @@ font: 12px Helvetica;
     color: #2049af;  /* dark blue */
     text-shadow: #CCCCCC 0 2px 1px;
 }
+/* --- inv rows --- */
+#transactionshearerinv {
+    width: 840px;
+}
+.theader {
+    background-color: #efefef;
+    border-color: #666666;
+    border-style: solid;
+    border-width: 1px;
+    box-shadow: 0px 3px 4px #999999;
+    color: #007BBB;
+    display: inline-block;
+    float: left;
+    font: bold 13px "Helvetica Neue", Helvetica;
+    padding: 4px;
+    z-index: 5;
+    text-align: center;
+    text-shadow: #CCCCCC 0 2px 1px;
+}
+.activeinvrow {
+    background-color: #d5e7fe;
+    padding-left: 3px;
+    border-color: #007bbb;
+    border-style: solid;
+    border-width: 1px;
+    z-index: 5;
+    padding-left: 1px;
+    padding-right: 1px;
+    border-left-color: #007bbb;
+    border-left-style: solid;
+    border-left-width: 3px;
+    border-right-color: #007bbb;
+    border-right-style: solid;
+    border-right-width: 3px;
+    box-shadow: 0px 3px 4px #999999;
+}
+.activeinveditmenu {
+    border-color: #007bbb;
+    border-style: solid;
+    border-width: 1px;
+}
+.irow0{
+    display:  inline-block;
+    width: 84px;
+}
+.irow1{
+    display:  inline-block;
+    width: 100px;
+}
+.irow2{
+    display:  inline-block;
+    width: 76px;
+    padding-left: 4px;
+}
+.irow3 { /* info */
+    color: #A0A0A0;
+    display: inline-block;
+    font: 11px "Helvetica Neue",Helvetica;
+    width: 192px;
+    border-right-color: #cccccc;
+    border-right-style: solid;
+    border-right-width: 1px;
+    padding-left: 4px;
+}
+.irow4 { /* + */
+    border-right-color: #cccccc;
+    border-right-style: solid;
+    border-right-width: 1px;
+    width: 60px;
+    display:  inline-block;
+    text-shadow: #7ffe79 0 1px 2px;
+    text-align: right;
+    padding-right: 16px;
+}
+.irow5 { /* - */
+    border-right-color: #cccccc;
+    border-right-style: solid;
+    border-right-width: 1px;
+    width: 60px;
+    display:  inline-block;
+    text-shadow: #CD5C5C 0 1px 2px;
+    text-align: right;
+    padding-right: 16px;
+}
+.irow6pos{
+    display:  inline-block;
+    width: 167px;
+    text-align: right;
+    font-weight: bold;
+    color: #3B6AA0; /* #3B4990; */
+    text-shadow: #CCCCCC 0 1px 1px;
+}
+.irow6neg{
+    display:  inline-block;
+    width: 167px;
+    text-align: right;
+    font-weight: bold;  
+    color: #707070;
+    text-shadow: #CCCCCC 1px 1px;
+}
+.future {
+    background-color: #E6E6FA;
+    border-bottom: 1px dashed #CCCCCC;
+}
+

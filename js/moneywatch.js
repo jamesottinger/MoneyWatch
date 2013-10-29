@@ -55,7 +55,7 @@ YUI({
 
     panelTransactions = new Y.Panel({
         srcNode: '#paneltransactions',
-        width: 1000,
+        width: 1200,
         centered: true,
         zIndex: 5,
         headerContent: "Transactions",
@@ -126,6 +126,7 @@ var moneyWatchX = '/x/moneywatch-relay.py';
 var xmlHttp = false;
 var requestType = "";
 var overobj;
+var activeInvRowId = '';
 
 var YUIcloseMarkup = '<span class="yui3-widget-button-wrapper"><a href="#" class="yui3-button yui3-button-close" onClick="utilClosePanel();"><span class="yui3-button-content"><span class="yui3-button-icon"></span></span></a></span>';
 
@@ -182,7 +183,7 @@ function runAction(in_action) {
         panelUniversal.set('width', 420);
         panelUniversal.set('headerContent', "Bulk Interest Entry" + YUIcloseMarkup);
         jQuery.post('/x/moneywatch-engine.py', {job: 'AJAX.INVESTMENT.GETSINGLETICKER', pu: utilPoisonURL()}, function(data) { jQuery('#paneluniversal-inner').html(data); panelUniversal.show(); });
-    } else if (in_action === 'ACTION.IMPORTMENU') {
+    } else if (in_action === 'U.IMPORTFILE.EDIT') {
         panelUniversal.set('width', 420);
         panelUniversal.set('headerContent', "Import Menu" + YUIcloseMarkup);
         jQuery.post('/x/moneywatch-engine.py', {job: 'AJAX.IMPORTMENU', pu: utilPoisonURL()}, function(data) { jQuery('#paneluniversal-inner').html(data); panelUniversal.show(); });
@@ -198,6 +199,7 @@ function utilClosePanel() {
     panelUniversal.hide();
     jQuery('#paneluniversal-inner').html('');
 }
+
 function poisonURL() {
     return new Date().getTime();
 }
@@ -239,6 +241,12 @@ function init_loadaccounts() {
     sendCommand('I.SUMMARY.GET');
     sendCommand('B.SUMMARY.GET');
 }
+function calcNetWorth() {
+    var nw = formatCurrency((jQuery('#networth-investments').val() * 1.00) + (jQuery('#networth-banks').val() * 1.00));
+    jQuery('#sum-worth-inv').html(formatCurrency(jQuery('#networth-investments').val()));
+    jQuery('#sum-worth-bank').html(formatCurrency(jQuery('#networth-banks').val()));
+    jQuery('#sum-worth-all').html(nw);
+}
 
 function sendCommand(in_job) {
     switch(in_job) {
@@ -247,6 +255,7 @@ function sendCommand(in_job) {
                 {job: in_job, pu: poisonURL()},
                 function(data) {
                     jQuery('#rightcontent1').html(data);
+                    calcNetWorth();
                 }
             );
             break;
@@ -275,11 +284,128 @@ function sendCommand(in_job) {
                 }
             );
             break;
+        case 'I.ENTRY.EDITSAVE':
+        case 'I.ENTRY.ADDSAVE':
+            var formdata = jQuery('#ieditsingle').serialize();
+            var thisticker = jQuery('#ieditsingle-ticker').val();
+            jQuery.post(moneyWatchX,
+                formdata,
+                function(data) {
+                    data = data.replace(/\n/gm, '');
+                    if (data == 'ok') {
+                        jQuery('#' + activeInvRowId).removeClass('activeinvrow');
+                        jQuery.post(moneyWatchX,
+                            {job: 'I.ELECTION.GET', ticker: thisticker, pu: poisonURL()},
+                            function(data) {
+                                jQuery('#transactionslist').html(data);
+                                jQuery("#transactionslist").scrollTop(jQuery("#transactionslist")[0].scrollHeight);
+                            }
+                        );
+                        jQuery.post(moneyWatchX,
+                            {job: 'I.ENTRY.ADD', ticker: thisticker, pu: poisonURL()},
+                            function(data) {
+                                jQuery('#transactionsrightedit').html(data);
+                            }
+                        );
+                        // reload underneath
+                        sendCommand('I.SUMMARY.GET');
+                    } else {
+                        alert(data);
+                    }
+                }
+            );
+            break;
         case 'B.SUMMARY.GET':
             jQuery.post(moneyWatchX,
                 {job: in_job, pu: poisonURL()},
                 function(data) {
                     jQuery('#rightcontent2').html(data);
+                    calcNetWorth();
+                }
+            );
+            break;
+        case 'B.BULKINTEREST.EDIT':
+            panelUniversal.set('width', 350);
+            panelUniversal.set('headerContent', "Bank - Bulk Interest" + YUIcloseMarkup);
+            jQuery.post(moneyWatchX,
+                {job: in_job, pu: poisonURL()},
+                function(data) {
+                    jQuery('#paneluniversal-inner').html(data);
+                    panelUniversal.show();
+                }
+            );
+            break;
+        case 'B.BULKINTEREST.SAVE':
+            var formdata = jQuery('#bbulkinterestedit').serialize();
+            jQuery.post(moneyWatchX,
+                formdata,
+                function(data) {
+                    data = data.replace(/\n/gm, '');
+                    if (data == 'ok') {
+                        panelUniversal.hide();
+                        sendCommand('I.SUMMARY.GET');
+                        sendCommand('B.SUMMARY.GET');
+                    } else {
+                        alert(data);
+                    }
+                }
+            );
+            break;
+        case 'B.BULKBILLS.EDIT':
+            panelUniversal.set('width', 750);
+            panelUniversal.set('headerContent', "Bank - Bulk Bills" + YUIcloseMarkup);
+            jQuery.post(moneyWatchX,
+                {job: in_job, pu: poisonURL()},
+                function(data) {
+                    jQuery('#paneluniversal-inner').html(data);
+                    panelUniversal.show();
+                }
+            );
+            break;
+        case 'B.BULKBILLS.SAVE':
+            var formdata = jQuery('#bbulkbillsedit').serialize();
+            jQuery.post(moneyWatchX,
+                formdata,
+                function(data) {
+                    data = data.replace(/\n/gm, '');
+                    if (data == 'ok') {
+                        panelUniversal.hide();
+                        sendCommand('I.SUMMARY.GET');
+                        sendCommand('B.SUMMARY.GET');
+                    } else {
+                        alert(data);
+                    }
+                }
+            );
+            break;
+        case 'B.ENTRY.EDITSAVE':
+        case 'B.ENTRY.ADDSAVE':
+            var formdata = jQuery('#beditsingle').serialize();
+            var thispid = jQuery('#beditsingle-thisparentid').val();
+            jQuery.post(moneyWatchX,
+                formdata,
+                function(data) {
+                    data = data.replace(/\n/gm, '');
+                    if (data == 'ok') {
+                        jQuery('#' + activeInvRowId).removeClass('activebankrow');
+                        jQuery.post(moneyWatchX,
+                            {job: 'B.ACCOUNT.GET', parentid: thispid, pu: poisonURL()},
+                            function(data) {
+                                jQuery('#transactionslist').html(data);
+                                jQuery("#transactionslist").scrollTop(jQuery("#transactionslist")[0].scrollHeight);
+                            }
+                        );
+                        jQuery.post(moneyWatchX,
+                            {job: 'B.ENTRY.ADD', bankacctid: thispid, pu: poisonURL()},
+                            function(data) {
+                                jQuery('#transactionsrightedit').html(data);
+                            }
+                        );
+                        // reload underneath
+                        sendCommand('B.SUMMARY.GET');
+                    } else {
+                        alert(data);
+                    }
                 }
             );
             break;
@@ -290,6 +416,8 @@ function sendCommand(in_job) {
                     data = data.replace(/\n/gm, '');
                     if (data == 'ok') {
                         sendCommand('I.SUMMARY.GET');
+                    } else {
+                        alert(data);
                     }
                 }
             );
@@ -301,7 +429,20 @@ function sendCommand(in_job) {
                     data = data.replace(/\n/gm, '');
                     if (data == 'ok') {
                         sendCommand('B.SUMMARY.GET');
+                    } else {
+                        alert(data);
                     }
+                }
+            );
+            break;
+        case 'U.IMPORTFILE.EDIT':
+            panelUniversal.set('width', 420);
+            panelUniversal.set('headerContent', "Import Menu" + YUIcloseMarkup);
+            jQuery.post(moneyWatchX,
+                {job: in_job, pu: poisonURL()},
+                function(data) {
+                    jQuery('#paneluniversal-inner').html(data);
+                    panelUniversal.show();
                 }
             );
             break;
@@ -313,24 +454,152 @@ function getInvElection(in_ticker) {
     jQuery.post(moneyWatchX,
         {job: 'I.ELECTION.GET', ticker: in_ticker, pu: poisonURL()},
         function(data) {
-            jQuery('#transactionsleft').html(data);
+            jQuery('#transactionslist').html(data);
+            // clear any previous highlights
+            jQuery('#' + activeInvRowId).removeClass('activeinvrow');
+            jQuery('#transactionsrightedit').removeClass('activeinveditmenu');
             panelTransactions.show();
+            // animate scroll to bottom
+            // jQuery('#transactionslist').stop().animate({ scrollTop: jQuery('#scrollmeinv').offset().top },120);
+            jQuery("#transactionslist").scrollTop(jQuery("#transactionslist")[0].scrollHeight);
+        }
+    );
+    jQuery.post(moneyWatchX,
+        {job: 'I.ENTRY.ADD', ticker: in_ticker, pu: poisonURL()},
+        function(data) {
+            jQuery('#transactionsrightedit').html(data);
+        }
+    );
+    jQuery.post(moneyWatchX,
+        {job: 'I.ENTRY.CHART', ticker: in_ticker, pu: poisonURL()},
+        function(data) {
+            jQuery('#transactionsrightchart').html(data);
         }
     );
     //jQuery('#paneluniversal-inner').html('');
 }
+
+function getInvElectionEdit(in_ticker, in_transid) {
+    jQuery.post(moneyWatchX,
+        {job: 'I.ENTRY.EDIT', ticker: in_ticker, transid: in_transid, pu: poisonURL()},
+        function(data) {
+            jQuery('#transactionsrightedit').html(data);
+            if (activeInvRowId != '') {
+                jQuery('#' + activeInvRowId).removeClass('activeinvrow');
+            }
+            activeInvRowId = in_ticker + in_transid;
+            jQuery('#' + activeInvRowId).addClass('activeinvrow');
+            jQuery('#transactionsrightedit').addClass('activeinveditmenu');
+        }
+    );
+}
+
+function sendInvDelete(in_ticker, in_transid) {
+    var r = confirm("Are you sure you want to delete this transaction?");
+    if (r == true) {
+        jQuery.post(moneyWatchX,
+            {job: 'I.ENTRY.DELETE', transid: in_transid, pu: poisonURL()},
+            function(data) {
+                data = data.replace(/\n/gm, '');
+                if (data == 'ok') {
+                    // reload left side, reflecting the deletion
+                    jQuery.post(moneyWatchX,
+                        {job: 'I.ELECTION.GET', ticker: in_ticker, pu: poisonURL()},
+                        function(data) {
+                            jQuery('#transactionslist').html(data);
+                        }
+                    );
+                    // reload underneath
+                    sendCommand('I.SUMMARY.GET');
+                } else {
+                    alert(data);
+                }
+            }
+        );
+    } else {
+        return false;
+    }
+}
+
+function getBankEdit(in_transid) {
+    jQuery.post(moneyWatchX,
+        {job: 'B.ENTRY.EDIT', transid: in_transid, pu: poisonURL()},
+        function(data) {
+            jQuery('#transactionsrightedit').html(data);
+            if (activeInvRowId != '') {
+                jQuery('#' + activeInvRowId).removeClass('activeinvrow');
+            }
+            activeInvRowId = 'b' + in_transid;
+            jQuery('#' + activeInvRowId).addClass('activeinvrow');
+            jQuery('#transactionsrightedit').addClass('activeinveditmenu');
+        }
+    );
+}
+
+function sendBankDelete(in_parentid, in_transid) {
+    var r = confirm("Are you sure you want to delete this transaction?");
+    if (r == true) {
+        jQuery.post(moneyWatchX,
+            {job: 'B.ENTRY.DELETE', transid: in_transid, pu: poisonURL()},
+            function(data) {
+                data = data.replace(/\n/gm, '');
+                if (data == 'ok') {
+                    // reload left side, reflecting the deletion
+                    jQuery.post(moneyWatchX,
+                        {job: 'B.ACCOUNT.GET', parentid: in_parentid, pu: poisonURL()},
+                        function(data) {
+                            jQuery('#transactionslist').html(data);
+                        }
+                    );
+                    // reload underneath
+                    sendCommand('B.SUMMARY.GET');
+                } else {
+                    alert(data);
+                }
+            }
+        );
+    } else {
+        return false;
+    }
+}
+
 
 function getBankAccount(in_parentid) {
     jQuery.post(moneyWatchX,
         {job: 'B.ACCOUNT.GET', parentid: in_parentid, pu: poisonURL()},
         function(data) {
-            jQuery('#transactionsleft').html(data);
+            jQuery('#transactionslist').html(data);
+            // clear any previous highlights
+            jQuery('#' + activeInvRowId).removeClass('activeinvrow');
+            jQuery('#transactionsrightedit').removeClass('activeinveditmenu');
             panelTransactions.show();
+            jQuery("#transactionslist").scrollTop(jQuery("#transactionslist")[0].scrollHeight);
         }
     );
-    //jQuery('#paneluniversal-inner').html('');
+    jQuery.post(moneyWatchX,
+        {job: 'B.ENTRY.ADD', bankacctid: in_parentid, pu: poisonURL()},
+        function(data) {
+            jQuery('#transactionsrightedit').html(data);
+        }
+    );
 }
 
+
+
+function formatCurrency(num) {
+    if (typeof num != 'undefined') {
+        num = num.toString().replace(/\$|\,/g, '');
+        if (isNaN(num)) num = "0";
+        sign = (num == (num = Math.abs(num)));
+        num = Math.floor(num * 100 + 0.50000000001);
+        cents = num % 100;
+        num = Math.floor(num / 100).toString();
+        if (cents < 10) cents = "0" + cents;
+        for (var i = 0; i < Math.floor((num.length - (1 + i)) / 3); i++)
+        num = num.substring(0, num.length - (4 * i + 3)) + ',' + num.substring(num.length - (4 * i + 3));
+        return (((sign) ? "" : "-") + "$" + num + '.' + cents);
+    }
+}
 
 
 function post_form(formobj) {
