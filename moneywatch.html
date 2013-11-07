@@ -52,7 +52,7 @@
              <br><a href="#" onClick="return post_command('AJAX.INVESTMENT.GETACCOUNTS');">get invs</a>
              <br><a href="#" onClick="return post_command('AJAX.ALL.GETACCOUNTS');">get all</a>
              <br><a href="#" onClick="return post_command('AJAX.INVESTMENT.MAKEEDITSETTINGS');">Inv Settings</a>
-
+             
              <div id="investmentaccounts"></div>-->
 
         </div>
@@ -70,7 +70,7 @@
     <div id="quotes"></div>
     <div id="histQuotes"></div>
     <div id="histQuotes2"></div>
-
+    
     <!-- PANEL: Add New Bank Entry -->
     <div id="paneladdbank" style="display: block;">
         <form name="bankentry" method="POST">
@@ -82,10 +82,10 @@
             <option value="transfer">Transfer</option>
             </select>
             Date: <input type="text" name="entrydate" id="datepicker1"><br>
-
+            
             <!-- inner start -->
             <div id="bankentryinner"></div>
-            <!-- inner end -->
+            <!-- inner end --> 
 
           </td><td width="300" style="text-align:right; vertical-align: top;">
             Whom: <input type="text" name="whom" id="addbackpayee" size="35" /><br>
@@ -163,7 +163,7 @@
                 <div id="transactionsrightchart"></div>
             </div>
             <div class="clear"></div>
-         </div>
+         </div>       
     </div>
 
 
@@ -174,13 +174,13 @@
 <script type="text/javascript">
    $(document).ready( function(){
        // Register listeners
-       jQuery('#addbanktype').change(function(){ addbank_typechange(); });
-       jQuery('#addbackpayee').focusout(function(){addbank_payeechange(); });
-       //jQuery('#getquotes').click(function(){
+       jQuery('#addbanktype').change(function(){ addbank_typechange(); }); 
+       jQuery('#addbackpayee').focusout(function(){addbank_payeechange(); }); 
+       //jQuery('#getquotes').click(function(){ 
        //   var symbols = ["FSEMX", "FSTMX", "FTBFX", "VFINX", "VBINX", "VHDYX", "VWEHX", "VISVX", "VIVAX"];
-       //   Y.YQL.Finance.getQuotes(symbols);
-       //});
+       //   Y.YQL.Finance.getQuotes(symbols); 
+       //}); 
    });
-</script>
+</script>      
     </body>
 </html>

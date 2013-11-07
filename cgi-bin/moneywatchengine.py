@@ -431,7 +431,7 @@ def i_entry_prepareedit():
         return i_edit_template(mode='edit', fundname=dbrow['fundname'], ticker=dbrow['ticker'], transid=str(dbrow['id']), parentid=str(dbrow['parentid']), banktransid=dbrow['banktransid'], tdate=str(dbrow['transdate']), action=dbrow['action'], shares="{:.3f}".format(float(dbrow['sharesamt'])), cost="{:.2f}".format(float(dbrow['transprice'])), fundsorigin=str(dbrow['fundsorigin']))
 
 
-# created the single
+# created the single 
 def i_edit_template(mode, fundname, ticker, transid, parentid, banktransid, tdate, action, shares, cost, fundsorigin):
 
     if mode == 'edit':
@@ -480,7 +480,7 @@ def i_edit_template(mode, fundname, ticker, transid, parentid, banktransid, tdat
 
                         <input type="hidden" name="fundname" value="%s">
                         <input type="hidden" name="parentid" value="%s">
-
+                        
                         <input type="hidden" name="transid" value="%s">
                         <input type="hidden" name="banktransid" value="%s">
                         <input type="button" name="doit" VALUE="%s" onClick="ieditsingle_validate('%s');">
@@ -632,7 +632,7 @@ def i_saveupdate(ticker, tdate, shares, cost, fromacct, action, parentid, fundna
     # devmoney_banktransactions.id  <== devmoney_invtransactions.banktransid
 
     if banktransid > 0: # was this bank funded?
-
+            
         sqlstr = "SELECT parentid FROM devmoney_banktransactions WHERE id=" + str(banktransid)
         h_logsql(sqlstr)
         cursor.execute(sqlstr)
@@ -648,7 +648,7 @@ def i_saveupdate(ticker, tdate, shares, cost, fromacct, action, parentid, fundna
 
             b_accounttally(bankacctid)
 
-        else:
+        else: 
             # update the bank account transaction with new details
             # enter bank transaction
             # Category: Buy Investment/CD: The Name Of Account
@@ -1091,7 +1091,7 @@ def b_saveadd(thisid, thisparentid, transferid, transferparentid, tdate, ttype, 
 
     # enter transaction in db
     sqlstr = """INSERT INTO devmoney_banktransactions (parentid, transdate, type, updown, amt, whom1, whom2, numnote, splityn, transferid, transferparentid) \
-                            VALUES (%s, '%s', '%s', '%s', %s, '%s', '%s', '%s', 0, %s, %s)""" % (thisparentid, tdate, ttype, updown, amt, whom1, whom2, numnote, transferid, transferparentid)
+                            VALUES (%s, '%s', '%s', '%s', %s, '%s', '%s', '%s', 0, %s, %s)""" % (thisparentid, tdate, ttype, updown, amt, whom1, whom2, numnote, transferid, transferparentid) 
     h_logsql(sqlstr)
     cursor.execute(sqlstr)
     dbcon.commit()
@@ -1367,7 +1367,7 @@ def h_dateinfuture(in_date):
 
 def h_todaydateformysql():
     # returns todays date as 2009-12-31
-    # import time
+    # import time    
     return time.strftime('%Y-%m-%d')
 
 def h_todaydatetimeformysql():
