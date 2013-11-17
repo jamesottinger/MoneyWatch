@@ -582,7 +582,6 @@ def i_saveadd(ticker, tdate, shares, cost, fromacct, action, parentid, fundname)
     dbcon.close()
 
 
-
 def i_saveupdate(ticker, tdate, shares, cost, fromacct, action, parentid, fundname, banktransid, transid):
     dbcon = mdb.connect(g_dbauth[0], g_dbauth[1], g_dbauth[2], g_dbauth[3])
     cursor = dbcon.cursor(mdb.cursors.DictCursor)
@@ -799,6 +798,15 @@ def b_makeselects(selected,identifier):
     dbcon.close()
     return markup
 
+def b_sayaccountname(acctid):
+    dbcon = mdb.connect(g_dbauth[0], g_dbauth[1], g_dbauth[2], g_dbauth[3])
+    cursor = dbcon.cursor(mdb.cursors.DictCursor)
+    sqlstr = """SELECT accountname FROM devmoney_bankaccounts WHERE id=%s""" % (acctid)
+    cursor.execute(sqlstr)
+    dbrow = cursor.fetchone()
+    dbcon.close()
+    return dbrow['accountname']
+
 
 # B.SUMMARY.GET = Shows Summary of Bank Accounts
 def b_summary():
@@ -954,13 +962,19 @@ def b_edit_template(mode, thisname, thisid, thisparentid, transferid, transferpa
         sendcmd = 'B.ENTRY.ADDSAVE'
         buttonsay = 'Add New'
 
+    transshow = 'none'
+    transsay = 'From'
     # add type options here
     if ttype == 'w':
         typeselect = '<option value="d">Deposit</option><option value="w" selected>Withdraw</option><option value="to">Transfer Out</option><option value="ti">Transfer In</option>'
     elif ttype == 'to':
         typeselect = '<option value="d">Deposit</option><option value="w">Withdraw</option><option value="to" selected>Transfer Out</option><option value="ti">Transfer In</option>'
+        transshow = 'block'
+        transsay = 'To'
     elif ttype == 'ti':
         typeselect = '<option value="d">Deposit</option><option value="w">Withdraw</option><option value="to">Transfer Out</option><option value="ti" selected>Transfer In</option>'
+        transshow = 'block'
+        transsay = 'From'
     else: # d = deposit
         typeselect = '<option value="d" selected>Deposit</option><option value="w">Withdraw</option><option value="to">Transfer Out</option><option value="ti">Transfer In</option>'
 
@@ -971,7 +985,7 @@ def b_edit_template(mode, thisname, thisid, thisparentid, transferid, transferpa
                         </tr>
                         <tr>
                             <td class="tdborderright">Action:<br>
-                                <select name="ttype" id="addbanktype" onChange="beditsingle_typechanged(this);">
+                                <select name="ttype" id="beditsingle-ttype" onChange="beditsingle_typechanged(this);">
                                     %s
                                 </select>
                             </td>
@@ -983,7 +997,7 @@ def b_edit_template(mode, thisname, thisid, thisparentid, transferid, transferpa
                         </tr>
                         <tr>
                             <td colspan="2">
-                            <div id="beditsingle-transblock" style="display: none">Transfer <span id="beditsingle-transsay">To</span>:<br><select name="transferaccount"><option value="0">--none--</option>%s</select></div></td>
+                            <div id="beditsingle-transblock" style="display: %s">Transfer <span id="beditsingle-transsay">%s</span>:<br><select name="transferaccount" id="beditsingle-transferaccount"><option value="0">--none--</option>%s</select></div></td>
                         </tr>
                         <tr>
                             <td colspan="2">
@@ -992,9 +1006,11 @@ def b_edit_template(mode, thisname, thisid, thisparentid, transferid, transferpa
                                 <input type="text" name="whom2" value="%s" placeholder="Memo (optional)" size="35" />
                             </td>
                         </tr>
+                        <!--
                         <tr>
                             <td colspan="2">Category:<br><input type="text" name="category" id="autocategories" size="35" /></td>
                         </tr>
+                        -->
                     </table>
                     <div style="text-align:right; padding-top: 20px; padding-right: 25px;">
                         <input type="hidden" name="job" value="%s">
@@ -1018,6 +1034,8 @@ def b_edit_template(mode, thisname, thisid, thisparentid, transferid, transferpa
                             alert("Please provide the total amount for this transaction.");
                         } else if(jQuery('#beditsingle-whom1').val() == '') {
                             alert("Please provide the who/whom for this transaction.");
+                        } else if((jQuery('#beditsingle-ttype').val() == 'ti' || jQuery('#beditsingle-ttype').val() == 'to') && jQuery('#beditsingle-transferaccount').val() == '0') {
+                            alert("Please select the transfer account.");
                         } else {
                             sendCommand(in_sendjob);
                         }
@@ -1029,10 +1047,14 @@ def b_edit_template(mode, thisname, thisid, thisparentid, transferid, transferpa
                             // transfer in
                             jQuery('#beditsingle-transsay').html('From');
                             jQuery('#beditsingle-transblock').show('slow');
+                            jQuery('#beditsingle-whom1').val('[autofill accounts]');
+                            jQuery('#beditsingle-numnote').val('TRANS');
                         } else if (in_obj.value == "to") {
                             // transfer out
                             jQuery('#beditsingle-transsay').html('To');
                             jQuery('#beditsingle-transblock').show('slow');
+                            jQuery('#beditsingle-whom1').val('[autofill accounts]');
+                            jQuery('#beditsingle-numnote').val('TRANS');
                         } else {
                             // d (deposit) or w (withdrawal)
                             jQuery('#beditsingle-transblock').hide('slow');
@@ -1040,7 +1062,7 @@ def b_edit_template(mode, thisname, thisid, thisparentid, transferid, transferpa
                     }
 
                 </script>
-        ''' % (thisname, typeselect, tdate, numnote, amt, b_makeselects(transferparentid,''), whom1, whom2, sendcmd, thisname, thisid, thisparentid, transferid, transferparentid, buttonsay, sendcmd)
+        ''' % (thisname, typeselect, tdate, numnote, amt, transshow, transsay, b_makeselects(transferparentid,''), whom1, whom2, sendcmd, thisname, thisid, thisparentid, transferid, transferparentid, buttonsay, sendcmd)
 
     return markup
 
@@ -1053,7 +1075,6 @@ def b_prepare_addupdate():
     in_amt      = g_formdata.getvalue('amt')
     in_type     = g_formdata.getvalue('ttype')
     in_whom1    = g_formdata.getvalue('whom1')
-    in_whom2    = g_formdata.getvalue('whom2')
     in_thisname = g_formdata.getvalue('thisname')
     in_thisid       = int(g_formdata.getvalue('thisid'))                  # (transaction id) updates only (hidden field)
     in_thisparentid = int(g_formdata.getvalue('thisparentid'))
@@ -1061,9 +1082,14 @@ def b_prepare_addupdate():
     in_transferparentid   = int(g_formdata.getvalue('transferparentid'))  # updates only (hidden field)
 
     if 'transferaccount' in g_formdata: # transferaccount can be hidden and may not be included
-        in_transferacct = g_formdata.getvalue('transferaccount')
+        in_transferacct = int(g_formdata.getvalue('transferaccount'))
     else:
-        in_transferacct = '0'
+        in_transferacct = 0
+
+    if 'whom2' in g_formdata: # was coming in as None
+        in_whom2 = g_formdata.getvalue('whom2')
+    else:
+        in_whom2 = ''
 
     if in_job == 'B.ENTRY.ADDSAVE':
         b_saveadd(thisid=in_thisid, thisparentid=in_thisparentid, transferid=in_transferid, transferparentid=in_transferparentid, tdate=in_date, ttype=in_type, amt=in_amt, numnote=in_numnote, whom1=in_whom1, whom2=in_whom2, transferacct=in_transferacct)
@@ -1082,16 +1108,20 @@ def b_saveadd(thisid, thisparentid, transferid, transferparentid, tdate, ttype, 
         updown = '-'
         updownother = '+'
         actiontrans = 'ti'
+        whom1 = '[' + b_sayaccountname(transferacct) + ']'
+        whom1trans = '[' + b_sayaccountname(thisparentid) + ']'
     elif ttype == 'ti': # transfer in
         updown = '+'
         updownother = '-'
         actiontrans = 'to'
+        whom1 = '[' + b_sayaccountname(transferacct) + ']'
+        whom1trans = '[' + b_sayaccountname(thisparentid) + ']'
     else: # d = deposit
         updown = '+'
 
     # enter transaction in db
     sqlstr = """INSERT INTO devmoney_banktransactions (parentid, transdate, type, updown, amt, whom1, whom2, numnote, splityn, transferid, transferparentid) \
-                            VALUES (%s, '%s', '%s', '%s', %s, '%s', '%s', '%s', 0, %s, %s)""" % (thisparentid, tdate, ttype, updown, amt, whom1, whom2, numnote, transferid, transferparentid) 
+                            VALUES (%s, '%s', '%s', '%s', %s, '%s', '%s', '%s', 0, %s, %s)""" % (thisparentid, tdate, ttype, updown, amt, whom1, whom2, numnote, transferid, transferacct) 
     h_logsql(sqlstr)
     cursor.execute(sqlstr)
     dbcon.commit()
@@ -1100,7 +1130,7 @@ def b_saveadd(thisid, thisparentid, transferid, transferparentid, tdate, ttype, 
 
     if ttype == 'to' or ttype == 'ti': # do the transfer part
         sqlstr = """INSERT INTO devmoney_banktransactions (parentid, transdate, type, updown, amt, whom1, whom2, numnote, splityn, transferid, transferparentid) \
-                            VALUES (%s, '%s', '%s', '%s', %s, '%s', '%s', '%s', 0, %s, %s)""" % (transferacct, tdate, actiontrans , updownother, amt, whom1, whom2, numnote, firsttransid, transferparentid)
+                            VALUES (%s, '%s', '%s', '%s', %s, '%s', '%s', '%s', 0, %s, %s)""" % (transferacct, tdate, actiontrans , updownother, amt, whom1trans, whom2, numnote, firsttransid, thisparentid)
         h_logsql(sqlstr)
         cursor.execute(sqlstr)
         dbcon.commit()
@@ -1116,6 +1146,91 @@ def b_saveadd(thisid, thisparentid, transferid, transferparentid, tdate, ttype, 
         dbcon.commit()
 
     dbcon.close()
+
+
+def b_saveupdate(thisid, thisparentid, transferid, transferparentid, tdate, ttype, amt, numnote, whom1, whom2, transferacct):
+    dbcon = mdb.connect(g_dbauth[0], g_dbauth[1], g_dbauth[2], g_dbauth[3])
+    cursor = dbcon.cursor(mdb.cursors.DictCursor)
+
+    # these are the previously saved values -> transferid, transferparentid
+
+    if ttype == 'w':     # withdrawal
+        updown = '-'
+    elif ttype == 'to': # transfer out
+        updown = '-'
+        updownother = '+'
+        actiontrans = 'ti'
+        whom1 = '[' + b_sayaccountname(transferacct) + ']'
+        whom1trans = '[' + b_sayaccountname(thisparentid) + ']'
+    elif ttype == 'ti': # transfer in
+        updown = '+'
+        updownother = '-'
+        actiontrans = 'to'
+        whom1 = '[' + b_sayaccountname(transferacct) + ']'
+        whom1trans = '[' + b_sayaccountname(thisparentid) + ']'
+    else: # d = deposit
+        updown = '+'
+
+    # ---------  [update any bank transfers]  ---------
+    if ttype == 'd' or ttype == 'w':
+        # was it previously a transfer?
+        if transferid > 0:
+            # delete the transfer, as this is no longer a transfer type
+            # delete bank transaction
+            sqlstr = """DELETE FROM devmoney_banktransactions WHERE id=%s""" % (str(transferid))
+            h_logsql(sqlstr)
+            cursor.execute(sqlstr)
+            dbcon.commit()
+            b_accounttally(transferparentid)
+    else:
+        # this is a transfer
+        # was it previously a transfer?
+        if transferid > 0:
+            # update the transfer
+            sqlstr = """UPDATE devmoney_banktransactions SET \
+                parentid=%s, # parent id may change!
+                transdate='%s',
+                type='%s',
+                updown='%s',
+                amt=%s,
+                whom1='%s',
+                whom2='%s',
+                numnote='%s',
+                transferid=%s, 
+                transferparentid=%s
+                WHERE id=%s""" % (transferacct, tdate, actiontrans, updownother, amt, whom1trans, whom2, numnote, thisid, thisparentid, transferid)
+            h_logsql(sqlstr)
+            cursor.execute(sqlstr)
+            dbcon.commit()
+            b_accounttally(transferacct)
+
+        else:
+            # insert a transfer
+            sqlstr = """INSERT INTO devmoney_banktransactions (parentid, transdate, type, updown, amt, whom1, whom2, numnote, splityn, transferid, transferparentid) \
+                                VALUES (%s, '%s', '%s', '%s', %s, '%s', '%s', '%s', 0, %s, %s)""" % (transferacct, tdate, actiontrans, updownother, amt, whom1trans, whom2, numnote, thisid, thisparentid)
+            h_logsql(sqlstr)
+            cursor.execute(sqlstr)
+            dbcon.commit()
+            transferid = cursor.lastrowid # use new id
+            transferparentid = transferacct
+            b_accounttally(transferacct)
+
+    # update the master bank entry
+    sqlstr = """UPDATE devmoney_banktransactions SET \
+        transdate='%s',
+        type='%s',
+        updown='%s',
+        amt=%s,
+        whom1='%s',
+        whom2='%s',
+        numnote='%s',
+        transferid=%s, 
+        transferparentid=%s
+        WHERE id=%s""" % (tdate, ttype, updown, amt, whom1, whom2, numnote, transferid, transferparentid, thisid)
+    h_logsql(sqlstr)
+    cursor.execute(sqlstr)
+    dbcon.commit()
+    b_accounttally(thisparentid)
 
 
     # B.ENTRY.DELETE = removes a bank entry and possibly a transfer

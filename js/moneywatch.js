@@ -458,6 +458,8 @@ function getInvElection(in_ticker) {
             // clear any previous highlights
             jQuery('#' + activeInvRowId).removeClass('activeinvrow');
             jQuery('#transactionsrightedit').removeClass('activeinveditmenu');
+            jQuery('#transactionsheaderinv').show();
+            jQuery('#transactionsheaderbank').hide();
             panelTransactions.show();
             // animate scroll to bottom
             // jQuery('#transactionslist').stop().animate({ scrollTop: jQuery('#scrollmeinv').offset().top },120);
@@ -572,6 +574,8 @@ function getBankAccount(in_parentid) {
             // clear any previous highlights
             jQuery('#' + activeInvRowId).removeClass('activeinvrow');
             jQuery('#transactionsrightedit').removeClass('activeinveditmenu');
+            jQuery('#transactionsheaderinv').hide();
+            jQuery('#transactionsheaderbank').show();
             panelTransactions.show();
             jQuery("#transactionslist").scrollTop(jQuery("#transactionslist")[0].scrollHeight);
         }
