@@ -4,13 +4,13 @@ padding:0;
 font: 12px Helvetica;
 }
 #header{
-    width: 1324px;
+    width: 1200px;
     height: 30px;
     background-color: #ffffff;
     margin: 0 auto;
 }  
 #container{
-    width: 1324px;
+    width: 1200px;
     margin: 0 auto;
 }
 #leftblock{
@@ -33,21 +33,23 @@ font: 12px Helvetica;
 }
 
 #rightblock{
-    float: right;
-    overflow: auto;
-    /* padding: 10px; */
-    width: 1100px;
-    height: 900px;
+    float: left;
+    /*overflow: auto;
+     padding: 10px; 
+    height: 900px;*/
+    width: 990px;
     font: 12px "Helvetica Neue", Helvetica;
     color: #707070;
     text-shadow: #CCCCCC 0 1px 1px;
  
 }
 #rightfixed{
+    /*
     overflow: auto;
     height: 900px;
+    */
 }
-#righttop, #rightbottom{
+#rightbottom{
     height: 1px;
     background-color: #d5d5d5;
    -moz-box-shadow:0 10px 20px #d5d5d5;
@@ -163,11 +165,11 @@ font: 12px Helvetica;
 
 /* === [ Account Summary ] ==*/
 .summary1heading{
-    width: 90%;    
-    font: 16px "Helvetica Neue", Helvetica;
-    border-bottom: solid 2px #cccccc;
-    color: #56ace2;
-    padding-top: 20px;
+    width: 800px;    
+    font: 18px "Helvetica Neue", Helvetica;
+    /* border-bottom: solid 2px #cccccc; */
+    color: #6770c0;
+    padding-top: 0px;
     padding-left: 10px;
 }
 .summary1bank{
@@ -224,6 +226,17 @@ font: 12px Helvetica;
 }
 .invtable{
     border-collapse: collapse;
+    border-color: #cccccc;
+    border-style: solid;
+    border-width: 1px;
+    border-top-color: #cccccc;
+    border-top-style: solid;
+    border-top-width: 3px;
+/*
+    box-shadow:0 0px 5px #d5d5d5;
+    -moz-box-shadow:0 0px 5px #d5d5d5;
+    -webkit-box-shadow: 0 0px 5px #d5d5d5;
+*/
 }
 .invtable td{
     padding: 6px;
@@ -239,6 +252,11 @@ font: 12px Helvetica;
     border-top-style: solid;
     border-top-width: 1px;
     background-color: #efefef;
+}
+.invtabletrgraytop{
+    border-top-color: #cccccc;
+    border-top-style: solid;
+    border-top-width: 1px;
 }
 .cleantable{
     border-collapse: collapse;
@@ -307,6 +325,12 @@ font: 12px Helvetica;
     font: bold 16px "Helvetica Neue", Helvetica;
     color: #2049af;  /* dark blue */
     text-shadow: #CCCCCC 0 2px 1px;
+}
+.smgraytext{
+    text-align: left;
+    font: 12px "Helvetica Neue", Helvetica;
+    color: #666666;
+    text-shadow: none;
 }
 /* --- inv rows --- */
 #transactionshearerinv {
@@ -412,4 +436,3 @@ font: 12px Helvetica;
     background-color: #E6E6FA;
     border-bottom: 1px dashed #CCCCCC;
 }
-

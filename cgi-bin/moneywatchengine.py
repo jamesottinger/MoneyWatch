@@ -154,9 +154,11 @@ def i_summary():
     cursor = dbcon.cursor(mdb.cursors.DictCursor)
     sqlstr = "SELECT * FROM devmoney_invelections WHERE shares > 0 AND ticker IS NOT NULL ORDER BY parentname,name"
     cursor.execute(sqlstr)
+    dbrows = cursor.fetchall()
 
-    markup = '<div class="summary1heading">Investment Accounts</div>'
-    markup += '''<table class="invtable">\
+    markup = '''\
+                <div class="summary1heading">Investment Accounts <span class="smgraytext">( last fetch: %s <a href="#" onClick="return sendCommand('U.UPDATEQUOTES');">fetch</a> )</span></div>
+                <table class="invtable">
                     <tr>
                         <td>Symbol</td>
                         <td>Name</td>
@@ -167,8 +169,9 @@ def i_summary():
                         <td>Income</td>
                         <td>Apprec.</td>
                         <td>Gain</td>
+                        <td>Links/Schedule</td>
                     </tr>
-    '''
+    ''' % (str(dbrows[0]['quotedate'].strftime("%A  %B %d, %Y %r")))
     all_costbasis = 0
     all_market = 0
     all_appres = 0
@@ -180,21 +183,19 @@ def i_summary():
     parent_income = 0
     parent_appres = 0
     parent_gain = 0
-    quotedate = ''
 
-    dbrows = cursor.fetchall()
     for dbrow in dbrows:
         if dbrow['parentname'] != parent:
             if dbrows[0] != dbrow:
                 markup += '''\
                                 <tr>
-                                    <td colspan="4">&nbsp;</td>
-                                    <td style="text-align: right;background-color: #efefef;"><!-- cost basis -->%s</td>
-                                    <td style="text-align: right;background-color: #efefef;"><!-- market value --><b>%s</b></td>
-                                    <td style="text-align: right;background-color: #efefef;"><!-- income -->%s</td>
-                                    <td style="text-align: right;background-color: #efefef;"><!-- apprec -->%s</td>
-                                    <td style="text-align: right;background-color: #efefef;"><!-- gain -->%s</td>
-                                    <td>&nbsp;</td>
+                                    <td class="invtabletrgraytop" colspan="4">&nbsp;</td>
+                                    <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;"><!-- cost basis -->%s</td>
+                                    <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;"><!-- market value --><b>%s</b></td>
+                                    <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;"><!-- income -->%s</td>
+                                    <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;"><!-- apprec -->%s</td>
+                                    <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;"><!-- gain -->%s</td>
+                                    <td class="invtabletrgraytop">&nbsp;</td>
                                 </tr>
                     ''' % (h_showmoney(parent_costbasis), h_showmoney(parent_market), h_showmoney(parent_income), h_showmoney(parent_appres), h_showmoney(parent_gain))
                 parent_costbasis = 0
@@ -202,8 +203,7 @@ def i_summary():
                 parent_income = 0
                 parent_appres = 0
                 parent_gain = 0
-                quotedate = str(dbrow['quotedate'])
-            markup += '<tr class="invtablehead"><td colspan="9"><b>' + dbrow['parentname'] + '</b></td></tr>'
+            markup += '<tr class="invtablehead"><td colspan="10"><b>' + dbrow['parentname'] + '</b></td></tr>'
             parent = dbrow['parentname']
 
         each_market = dbrow['shares'] * dbrow['quoteprice']
@@ -241,13 +241,13 @@ def i_summary():
 
     markup += '''\
                     <tr>
-                        <td colspan="4">&nbsp;</td>
-                        <td style="text-align: right;background-color: #efefef;"><!-- cost basis -->%s</td>
-                        <td style="text-align: right;background-color: #efefef;"><!-- market value --><b>%s</b></td>
-                        <td style="text-align: right;background-color: #efefef;"><!-- income -->%s</td>
-                        <td style="text-align: right;background-color: #efefef;"><!-- apprec -->%s</td>
-                        <td style="text-align: right;background-color: #efefef;"><!-- gain -->%s</td>
-                        <td>&nbsp;</td>
+                        <td class="invtabletrgraytop" colspan="4">&nbsp;</td>
+                        <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;"><!-- cost basis -->%s</td>
+                        <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;"><!-- market value --><b>%s</b></td>
+                        <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;"><!-- income -->%s</td>
+                        <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;"><!-- apprec -->%s</td>
+                        <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;"><!-- gain -->%s</td>
+                        <td class="invtabletrgraytop">&nbsp;</td>
                     </tr>
         ''' % (h_showmoney(parent_costbasis), h_showmoney(parent_market), h_showmoney(parent_income), h_showmoney(parent_appres), h_showmoney(parent_gain))
 
@@ -266,7 +266,7 @@ def i_summary():
 
 
     dbcon.close()
-    return quotedate + '<br>' + markup + '</table>'
+    return markup + '</table>'
 
 
 # I.ELECTION.GET
@@ -775,7 +775,7 @@ def b_accounttally(in_account):
             if h_dateinfuture(dbrow['transdate']) == False:
                 totaluptotoday -= float(dbrow['amt'])
 
-    sqlstr = """UPDATE devmoney_bankaccounts SET totalall=%s, totaluptotoday=%s, todaywas='%s' WHERE id=%s""" % ("{:.2f}".format(float(totalall)), "{:.2f}".format(float(totaluptotoday)), h_todaydateformysql(), str(in_account))
+    sqlstr = """UPDATE devmoney_bankaccounts SET totalall=%s, totaluptotoday=%s, todaywas='%s', tallytime='%s' WHERE id=%s""" % ("{:.2f}".format(float(totalall)), "{:.2f}".format(float(totaluptotoday)), h_todaydateformysql(), h_todaydatetimeformysql(), str(in_account))
     cursor.execute(sqlstr)
     dbcon.commit()
     dbcon.close()
@@ -816,16 +816,17 @@ def b_summary():
     cursor.execute(sqlstr)
     dbrows = cursor.fetchall()
 
-    markup = '<div class="summary1heading">Bank Accounts</div>'
-    markup += '''<table class="invtable">\
-                    <tr style="background-color: #efefef;">
-                        <td>Bank</td>
-                        <td width="326">Account</td>
-                        <td>Value</td>
-                        <td>My(Today)</td>
-                        <td>My</td>
+    markup = '''\
+                <div class="summary1heading">Bank Accounts <span class="smgraytext">( last tally: %s <a href="#" onClick="return sendCommand('U.UPDATEBANKTOTALS');">tally</a> )</span></div>
+                <table class="invtable">
+                    <tr style="background-color: #ffffff;">
+                        <td style="border-bottom: solid 1px #cccccc;">Bank</td>
+                        <td style="border-bottom: solid 1px #cccccc;"width="326">Account</td>
+                        <td style="border-bottom: solid 1px #cccccc;">Value</td>
+                        <td style="border-bottom: solid 1px #cccccc;">Me (Today)</td>
+                        <td style="border-bottom: solid 1px #cccccc;">Me (Future)</td>
                     </tr>
-    '''
+    ''' % (str(dbrows[0]['tallytime'].strftime("%A  %B %d, %Y %r")))
     totalmytoday = 0
 
     for dbrow in dbrows:
@@ -849,11 +850,10 @@ def b_summary():
     dbcon.close()
     markup += '''\
                 <tr>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
+                    <td class="invtabletrgraytop" colspan="2">&nbsp;</td>
+                    <td class="invtabletrgraytop" >&nbsp;</td>
                     <td class="invtotalsbottom" style="width:60px;text-align: right;"><!-- MINE - value current/today --><b>%s</b>  <input type="hidden" id="networth-banks" name="networth-banks" value="%s"></td>
-                    <td style="text-align: right;"><!-- MINE - value extended --></td>
+                    <td class="invtabletrgraytop" style="text-align: right;"><!-- MINE - value extended --></td>
                 </tr>''' % (h_showmoney(totalmytoday),totalmytoday)
 
     return markup + '</table>'
@@ -898,7 +898,7 @@ def b_accountget():
             rtotalclass = 'rbalneg'
             rtotalshow = '(' + h_showmoney(rtotal) + ')'
 
-        if dbrow['type'] == 't':
+        if dbrow['type'] == 'ti' or dbrow['type'] == 'to':
             if dbrow['whom1'] == '':
                 showwho = dbrow['whom2']
             else:
@@ -944,7 +944,7 @@ def b_entry_prepareadd():
 def b_entry_prepareedit():
     dbcon = mdb.connect(g_dbauth[0], g_dbauth[1], g_dbauth[2], g_dbauth[3])
     cursor = dbcon.cursor(mdb.cursors.DictCursor)
-    sqlstr = """SELECT bt.*, ba.accountname AS accountname, ba.id AS thisid FROM devmoney_banktransactions bt \
+    sqlstr = """SELECT bt.*, ba.accountname AS accountname, bt.id AS thisid FROM devmoney_banktransactions bt \
                 INNER JOIN devmoney_bankaccounts ba ON bt.parentid=ba.id WHERE bt.id=%s""" % (g_formdata.getvalue('transid'))
     cursor.execute(sqlstr)
     dbrow = cursor.fetchone()
@@ -1094,7 +1094,7 @@ def b_prepare_addupdate():
     if in_job == 'B.ENTRY.ADDSAVE':
         b_saveadd(thisid=in_thisid, thisparentid=in_thisparentid, transferid=in_transferid, transferparentid=in_transferparentid, tdate=in_date, ttype=in_type, amt=in_amt, numnote=in_numnote, whom1=in_whom1, whom2=in_whom2, transferacct=in_transferacct)
 
-    if in_job == 'B.ENTRY.UPDATESAVE':
+    if in_job == 'B.ENTRY.EDITSAVE':
         b_saveupdate(thisid=in_thisid, thisparentid=in_thisparentid, transferid=in_transferid, transferparentid=in_transferparentid, tdate=in_date, ttype=in_type, amt=in_amt, numnote=in_numnote, whom1=in_whom1, whom2=in_whom2, transferacct=in_transferacct)
 
 
@@ -1186,9 +1186,9 @@ def b_saveupdate(thisid, thisparentid, transferid, transferparentid, tdate, ttyp
         # this is a transfer
         # was it previously a transfer?
         if transferid > 0:
-            # update the transfer
+            # update the transfer (parent id may change!)
             sqlstr = """UPDATE devmoney_banktransactions SET \
-                parentid=%s, # parent id may change!
+                parentid=%s,
                 transdate='%s',
                 type='%s',
                 updown='%s',
@@ -1257,7 +1257,7 @@ def b_entry_delete():
 
     if dbrow['transferid'] > 0:
         # delete any transfers
-        sqlstr = """DELETE FROM devmoney_banktransactions WHERE transactionid=%s""" % (str(dbrow['transferid']))
+        sqlstr = """DELETE FROM devmoney_banktransactions WHERE id=%s""" % (str(dbrow['transferid']))
         h_logsql(sqlstr)
         cursor.execute(sqlstr)
         dbcon.commit()
@@ -1278,13 +1278,13 @@ def b_bulkinterest_edit():
     parent = ''
     javascriptcalls = []
 
-    markup += '''<form name="bbulkinterestedit" id="bbulkinterestedit"><table class="invtable">\
+    markup += '''<form name="bbulkinterestedit" id="bbulkinterestedit"><table class="invtable" width="100%">\
                     <tr>
                         <td colspan="2">Date <input type="text" name="bbulkinterest-date" id="bbulkinterest-date" size="10"></td>
                     </tr>
                     <tr>
-                        <td><strong>Account Name</strong></td>
-                        <td><strong>Amount</strong></td>
+                        <td style="border-bottom: solid 1px #cccccc;border-top: solid 1px #cccccc;"><strong>Account Name</strong></td>
+                        <td style="border-bottom: solid 1px #cccccc;border-top: solid 1px #cccccc;"><strong>Amount</strong></td>
                     </tr>
     '''
 
@@ -1338,12 +1338,12 @@ def b_bulkbills_edit():
     markup = ''
     javascriptcalls = []
 
-    markup += '''<form name="bbulkbillsedit" id="bbulkbillsedit"><table class="invtable">\
+    markup += '''<form name="bbulkbillsedit" id="bbulkbillsedit"><table class="invtable" width="100%">\
                     <tr>
-                        <td><strong>Payee Name</strong></td>
-                        <td><strong>Paid From</strong></td>
-                        <td><strong>Date</strong></td>
-                        <td><strong>Amount</strong></td>
+                        <td style="border-bottom: solid 1px #cccccc;"><strong>Payee Name</strong></td>
+                        <td style="border-bottom: solid 1px #cccccc;"><strong>Paid From</strong></td>
+                        <td style="border-bottom: solid 1px #cccccc;"><strong>Date</strong></td>
+                        <td style="border-bottom: solid 1px #cccccc;"><strong>Amount</strong></td>
                     </tr>
     '''
 
