@@ -496,6 +496,18 @@ function getInvElectionEdit(in_ticker, in_transid) {
     );
 }
 
+function getInvGraph(in_ticker) {
+    panelUniversal.set('width', 950);
+    panelUniversal.set('headerContent', "Investment - Graph" + YUIcloseMarkup);
+    jQuery.post(moneyWatchX,
+        {job: 'I.GRAPH.GET', ticker: in_ticker, pu: poisonURL()},
+        function(data) { 
+            jQuery('#paneluniversal-inner').html(data);
+            panelUniversal.show();
+        }
+    );
+}
+
 function sendInvDelete(in_ticker, in_transid) {
     var r = confirm("Are you sure you want to delete this transaction?");
     if (r == true) {

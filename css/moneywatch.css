@@ -3,6 +3,10 @@ margin:0;
 padding:0;
 font: 12px Helvetica;
 }
+a:link    {color:#6a6aa2;}  /* unvisited link  */
+a:visited {color:#6a6aa2;}  /* visited link    */
+a:hover   {color:#6a6aa2;}  /* mouse over link */
+a:active  {color:#6a6aa2;}  /* selected link   */
 #header{
     width: 1200px;
     height: 30px;
@@ -35,7 +39,7 @@ font: 12px Helvetica;
 #rightblock{
     float: left;
     /*overflow: auto;
-     padding: 10px; 
+    padding: 10px; 
     height: 900px;*/
     width: 990px;
     font: 12px "Helvetica Neue", Helvetica;
