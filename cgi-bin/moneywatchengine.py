@@ -1419,8 +1419,14 @@ def u_fetchquotes():
         stockstring = dbrow['ticker']
       else:
         stockstring += '+' + dbrow['ticker']
+    
+    try:
+        response = urllib2.urlopen('http://finance.yahoo.com/d/quotes.csv?s=' + stockstring + '&f=snl1d1cjk&e=.csv')
+    except urllib2.URLError, e:
+        print "There was an error fetching quotes: " + e
+        return
+        #raise MyException("There was an error fetching quotes: %r" % e)
 
-    response = urllib2.urlopen('http://finance.yahoo.com/d/quotes.csv?s=' + stockstring + '&f=snl1d1cjk&e=.csv')
     csvdatalines = filter(None, response.read().split('\r\n'))
     #csvreader = csv.reader(csvdata)
     #print csvdatalines
