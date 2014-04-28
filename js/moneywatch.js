@@ -3,7 +3,7 @@
 // INIT
 //====================================================
 var panelAddBank, panelIntBulk, panelInvSettings, panelUniversal, panelTransactions; // global variables (YUI panels)
-    
+
 // YUI Components
 YUI({
      gallery: 'gallery-2011.06.01-20-18' // Last Gallery Build of this module
@@ -68,14 +68,14 @@ YUI({
         resultFilters: 'phraseMatch',
         resultHighlighter: 'phraseMatch',
         source: 'php-bank-categories-generate.php?&callback=parseAuto'
-    });  
-    
+    });
+
     //  Accessing Yahoo Finance - http://yuilibrary.com/gallery/show/yql-finance
     var symbols = ["FSEMX", "FSTMX", "FTBFX", "VFINX", "VBINX", "VHDYX", "VWEHX", "VISVX", "VIVAX"];
    /*
     function display(container, prices) {
         var asset, content = "", c = Y.one(container);
- 
+
         for (asset in prices) {
             if (prices.hasOwnProperty(asset)) {
                 content += asset + " -> ";
@@ -83,15 +83,15 @@ YUI({
                 content += "<br />";
             }
         }
-        c.setContent(content);    
+        c.setContent(content);
     }
- 
+
     Y.YQL.Finance.getHistoricalQuotes(symbols, function (prices) {
         display("#histQuotes", prices);
     }, {
         columns: ["Close", "Date"]
     });
- 
+
     Y.YQL.Finance.getHistoricalQuotes(symbols, function (prices) {
         display("#histQuotes2", prices);
     }, {
@@ -100,7 +100,7 @@ YUI({
         startDate: "2010-10-01",
         endDate: "2010-10-30"
     });
- 
+
     Y.YQL.Finance.getQuotes(symbols, function (prices) {
         display("#quotes", prices);
     }, {
@@ -120,9 +120,10 @@ jQuery(function() {
 
 
 //====================================================
-// AJAX 
+// AJAX
 //====================================================
 var moneyWatchX = '/x/moneywatch-relay.py';
+//var moneyWatchX = '/devmoney-x/moneywatch-relay.py';
 var xmlHttp = false;
 var requestType = "";
 var overobj;
@@ -143,7 +144,7 @@ function ajax_createXMLHttpRequest() {
                 xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
             } catch(e) {
                 xmlHttp = false;
-            } 
+            }
         }
     }
 }
@@ -152,7 +153,7 @@ function ajax_handleStateChange()
 {
     if(xmlHttp.readyState == 4) {
         if(xmlHttp.status == 200 || xmlHttp.status == 304) {
-            
+
             if(requestType == "AJAX.BANK.GETTRANSACTIONS") {
                 jQuery('#rightcontent').html(xmlHttp.responseText);
                 // animate scroll to bottom
@@ -253,7 +254,7 @@ function sendCommand(in_job) {
         case 'I.SUMMARY.GET':
             jQuery.post(moneyWatchX,
                 {job: in_job, pu: poisonURL()},
-                function(data) { 
+                function(data) {
                     jQuery('#rightcontent1').html(data);
                     calcNetWorth();
                 }
@@ -264,7 +265,7 @@ function sendCommand(in_job) {
             panelUniversal.set('headerContent', "Investments - Bulk Add" + YUIcloseMarkup);
             jQuery.post(moneyWatchX,
                 {job: in_job, pu: poisonURL()},
-                function(data) { 
+                function(data) {
                     jQuery('#paneluniversal-inner').html(data);
                     panelUniversal.show();
                 }
@@ -296,21 +297,21 @@ function sendCommand(in_job) {
                         jQuery('#' + activeInvRowId).removeClass('activeinvrow');
                         jQuery.post(moneyWatchX,
                             {job: 'I.ELECTION.GET', ticker: thisticker, pu: poisonURL()},
-                            function(data) { 
+                            function(data) {
                                 jQuery('#transactionslist').html(data);
                                 jQuery("#transactionslist").scrollTop(jQuery("#transactionslist")[0].scrollHeight);
                             }
                         );
                         jQuery.post(moneyWatchX,
                             {job: 'I.ENTRY.ADD', ticker: thisticker, pu: poisonURL()},
-                            function(data) { 
+                            function(data) {
                                 jQuery('#transactionsrightedit').html(data);
                             }
                         );
                         // reload underneath
                         sendCommand('I.SUMMARY.GET');
                     } else {
-                        alert(data);
+                        alert(data.substr(0,500));
                     }
                 }
             );
@@ -318,7 +319,7 @@ function sendCommand(in_job) {
         case 'B.SUMMARY.GET':
             jQuery.post(moneyWatchX,
                 {job: in_job, pu: poisonURL()},
-                function(data) { 
+                function(data) {
                     jQuery('#rightcontent2').html(data);
                     calcNetWorth();
                 }
@@ -329,7 +330,7 @@ function sendCommand(in_job) {
             panelUniversal.set('headerContent', "Bank - Bulk Interest" + YUIcloseMarkup);
             jQuery.post(moneyWatchX,
                 {job: in_job, pu: poisonURL()},
-                function(data) { 
+                function(data) {
                     jQuery('#paneluniversal-inner').html(data);
                     panelUniversal.show();
                 }
@@ -346,7 +347,7 @@ function sendCommand(in_job) {
                         sendCommand('I.SUMMARY.GET');
                         sendCommand('B.SUMMARY.GET');
                     } else {
-                        alert(data);
+                        alert(data.substr(0,500));
                     }
                 }
             );
@@ -356,7 +357,7 @@ function sendCommand(in_job) {
             panelUniversal.set('headerContent', "Bank - Bulk Bills" + YUIcloseMarkup);
             jQuery.post(moneyWatchX,
                 {job: in_job, pu: poisonURL()},
-                function(data) { 
+                function(data) {
                     jQuery('#paneluniversal-inner').html(data);
                     panelUniversal.show();
                 }
@@ -373,7 +374,7 @@ function sendCommand(in_job) {
                         sendCommand('I.SUMMARY.GET');
                         sendCommand('B.SUMMARY.GET');
                     } else {
-                        alert(data);
+                        alert(data.substr(0,500));
                     }
                 }
             );
@@ -390,21 +391,21 @@ function sendCommand(in_job) {
                         jQuery('#' + activeInvRowId).removeClass('activebankrow');
                         jQuery.post(moneyWatchX,
                             {job: 'B.ACCOUNT.GET', parentid: thispid, pu: poisonURL()},
-                            function(data) { 
+                            function(data) {
                                 jQuery('#transactionslist').html(data);
                                 jQuery("#transactionslist").scrollTop(jQuery("#transactionslist")[0].scrollHeight);
                             }
                         );
                         jQuery.post(moneyWatchX,
                             {job: 'B.ENTRY.ADD', bankacctid: thispid, pu: poisonURL()},
-                            function(data) { 
+                            function(data) {
                                 jQuery('#transactionsrightedit').html(data);
                             }
                         );
                         // reload underneath
                         sendCommand('B.SUMMARY.GET');
                     } else {
-                        alert(data);
+                        alert(data.substr(0,500));
                     }
                 }
             );
@@ -412,12 +413,12 @@ function sendCommand(in_job) {
         case 'U.UPDATEQUOTES':
             jQuery.post(moneyWatchX,
                 {job: in_job, pu: poisonURL()},
-                function(data) { 
+                function(data) {
                     data = data.replace(/\n/gm, '');
                     if (data == 'ok') {
                         sendCommand('I.SUMMARY.GET');
                     } else {
-                        alert(data);
+                        alert(data.substr(0,500));
                     }
                 }
             );
@@ -425,12 +426,12 @@ function sendCommand(in_job) {
         case 'U.UPDATEBANKTOTALS':
             jQuery.post(moneyWatchX,
                 {job: in_job, pu: poisonURL()},
-                function(data) { 
+                function(data) {
                     data = data.replace(/\n/gm, '');
                     if (data == 'ok') {
                         sendCommand('B.SUMMARY.GET');
                     } else {
-                        alert(data);
+                        alert(data.substr(0,500));
                     }
                 }
             );
@@ -440,7 +441,7 @@ function sendCommand(in_job) {
             panelUniversal.set('headerContent', "Import Menu" + YUIcloseMarkup);
             jQuery.post(moneyWatchX,
                 {job: in_job, pu: poisonURL()},
-                function(data) { 
+                function(data) {
                     jQuery('#paneluniversal-inner').html(data);
                     panelUniversal.show();
                 }
@@ -453,7 +454,7 @@ function sendCommand(in_job) {
 function getInvElection(in_ticker) {
     jQuery.post(moneyWatchX,
         {job: 'I.ELECTION.GET', ticker: in_ticker, pu: poisonURL()},
-        function(data) { 
+        function(data) {
             jQuery('#transactionslist').html(data);
             // clear any previous highlights
             jQuery('#' + activeInvRowId).removeClass('activeinvrow');
@@ -468,13 +469,13 @@ function getInvElection(in_ticker) {
     );
     jQuery.post(moneyWatchX,
         {job: 'I.ENTRY.ADD', ticker: in_ticker, pu: poisonURL()},
-        function(data) { 
+        function(data) {
             jQuery('#transactionsrightedit').html(data);
         }
     );
     jQuery.post(moneyWatchX,
         {job: 'I.ENTRY.CHART', ticker: in_ticker, pu: poisonURL()},
-        function(data) { 
+        function(data) {
             jQuery('#transactionsrightchart').html(data);
         }
     );
@@ -484,7 +485,7 @@ function getInvElection(in_ticker) {
 function getInvElectionEdit(in_ticker, in_transid) {
     jQuery.post(moneyWatchX,
         {job: 'I.ENTRY.EDIT', ticker: in_ticker, transid: in_transid, pu: poisonURL()},
-        function(data) { 
+        function(data) {
             jQuery('#transactionsrightedit').html(data);
             if (activeInvRowId != '') {
                 jQuery('#' + activeInvRowId).removeClass('activeinvrow');
@@ -501,7 +502,7 @@ function getInvGraph(in_ticker) {
     panelUniversal.set('headerContent', "Investment - Graph" + YUIcloseMarkup);
     jQuery.post(moneyWatchX,
         {job: 'I.GRAPH.GET', ticker: in_ticker, pu: poisonURL()},
-        function(data) { 
+        function(data) {
             jQuery('#paneluniversal-inner').html(data);
             panelUniversal.show();
         }
@@ -526,7 +527,7 @@ function sendInvDelete(in_ticker, in_transid) {
                     // reload underneath
                     sendCommand('I.SUMMARY.GET');
                 } else {
-                    alert(data);
+                    alert(data.substr(0,500));
                 }
             }
         );
@@ -561,14 +562,14 @@ function sendBankDelete(in_parentid, in_transid) {
                     // reload left side, reflecting the deletion
                     jQuery.post(moneyWatchX,
                         {job: 'B.ACCOUNT.GET', parentid: in_parentid, pu: poisonURL()},
-                        function(data) { 
+                        function(data) {
                             jQuery('#transactionslist').html(data);
                         }
                     );
                     // reload underneath
                     sendCommand('B.SUMMARY.GET');
                 } else {
-                    alert(data);
+                    alert(data.substr(0,500));
                 }
             }
         );
@@ -594,7 +595,7 @@ function getBankAccount(in_parentid) {
     );
     jQuery.post(moneyWatchX,
         {job: 'B.ENTRY.ADD', bankacctid: in_parentid, pu: poisonURL()},
-        function(data) { 
+        function(data) {
             jQuery('#transactionsrightedit').html(data);
         }
     );
