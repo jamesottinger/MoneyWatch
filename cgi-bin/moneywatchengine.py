@@ -1393,9 +1393,14 @@ def b_bulkbills_save():
     dbcon.close()
 
 
+#================================================================================================================
+# UTILITIES
+#================================================================================================================
+
+
 # U.UPDATEQUOTES
 def u_fetchquotes():
-#http://finance.yahoo.com/d/quotes.csv?s=LLL+VFINX&f=snl1d1c
+#http://finance.yahoo.com/d/quotes.csv?s=LLL+VFINX&f=snl1d1cjkyr1q
 #"LLL","L-3 Communication",66.24,"12/2/2011","+0.23"
 #"VFINX","VANGUARD INDEX TR",115.07,"12/1/2011","-0.21"
 #stockstring = 'VBINX+LLL'
@@ -1405,11 +1410,14 @@ def u_fetchquotes():
 #   3 = Date of Price
 #   4 = Change
 #   5 = 52 week low
-#   6 = 52 week high
+#   6 = (k) 52 week high
+#   7 = (y) yield
+#   8 = (r1) dividend date (next)
+#   9 = (q) dividend date (prev)
 
     dbcon = mdb.connect(g_dbauth[0], g_dbauth[1], g_dbauth[2], g_dbauth[3])
     cursor = dbcon.cursor(mdb.cursors.DictCursor)
-    sqlstr = "SELECT ticker FROM devmoney_invelections WHERE ticker IS NOT NULL"
+    sqlstr = "SELECT DISTINCT ticker FROM devmoney_invelections WHERE ticker IS NOT NULL"
     cursor.execute(sqlstr)
 
     dbrows = cursor.fetchall()
@@ -1419,9 +1427,9 @@ def u_fetchquotes():
         stockstring = dbrow['ticker']
       else:
         stockstring += '+' + dbrow['ticker']
-    
+
     try:
-        response = urllib2.urlopen('http://finance.yahoo.com/d/quotes.csv?s=' + stockstring + '&f=snl1d1cjk&e=.csv')
+        response = urllib2.urlopen('http://finance.yahoo.com/d/quotes.csv?s=' + stockstring + '&f=snl1d1cjkyr1q&e=.csv')
     except urllib2.URLError, e:
         print "There was an error fetching quotes: " + e
         return
@@ -1435,11 +1443,16 @@ def u_fetchquotes():
         row[0] = str(row[0].replace('"', ''))
         row[3] = str(row[3].replace('"', ''))
         row[4] = str(row[4].replace('"', ''))
+        row[7] = str(row[7].replace('"', ''))
+        row[8] = str(row[8].replace('"', ''))
+        row[9] = str(row[9].replace('"', ''))
         #print row[0] + " " + row[2] + " " + row[3] + " " + row[4]
         #sqlstr = "UPDATE newslettermanager SET id_active='Y', date_subactivated='" + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "' WHERE user_email='" + user_email_lookup + "'
 
-        i_electiontally(row[0])
-        sqlstr = """UPDATE devmoney_invelections SET quoteprice ='%s', quotechange='%s', quotedate='%s' WHERE ticker ='%s'""" % (row[2], row[4], h_todaydatetimeformysql(), row[0])
+        if row[0] == 'VMMXX': # Yahoo thinks the quote is .01 for Vanguard Prime Money Market Fund
+            row[2] = '1.00'
+
+        sqlstr = """UPDATE devmoney_invelections SET quoteprice ='%s', quotechange='%s', quotedate='%s', yield = '%s', divdatenext = '%s', divdateprev = '%s' WHERE ticker ='%s'""" % (row[2], row[4], h_todaydatetimeformysql(), row[7], row[8], row[9], row[0])
         cursor.execute(sqlstr)
         dbcon.commit()
     dbcon.close()
