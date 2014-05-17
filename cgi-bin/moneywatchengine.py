@@ -571,10 +571,10 @@ def i_saveadd(ticker, tdate, shares, cost, fromacct, action, parentid, fundname)
     i_electiontally(ticker)
 
     if fromacct > 0: # was this bank funded?
-        # update the bank account to show transid
+        # update the bank account to show investmentid
         sqlstr = """UPDATE devmoney_banktransactions SET \
-                    transferid=%s
-                    WHERE id=%s""" % (cursor.lastrowid, banktransid)
+            investmentid=%s
+            WHERE id=%s""" % (cursor.lastrowid, banktransid)
         h_logsql(sqlstr)
         cursor.execute(sqlstr)
         dbcon.commit()
