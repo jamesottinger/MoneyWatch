@@ -251,9 +251,9 @@ def i_summary():
                         <td style="text-align: right;"><!-- income -->%s</td>
                         <td style="text-align: right;" class="%s"><!-- apprec -->%s</td>
                         <td style="text-align: right;"><!-- gain -->%s</td>
-                        <td><a href="http://www.google.com/finance?q=%s" target="_blank">G</a> <a href="http://finance.yahoo.com/q?s=%s" target="_blank">Y</a> [%s]</td>
+                        <td><a href="http://www.google.com/finance?q=%s" target="_blank">G</a> <a href="http://finance.yahoo.com/q?s=%s" target="_blank">Y</a> <a href="http://quotes.morningstar.com/fund/%s/f?t=%s" target="_blank">MS</a> [%s]</td>
                     </tr>
-        ''' % (dbrow['ticker'], dbrow['ticker'], dbrow['ticker'], dbrow['name'], "{:.3f}".format(dbrow['shares']), h_showmoney(dbrow['quoteprice']), h_showmoney(dbrow['costbasis']), h_showmoney(each_market), h_showmoney(each_income), each_apprecclass, h_showmoney(each_appres), h_showmoney(each_gain), dbrow['ticker'], dbrow['ticker'], dbrow['divschedule'])
+        ''' % (dbrow['ticker'], dbrow['ticker'], dbrow['ticker'], dbrow['name'], "{:.3f}".format(dbrow['shares']), h_showmoney(dbrow['quoteprice']), h_showmoney(dbrow['costbasis']), h_showmoney(each_market), h_showmoney(each_income), each_apprecclass, h_showmoney(each_appres), h_showmoney(each_gain), dbrow['ticker'], dbrow['ticker'], dbrow['ticker'], dbrow['ticker'], dbrow['divschedule'])
 
     markup += '''\
                     <tr>
