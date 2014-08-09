@@ -447,7 +447,7 @@ def i_entry_prepareedit():
         return i_edit_template(mode='edit', fundname=dbrow['fundname'], ticker=dbrow['ticker'], transid=str(dbrow['id']), parentid=str(dbrow['parentid']), banktransid=dbrow['banktransid'], tdate=str(dbrow['transdate']), action=dbrow['action'], shares="{:.3f}".format(float(dbrow['sharesamt'])), cost="{:.2f}".format(float(dbrow['transprice'])), fundsorigin=str(dbrow['fundsorigin']))
 
 
-# created the single 
+# created the single
 def i_edit_template(mode, fundname, ticker, transid, parentid, banktransid, tdate, action, shares, cost, fundsorigin):
 
     if mode == 'edit':
@@ -496,7 +496,7 @@ def i_edit_template(mode, fundname, ticker, transid, parentid, banktransid, tdat
 
                         <input type="hidden" name="fundname" value="%s">
                         <input type="hidden" name="parentid" value="%s">
-                        
+
                         <input type="hidden" name="transid" value="%s">
                         <input type="hidden" name="banktransid" value="%s">
                         <input type="button" name="doit" VALUE="%s" onClick="ieditsingle_validate('%s');">
@@ -1146,7 +1146,7 @@ def b_saveadd(thisid, thisparentid, transferid, transferparentid, tdate, ttype, 
 
     # enter transaction in db
     sqlstr = """INSERT INTO devmoney_banktransactions (parentid, transdate, type, updown, amt, whom1, whom2, numnote, splityn, transferid, transferparentid, investmentid) \
-                            VALUES (%s, '%s', '%s', '%s', %s, '%s', '%s', '%s', 0, %s, %s, 0)""" % (thisparentid, tdate, ttype, updown, amt, whom1, whom2, numnote, transferid, transferacct) 
+                            VALUES (%s, '%s', '%s', '%s', %s, '%s', '%s', '%s', 0, %s, %s, 0)""" % (thisparentid, tdate, ttype, updown, amt, whom1, whom2, numnote, transferid, transferacct)
     h_logsql(sqlstr)
     cursor.execute(sqlstr)
     dbcon.commit()
@@ -1221,7 +1221,7 @@ def b_saveupdate(thisid, thisparentid, transferid, transferparentid, tdate, ttyp
                 whom1='%s',
                 whom2='%s',
                 numnote='%s',
-                transferid=%s, 
+                transferid=%s,
                 transferparentid=%s
                 WHERE id=%s""" % (transferacct, tdate, actiontrans, updownother, amt, whom1trans, whom2, numnote, thisid, thisparentid, transferid)
             h_logsql(sqlstr)
@@ -1249,7 +1249,7 @@ def b_saveupdate(thisid, thisparentid, transferid, transferparentid, tdate, ttyp
         whom1='%s',
         whom2='%s',
         numnote='%s',
-        transferid=%s, 
+        transferid=%s,
         transferparentid=%s
         WHERE id=%s""" % (tdate, ttype, updown, amt, whom1, whom2, numnote, transferid, transferparentid, thisid)
     h_logsql(sqlstr)
@@ -1526,7 +1526,7 @@ def h_dateinfuture(in_date):
 
 def h_todaydateformysql():
     # returns todays date as 2009-12-31
-    # import time    
+    # import time
     return time.strftime('%Y-%m-%d')
 
 def h_todaydatetimeformysql():
@@ -1566,7 +1566,7 @@ def i_graph():
     cursor.execute(sqlstr)
     dbrows = cursor.fetchall()
     #parentid, transdate, ticker, updown, action, sharesamt, shareprice, transprice, totalshould
-    
+
     fundstart = str(dbrows[0]['transdate']).split("-")
 
     fundstartyear = fundstart[0]
@@ -1596,7 +1596,7 @@ def i_graph():
 
 <script>
 
-    jQuery(function () { 
+    jQuery(function () {
         jQuery('#graphpurchases').highcharts({
             chart: {
                 zoomType: 'x',
@@ -1645,7 +1645,7 @@ def i_graph():
                     threshold: null
                 }
             },
-    
+
             series: [{
                 type: 'area',
                 name: 'Shares',
@@ -1703,7 +1703,7 @@ def i_graph():
                     threshold: null
                 }
             },
-    
+
             series: [{
                 type: 'area',
                 name: 'Prices',
