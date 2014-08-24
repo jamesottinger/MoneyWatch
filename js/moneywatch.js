@@ -288,7 +288,7 @@ function sendCommand(in_job) {
         case 'I.ENTRY.EDITSAVE':
         case 'I.ENTRY.ADDSAVE':
             var formdata = jQuery('#ieditsingle').serialize();
-            var thisticker = jQuery('#ieditsingle-ticker').val();
+            var thisparentid = jQuery('#ieditsingle-parentid').val();
             jQuery.post(moneyWatchX,
                 formdata,
                 function(data) {
@@ -296,14 +296,14 @@ function sendCommand(in_job) {
                     if (data == 'ok') {
                         jQuery('#' + activeInvRowId).removeClass('activeinvrow');
                         jQuery.post(moneyWatchX,
-                            {job: 'I.ELECTION.GET', ticker: thisticker, pu: poisonURL()},
+                            {job: 'I.ELECTION.GET', parentid: thisparentid, pu: poisonURL()},
                             function(data) {
                                 jQuery('#transactionslist').html(data);
                                 jQuery("#transactionslist").scrollTop(jQuery("#transactionslist")[0].scrollHeight);
                             }
                         );
                         jQuery.post(moneyWatchX,
-                            {job: 'I.ENTRY.ADD', ticker: thisticker, pu: poisonURL()},
+                            {job: 'I.ENTRY.ADD', parentid: thisparentid, pu: poisonURL()},
                             function(data) {
                                 jQuery('#transactionsrightedit').html(data);
                             }
@@ -451,9 +451,9 @@ function sendCommand(in_job) {
     }
 }
 
-function getInvElection(in_ticker) {
+function getInvElection(in_id) {
     jQuery.post(moneyWatchX,
-        {job: 'I.ELECTION.GET', ticker: in_ticker, pu: poisonURL()},
+        {job: 'I.ELECTION.GET', parentid: in_id, pu: poisonURL()},
         function(data) {
             jQuery('#transactionslist').html(data);
             // clear any previous highlights
@@ -468,13 +468,13 @@ function getInvElection(in_ticker) {
         }
     );
     jQuery.post(moneyWatchX,
-        {job: 'I.ENTRY.ADD', ticker: in_ticker, pu: poisonURL()},
+        {job: 'I.ENTRY.ADD', parentid: in_id, pu: poisonURL()},
         function(data) {
             jQuery('#transactionsrightedit').html(data);
         }
     );
     jQuery.post(moneyWatchX,
-        {job: 'I.ENTRY.CHART', ticker: in_ticker, pu: poisonURL()},
+        {job: 'I.ENTRY.CHART', parentid: in_id, pu: poisonURL()},
         function(data) {
             jQuery('#transactionsrightchart').html(data);
         }
@@ -482,26 +482,26 @@ function getInvElection(in_ticker) {
     //jQuery('#paneluniversal-inner').html('');
 }
 
-function getInvElectionEdit(in_ticker, in_transid) {
+function getInvElectionEdit(in_parentid, in_transid) {
     jQuery.post(moneyWatchX,
-        {job: 'I.ENTRY.EDIT', ticker: in_ticker, transid: in_transid, pu: poisonURL()},
+        {job: 'I.ENTRY.EDIT', parentid: in_parentid, transid: in_transid, pu: poisonURL()},
         function(data) {
             jQuery('#transactionsrightedit').html(data);
             if (activeInvRowId != '') {
                 jQuery('#' + activeInvRowId).removeClass('activeinvrow');
             }
-            activeInvRowId = in_ticker + in_transid;
+            activeInvRowId = in_parentid + in_transid;
             jQuery('#' + activeInvRowId).addClass('activeinvrow');
             jQuery('#transactionsrightedit').addClass('activeinveditmenu');
         }
     );
 }
 
-function getInvGraph(in_ticker) {
+function getInvGraph(in_parentid) {
     panelUniversal.set('width', 950);
     panelUniversal.set('headerContent', "Investment - Graph" + YUIcloseMarkup);
     jQuery.post(moneyWatchX,
-        {job: 'I.GRAPH.GET', ticker: in_ticker, pu: poisonURL()},
+        {job: 'I.GRAPH.GET', parentid: in_parentid, pu: poisonURL()},
         function(data) {
             jQuery('#paneluniversal-inner').html(data);
             panelUniversal.show();
@@ -509,7 +509,7 @@ function getInvGraph(in_ticker) {
     );
 }
 
-function sendInvDelete(in_ticker, in_transid) {
+function sendInvDelete(in_parentid, in_transid) {
     var r = confirm("Are you sure you want to delete this transaction?");
     if (r == true) {
         jQuery.post(moneyWatchX,
@@ -519,7 +519,7 @@ function sendInvDelete(in_ticker, in_transid) {
                 if (data == 'ok') {
                     // reload left side, reflecting the deletion
                     jQuery.post(moneyWatchX,
-                        {job: 'I.ELECTION.GET', ticker: in_ticker, pu: poisonURL()},
+                        {job: 'I.ELECTION.GET', parentid: in_parentid, pu: poisonURL()},
                         function(data) {
                             jQuery('#transactionslist').html(data);
                         }

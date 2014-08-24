@@ -253,7 +253,7 @@ def i_summary():
                         <td style="text-align: right;"><!-- gain -->%s</td>
                         <td><a href="http://www.google.com/finance?q=%s" target="_blank">G</a> <a href="http://finance.yahoo.com/q?s=%s" target="_blank">Y</a> <a href="http://quotes.morningstar.com/fund/%s/f?t=%s" target="_blank">MS</a> [%s]</td>
                     </tr>
-        ''' % (dbrow['ticker'], dbrow['ticker'], dbrow['ticker'], dbrow['name'], "{:.3f}".format(dbrow['shares']), h_showmoney(dbrow['quoteprice']), h_showmoney(dbrow['costbasis']), h_showmoney(each_market), h_showmoney(each_income), each_apprecclass, h_showmoney(each_appres), h_showmoney(each_gain), dbrow['ticker'], dbrow['ticker'], dbrow['ticker'], dbrow['ticker'], dbrow['divschedule'])
+        ''' % (dbrow['id'], dbrow['ticker'], dbrow['id'], dbrow['name'], "{:.3f}".format(dbrow['shares']), h_showmoney(dbrow['quoteprice']), h_showmoney(dbrow['costbasis']), h_showmoney(each_market), h_showmoney(each_income), each_apprecclass, h_showmoney(each_appres), h_showmoney(each_gain), dbrow['ticker'], dbrow['ticker'], dbrow['ticker'], dbrow['ticker'], dbrow['divschedule'])
 
     markup += '''\
                     <tr>
@@ -292,8 +292,8 @@ def i_electionget():
     rtotal = 0
     dbcon = mdb.connect(g_dbauth[0], g_dbauth[1], g_dbauth[2], g_dbauth[3])
     cursor = dbcon.cursor(mdb.cursors.DictCursor)
-    sqlstr = "SELECT * FROM devmoney_invtransactions WHERE ticker=%s ORDER BY transdate,action"
-    cursor.execute(sqlstr, (g_formdata.getvalue('ticker')))
+    sqlstr = "SELECT * FROM devmoney_invtransactions WHERE parentid=%s ORDER BY transdate,action"
+    cursor.execute(sqlstr, (g_formdata.getvalue('parentid')))
     dbrows = cursor.fetchall()
     #parentid, transdate, ticker, updown, action, sharesamt, shareprice, transprice, totalshould
 
@@ -322,7 +322,7 @@ def i_electionget():
         else:
             classoe = 'recordodd'
 
-        identifier = dbrow['ticker'] + str(dbrow['id'])
+        identifier = str(dbrow['parentid']) + str(dbrow['id'])
 
         markup += '''<div class="%s" id="%s">\
                         <span class="irow0"><input type="button" value="D" onclick="return sendInvDelete('%s','%s');"> <input type="button" value="E" onclick="return getInvElectionEdit('%s', '%s');"></span>
@@ -332,7 +332,7 @@ def i_electionget():
                         <span class="irow4">%s</span>
                         <span class="irow5">%s</span>
                         <span class="irow6pos"> %s %s</span>
-                     </div>''' % (classoe, identifier, dbrow['ticker'], str(dbrow['id']), dbrow['ticker'], str(dbrow['id']), dbrow['transdate'], dbrow['action'], "{:.2f}".format(float(dbrow['transprice'])), "{:.3f}".format(float(dbrow['shareprice'])), amtup, amtdown, "{:.3f}".format(rtotal), showcheck)
+                     </div>''' % (classoe, identifier, str(dbrow['parentid']), str(dbrow['id']), str(dbrow['parentid']), str(dbrow['id']), dbrow['transdate'], dbrow['action'], "{:.2f}".format(float(dbrow['transprice'])), "{:.3f}".format(float(dbrow['shareprice'])), amtup, amtdown, "{:.3f}".format(rtotal), showcheck)
                     #//$R .= $ecounter . "==" . $election['shares'] . "|"; //'<a href="#" onClick="return bank_gettransactions(' . "'" . $document['name'] . "');" . '">' . $document['name'] . " $" .  number_format($document['total'], 2, '.', ',') . "</a><br>";
         counter +=1
         markup += '<div id="scrollmeinv"></div>'
@@ -343,7 +343,7 @@ def i_electionget():
 def i_bulkadd_edit():
     dbcon = mdb.connect(g_dbauth[0], g_dbauth[1], g_dbauth[2], g_dbauth[3])
     cursor = dbcon.cursor(mdb.cursors.DictCursor)
-    sqlstr = "SELECT * FROM devmoney_invelections WHERE ticker IS NOT NULL AND active = 1 ORDER BY parentname,name"
+    sqlstr = "SELECT * FROM devmoney_invelections WHERE ticker IS NOT NULL AND active=1 ORDER BY parentname,name"
     cursor.execute(sqlstr)
     dbrows = cursor.fetchall()
 
@@ -368,7 +368,7 @@ def i_bulkadd_edit():
             markup += '<tr><td colspan="7" style="background-color: #efefef;"><span class="bigbluetext">' + dbrow['parentname'] + '</span></td></tr>'
             parent = dbrow['parentname']
 
-        each_datepicker = dbrow['ticker'] + str(dbrow['id']) + '-date'
+        each_datepicker = str(dbrow['id']) + '-date'
         javascriptcalls.append(' jQuery("#' + each_datepicker + '").datepicker({ dateFormat: "yy-mm-dd" });')
 
         markup += '''\
@@ -387,7 +387,7 @@ def i_bulkadd_edit():
                         <td><input type="text" size="8" name="%s-shares" value="" onChange="checkValueDecimals(this, 3);"></td>
                         <td><nobr>$<input type="text" size="8" name="%s-cost" value="" onChange="checkValueDecimals(this, 2);"></nobr></td>
                     </tr>
-        ''' % (dbrow['name'], dbrow['ticker'], dbrow['id'], dbrow['ticker'], dbrow['ticker'], b_makeselects(selected='', identifier=''), each_datepicker, each_datepicker, dbrow['ticker'], dbrow['ticker'], dbrow['ticker'])
+        ''' % (dbrow['name'], str(dbrow['id']), str(dbrow['id']), dbrow['ticker'], str(dbrow['id']), b_makeselects(selected='', identifier=''), each_datepicker, each_datepicker, str(dbrow['id']), str(dbrow['id']), str(dbrow['id']))
 
         #markup += '<div><span>' +  dbrow['name'] + '</span><span><input type="text" class="tickerentry" size="8" name="' + dbrow['ticker'] + '-shares" value=""></span></div>'
     dbcon.close()
@@ -403,18 +403,18 @@ def i_bulkadd_edit():
 def i_bulkadd_save():
     dbcon = mdb.connect(g_dbauth[0], g_dbauth[1], g_dbauth[2], g_dbauth[3])
     cursor = dbcon.cursor(mdb.cursors.DictCursor)
-    sqlstr = "SELECT * FROM devmoney_invelections WHERE ticker IS NOT NULL AND active = 1 ORDER BY parentname,name"
+    sqlstr = "SELECT * FROM devmoney_invelections WHERE ticker IS NOT NULL AND active=1 ORDER BY parentname,name"
     cursor.execute(sqlstr)
     dbrows = cursor.fetchall()
 
     for dbrow in dbrows:
-        each_shares = g_formdata.getvalue(dbrow['ticker'] + '-shares')
-        each_cost = g_formdata.getvalue(dbrow['ticker'] + '-cost') # cost of full sale
-        each_date = g_formdata.getvalue(dbrow['ticker'] + str(dbrow['id']) + '-date')
+        each_shares = g_formdata.getvalue(str(dbrow['id']) + '-shares')
+        each_cost = g_formdata.getvalue(str(dbrow['id']) + '-cost') # cost of full sale
+        each_date = g_formdata.getvalue(str(dbrow['id']) + '-date')
         if each_shares is not None and each_cost is not None and each_date is not None:
-            each_parentid = int(g_formdata.getvalue(dbrow['ticker'] + '-parentid'))
-            each_fromid = int(g_formdata.getvalue(dbrow['ticker'] + '-fromaccount'))
-            each_action = g_formdata.getvalue(dbrow['ticker'] + '-action')
+            each_parentid = int(g_formdata.getvalue(str(dbrow['id']) + '-parentid'))
+            each_fromid = int(g_formdata.getvalue(str(dbrow['id']) + '-fromaccount'))
+            each_action = g_formdata.getvalue(str(dbrow['id']) + '-action')
 
             i_saveadd(ticker=dbrow['ticker'], tdate=each_date, shares=each_shares, cost=each_cost, fromacct=each_fromid, action=each_action, parentid=each_parentid, fundname=dbrow['name'])
 
@@ -425,8 +425,8 @@ def i_bulkadd_save():
 def i_entry_prepareadd():
     dbcon = mdb.connect(g_dbauth[0], g_dbauth[1], g_dbauth[2], g_dbauth[3])
     cursor = dbcon.cursor(mdb.cursors.DictCursor)
-    sqlstr = "SELECT * FROM devmoney_invelections WHERE ticker=%s"
-    cursor.execute(sqlstr, (g_formdata.getvalue('ticker')))
+    sqlstr = "SELECT * FROM devmoney_invelections WHERE id=%s"
+    cursor.execute(sqlstr, (g_formdata.getvalue('parentid')))
     dbrows = cursor.fetchall()
     dbcon.close()
 
@@ -495,7 +495,7 @@ def i_edit_template(mode, fundname, ticker, transid, parentid, banktransid, tdat
                         <input type="hidden" name="ticker" id="ieditsingle-ticker" value="%s">
 
                         <input type="hidden" name="fundname" value="%s">
-                        <input type="hidden" name="parentid" value="%s">
+                        <input type="hidden" name="parentid" id="ieditsingle-parentid" value="%s">
 
                         <input type="hidden" name="transid" value="%s">
                         <input type="hidden" name="banktransid" value="%s">
@@ -637,7 +637,7 @@ def i_saveupdate(ticker, tdate, shares, cost, fromacct, action, parentid, fundna
         transprice=%s,
         banktransid=%s WHERE id=%s"""
 
-    cursor.execute(sqlstr, (tdate, action, updown, shares, costpershare, cost, fromacct, banktransid, transid))
+    cursor.execute(sqlstr, (tdate, action, updown, shares, costpershare, cost, banktransid, transid))
     h_logsql(cursor._executed)
     dbcon.commit()
     i_electiontally(parentid)
@@ -722,8 +722,8 @@ def i_entry_delete():
 def i_entry_edit():
     dbcon = mdb.connect(g_dbauth[0], g_dbauth[1], g_dbauth[2], g_dbauth[3])
     cursor = dbcon.cursor(mdb.cursors.DictCursor)
-    sqlstr = "SELECT * FROM devmoney_invelections WHERE ticker IS NOT NULL AND active = 1 AND ticker=%s ORDER BY parentname,name"
-    cursor.execute(sqlstr, (g_formdata.getvalue('ticker')))
+    sqlstr = "SELECT * FROM devmoney_invelections WHERE ticker IS NOT NULL AND active=1 AND id=%s ORDER BY parentname,name"
+    cursor.execute(sqlstr, (g_formdata.getvalue('parentid')))
     dbrows = cursor.fetchall()
 
     markup = ''
@@ -1019,7 +1019,7 @@ def b_edit_template(mode, thisname, thisid, thisparentid, transferid, transferpa
                         </tr>
                         <tr>
                             <td class="tdborderright">Num-Note:<br><input type="text" size="10" placeholder="Num" name="numnote" id="beditsingle-numnote" value="%s"></td>
-                            <td>Value:<br><nobr>$<input type="text" size="8" name="amt" id="beditsingle-amt" value="%s" onChange="checkValueDecimals(this, 2);"></nobr></td>
+                            <td>Value:<br><nobr>$<input type="text" size="10" name="amt" id="beditsingle-amt" value="%s" onChange="checkValueDecimals(this, 2);"></nobr></td>
                         </tr>
                         <tr>
                             <td colspan="2">
@@ -1484,6 +1484,7 @@ def u_fetchquotes():
         cursor.execute(sqlstr, (row[2], row[4], h_todaydatetimeformysql(), row[7], row[8], row[9], row[0]))
         dbcon.commit()
     dbcon.close()
+    i_electiontallyall()
 
 
 def u_banktotals():
@@ -1564,8 +1565,8 @@ def i_graph():
     dbcon = mdb.connect(g_dbauth[0], g_dbauth[1], g_dbauth[2], g_dbauth[3])
     cursor = dbcon.cursor(mdb.cursors.DictCursor)
     sqlstr = """SELECT it.*, ie.name AS fundname, ie.id AS fundsorigin FROM devmoney_invtransactions it \
-                INNER JOIN devmoney_invelections ie ON it.parentid=ie.id WHERE it.ticker=%s ORDER BY it.transdate,it.action"""
-    cursor.execute(sqlstr, (g_formdata.getvalue('ticker')))
+                INNER JOIN devmoney_invelections ie ON it.parentid=ie.id WHERE it.parentid=%s ORDER BY it.transdate,it.action"""
+    cursor.execute(sqlstr, (g_formdata.getvalue('parentid')))
     dbrows = cursor.fetchall()
     #parentid, transdate, ticker, updown, action, sharesamt, shareprice, transprice, totalshould
 
