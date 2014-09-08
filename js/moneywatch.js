@@ -288,7 +288,7 @@ function sendCommand(in_job) {
         case 'I.ENTRY.EDITSAVE':
         case 'I.ENTRY.ADDSAVE':
             var formdata = jQuery('#ieditsingle').serialize();
-            var thisparentid = jQuery('#ieditsingle-parentid').val();
+            var ielectionid = jQuery('#ieditsingle-ielectionid').val();
             jQuery.post(moneyWatchX,
                 formdata,
                 function(data) {
@@ -296,14 +296,14 @@ function sendCommand(in_job) {
                     if (data == 'ok') {
                         jQuery('#' + activeInvRowId).removeClass('activeinvrow');
                         jQuery.post(moneyWatchX,
-                            {job: 'I.ELECTION.GET', parentid: thisparentid, pu: poisonURL()},
+                            {job: 'I.ELECTION.GET', 'ielectionid': ielectionid, pu: poisonURL()},
                             function(data) {
                                 jQuery('#transactionslist').html(data);
                                 jQuery("#transactionslist").scrollTop(jQuery("#transactionslist")[0].scrollHeight);
                             }
                         );
                         jQuery.post(moneyWatchX,
-                            {job: 'I.ENTRY.ADD', parentid: thisparentid, pu: poisonURL()},
+                            {job: 'I.ENTRY.ADD', 'ielectionid': ielectionid, pu: poisonURL()},
                             function(data) {
                                 jQuery('#transactionsrightedit').html(data);
                             }
@@ -382,7 +382,7 @@ function sendCommand(in_job) {
         case 'B.ENTRY.EDITSAVE':
         case 'B.ENTRY.ADDSAVE':
             var formdata = jQuery('#beditsingle').serialize();
-            var thispid = jQuery('#beditsingle-thisparentid').val();
+            var bacctid = jQuery('#beditsingle-bacctid').val();
             jQuery.post(moneyWatchX,
                 formdata,
                 function(data) {
@@ -390,14 +390,14 @@ function sendCommand(in_job) {
                     if (data == 'ok') {
                         jQuery('#' + activeInvRowId).removeClass('activebankrow');
                         jQuery.post(moneyWatchX,
-                            {job: 'B.ACCOUNT.GET', parentid: thispid, pu: poisonURL()},
+                            {job: 'B.ACCOUNT.GET', 'bacctid': bacctid, pu: poisonURL()},
                             function(data) {
                                 jQuery('#transactionslist').html(data);
                                 jQuery("#transactionslist").scrollTop(jQuery("#transactionslist")[0].scrollHeight);
                             }
                         );
                         jQuery.post(moneyWatchX,
-                            {job: 'B.ENTRY.ADD', bankacctid: thispid, pu: poisonURL()},
+                            {job: 'B.ENTRY.ADD', 'bacctid': bacctid, pu: poisonURL()},
                             function(data) {
                                 jQuery('#transactionsrightedit').html(data);
                             }
@@ -451,9 +451,9 @@ function sendCommand(in_job) {
     }
 }
 
-function getInvElection(in_id) {
+function getInvElection(in_ielectionid) {
     jQuery.post(moneyWatchX,
-        {job: 'I.ELECTION.GET', parentid: in_id, pu: poisonURL()},
+        {job: 'I.ELECTION.GET', 'ielectionid': in_ielectionid, pu: poisonURL()},
         function(data) {
             jQuery('#transactionslist').html(data);
             // clear any previous highlights
@@ -468,13 +468,13 @@ function getInvElection(in_id) {
         }
     );
     jQuery.post(moneyWatchX,
-        {job: 'I.ENTRY.ADD', parentid: in_id, pu: poisonURL()},
+        {job: 'I.ENTRY.ADD', 'ielectionid': in_ielectionid, pu: poisonURL()},
         function(data) {
             jQuery('#transactionsrightedit').html(data);
         }
     );
     jQuery.post(moneyWatchX,
-        {job: 'I.ENTRY.CHART', parentid: in_id, pu: poisonURL()},
+        {job: 'I.ENTRY.CHART', 'ielectionid': in_ielectionid, pu: poisonURL()},
         function(data) {
             jQuery('#transactionsrightchart').html(data);
         }
@@ -482,26 +482,26 @@ function getInvElection(in_id) {
     //jQuery('#paneluniversal-inner').html('');
 }
 
-function getInvElectionEdit(in_parentid, in_transid) {
+function getInvElectionEdit(in_ielectionid, in_itransid) {
     jQuery.post(moneyWatchX,
-        {job: 'I.ENTRY.EDIT', parentid: in_parentid, transid: in_transid, pu: poisonURL()},
+        {job: 'I.ENTRY.EDIT', 'ielectionid': in_ielectionid, 'itransid': in_itransid, pu: poisonURL()},
         function(data) {
             jQuery('#transactionsrightedit').html(data);
             if (activeInvRowId != '') {
                 jQuery('#' + activeInvRowId).removeClass('activeinvrow');
             }
-            activeInvRowId = in_parentid + in_transid;
+            activeInvRowId = in_ielectionid + in_itransid;
             jQuery('#' + activeInvRowId).addClass('activeinvrow');
             jQuery('#transactionsrightedit').addClass('activeinveditmenu');
         }
     );
 }
 
-function getInvGraph(in_parentid) {
+function getInvGraph(in_ielectionid) {
     panelUniversal.set('width', 950);
     panelUniversal.set('headerContent', "Investment - Graph" + YUIcloseMarkup);
     jQuery.post(moneyWatchX,
-        {job: 'I.GRAPH.GET', parentid: in_parentid, pu: poisonURL()},
+        {job: 'I.GRAPH.GET', 'ielectionid': in_ielectionid, pu: poisonURL()},
         function(data) {
             jQuery('#paneluniversal-inner').html(data);
             panelUniversal.show();
@@ -509,17 +509,17 @@ function getInvGraph(in_parentid) {
     );
 }
 
-function sendInvDelete(in_parentid, in_transid) {
+function sendInvDelete(in_ielectionid, in_itransid) {
     var r = confirm("Are you sure you want to delete this transaction?");
     if (r == true) {
         jQuery.post(moneyWatchX,
-            {job: 'I.ENTRY.DELETE', transid: in_transid, pu: poisonURL()},
+            {job: 'I.ENTRY.DELETE', 'itransid': in_itransid, pu: poisonURL()},
             function(data) {
                 data = data.replace(/\n/gm, '');
                 if (data == 'ok') {
                     // reload left side, reflecting the deletion
                     jQuery.post(moneyWatchX,
-                        {job: 'I.ELECTION.GET', parentid: in_parentid, pu: poisonURL()},
+                        {job: 'I.ELECTION.GET', 'ielectionid': in_ielectionid, pu: poisonURL()},
                         function(data) {
                             jQuery('#transactionslist').html(data);
                         }
@@ -536,32 +536,32 @@ function sendInvDelete(in_parentid, in_transid) {
     }
 }
 
-function getBankEdit(in_transid) {
+function getBankEdit(in_btransid) {
     jQuery.post(moneyWatchX,
-        {job: 'B.ENTRY.EDIT', transid: in_transid, pu: poisonURL()},
+        {job: 'B.ENTRY.EDIT', 'btransid': in_btransid, pu: poisonURL()},
         function(data) {
             jQuery('#transactionsrightedit').html(data);
             if (activeInvRowId != '') {
                 jQuery('#' + activeInvRowId).removeClass('activeinvrow');
             }
-            activeInvRowId = 'b' + in_transid;
+            activeInvRowId = 'b' + in_btransid;
             jQuery('#' + activeInvRowId).addClass('activeinvrow');
             jQuery('#transactionsrightedit').addClass('activeinveditmenu');
         }
     );
 }
 
-function sendBankDelete(in_parentid, in_transid) {
+function sendBankDelete(in_bacctid, in_btransid) {
     var r = confirm("Are you sure you want to delete this transaction?");
     if (r == true) {
         jQuery.post(moneyWatchX,
-            {job: 'B.ENTRY.DELETE', transid: in_transid, pu: poisonURL()},
+            {job: 'B.ENTRY.DELETE', 'btransid': in_btransid, pu: poisonURL()},
             function(data) {
                 data = data.replace(/\n/gm, '');
                 if (data == 'ok') {
                     // reload left side, reflecting the deletion
                     jQuery.post(moneyWatchX,
-                        {job: 'B.ACCOUNT.GET', parentid: in_parentid, pu: poisonURL()},
+                        {job: 'B.ACCOUNT.GET', 'bacctid': in_bacctid, pu: poisonURL()},
                         function(data) {
                             jQuery('#transactionslist').html(data);
                         }
@@ -579,9 +579,9 @@ function sendBankDelete(in_parentid, in_transid) {
 }
 
 
-function getBankAccount(in_parentid) {
+function getBankAccount(in_bacctid) {
     jQuery.post(moneyWatchX,
-        {job: 'B.ACCOUNT.GET', parentid: in_parentid, pu: poisonURL()},
+        {job: 'B.ACCOUNT.GET', 'bacctid': in_bacctid, pu: poisonURL()},
         function(data) {
             jQuery('#transactionslist').html(data);
             // clear any previous highlights
@@ -594,7 +594,7 @@ function getBankAccount(in_parentid) {
         }
     );
     jQuery.post(moneyWatchX,
-        {job: 'B.ENTRY.ADD', bankacctid: in_parentid, pu: poisonURL()},
+        {job: 'B.ENTRY.ADD', 'bacctid': in_bacctid, pu: poisonURL()},
         function(data) {
             jQuery('#transactionsrightedit').html(data);
         }
