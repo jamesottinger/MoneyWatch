@@ -420,7 +420,7 @@ def i_bulkadd_save():
             each_fromid = int(g_formdata.getvalue(str(dbrow['ielectionid']) + '-fromaccount'))
             each_action = g_formdata.getvalue(str(dbrow['ielectionid']) + '-action')
 
-            i_saveadd(ticker=dbrow['ticker'], tdate=each_date, shares=each_shares, cost=each_cost, fromacct=each_fromid, action=each_action, ielectionid=each_ielectionid, ielectionname=dbrow['ielectionname'])
+            i_saveadd(ticker=dbrow['ticker'], transdate=each_date, shares=each_shares, cost=each_cost, fromacct=each_fromid, action=each_action, ielectionid=each_ielectionid, ielectionname=dbrow['ielectionname'])
 
     dbcon.close()
 
