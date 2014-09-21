@@ -441,15 +441,14 @@ def i_entry_prepareadd():
 def i_entry_prepareedit():
     dbcon = mdb.connect(g_dbauth[0], g_dbauth[1], g_dbauth[2], g_dbauth[3])
     cursor = dbcon.cursor(mdb.cursors.DictCursor)
-    #!!!! BOOKMARK
-    sqlstr = """SELECT it.*, ie.name AS ielectionname, ie.id AS fundsorigin FROM devmoney_invtransactions it \
+    sqlstr = """SELECT it.*, ie.ielectionname FROM devmoney_invtransactions it \
                 INNER JOIN devmoney_invelections ie ON it.ielectionid=ie.ielectionid WHERE it.itransid=%s"""
     cursor.execute(sqlstr, (g_formdata.getvalue('itransid')))
     dbrows = cursor.fetchall()
     dbcon.close()
 
     for dbrow in dbrows:
-        return i_edit_template(mode='edit', ielectionname=dbrow['ielectionname'], ticker=dbrow['ticker'], itransid=str(dbrow['itransid']), ielectionid=str(dbrow['ielectionid']), btransid=dbrow['banktransid'], transdate=str(dbrow['transdate']), action=dbrow['action'], shares="{:.3f}".format(float(dbrow['sharesamt'])), cost="{:.2f}".format(float(dbrow['transprice'])), fundsorigin=str(dbrow['fundsorigin']))
+        return i_edit_template(mode='edit', ielectionname=dbrow['ielectionname'], ticker=dbrow['ticker'], itransid=str(dbrow['itransid']), ielectionid=str(dbrow['ielectionid']), btransid=dbrow['btransid'], transdate=str(dbrow['transdate']), action=dbrow['action'], shares="{:.3f}".format(float(dbrow['sharesamt'])), cost="{:.2f}".format(float(dbrow['transprice'])), fundsorigin=str(dbrow['btransid']))
 
 
 # created the single
@@ -537,12 +536,12 @@ def i_prepare_addupdate():
     # get form items
     in_job      = g_formdata.getvalue('job')
     in_ticker   = g_formdata.getvalue('ticker')
-    in_transdate     = g_formdata.getvalue('tradedate')
+    in_transdate = g_formdata.getvalue('tradedate')
     in_shares   = g_formdata.getvalue('shares')
     in_cost     = g_formdata.getvalue('cost')
     in_action   = g_formdata.getvalue('action')
-    in_btransid = g_formdata.getvalue('btransid')             # updates only (hidden field)
-    in_itransid    = g_formdata.getvalue('itransid')          # updates only (hidden field)
+    in_btransid = int(g_formdata.getvalue('btransid'))             # updates only (hidden field)
+    in_itransid    = int(g_formdata.getvalue('itransid'))          # updates only (hidden field)
     in_ielectionid = int(g_formdata.getvalue('ielectionid'))
     in_ielectionname = g_formdata.getvalue('ielectionname')
     in_fromid   = int(g_formdata.getvalue('fromaccount'))
@@ -551,7 +550,7 @@ def i_prepare_addupdate():
         i_saveadd(ticker=in_ticker, transdate=in_transdate, shares=in_shares, cost=in_cost, fromacct=in_fromid, action=in_action, ielectionid=in_ielectionid, ielectionname=in_ielectionname)
 
     if in_job == 'I.ENTRY.EDITSAVE':
-        i_saveupdate(ticker=in_ticker, transdate=in_date, shares=in_shares, cost=in_cost, fromacct=in_fromid, action=in_action, ielectionid=in_ielectionid, ielectionname=in_ielectionname, btransid=in_btransid, itransid=in_itransid)
+        i_saveupdate(ticker=in_ticker, transdate=in_transdate, shares=in_shares, cost=in_cost, fromacct=in_fromid, action=in_action, ielectionid=in_ielectionid, ielectionname=in_ielectionname, btransid=in_btransid, itransid=in_itransid)
 
 
 def i_saveadd(ticker, transdate, shares, cost, fromacct, action, ielectionid, ielectionname):
@@ -565,7 +564,7 @@ def i_saveadd(ticker, transdate, shares, cost, fromacct, action, ielectionid, ie
     else: # BUY BUYX REINVDIV
         updown = '+'
 
-    banktransid = 0
+    btransid = 0
     transferbtransid = 0
     # do bank insert first, since we will need to learn the transaction id
     if fromacct > 0: # was this bank funded?
@@ -574,7 +573,7 @@ def i_saveadd(ticker, transdate, shares, cost, fromacct, action, ielectionid, ie
         # Buy: Mutual Fund Name 4.439 @ $22.754
         whom1 = 'Buy : ' + ticker + ' ' + shares + ' @ ' + h_showmoney(float(cost) / float(shares))
         whom2 = 'Buy Investment/CD: ' + ielectionname
-        sqlstr = """INSERT INTO devmoney_banktransactions (ielectionid, transdate, type, updown, amt, whom1, whom2, numnote, splityn, transferbtransid, transferielectionid, itransid) \
+        sqlstr = """INSERT INTO devmoney_banktransactions (bacctid, transdate, type, updown, amt, whom1, whom2, numnote, splityn, transferbtransid, transferielectionid, itransid) \
                     VALUES (%s, %s, 'w', '-', %s, %s, %s, 'INV', 0, 0, 0, 0)"""
         cursor.execute(sqlstr, (fromacct, transdate, cost, whom1, whom2))
         h_logsql(cursor._executed)
@@ -607,6 +606,7 @@ def i_saveupdate(ticker, transdate, shares, cost, fromacct, action, ielectionid,
     dbcon = mdb.connect(g_dbauth[0], g_dbauth[1], g_dbauth[2], g_dbauth[3])
     cursor = dbcon.cursor(mdb.cursors.DictCursor)
 
+    update_btransid = 0
     costpershare = "{:.3f}".format(float(cost) / float(shares))
 
     if action == 'SELL' or action == 'SELLX':
@@ -615,24 +615,91 @@ def i_saveupdate(ticker, transdate, shares, cost, fromacct, action, ielectionid,
         updown = '+'
 
     # ---------  [update investment transaction]  ---------
-    # if the transactionid was 0 but now we have a fromacct, we need to create a bank transaction to match the investment update
+    # 1) it wasn't bank funded before, but it is now
+    # 2) it was bank funded before, not it isn't anymore
+    # 3) it was bank funded before and still is, but it might be from a different bank account
+    # 4) it wasn't bank funded before and it still isn't
+
+    # (1) it wasn't bank funded before, but it is now
     if btransid == 0 and fromacct > 0:
         # need to create a bank entry
 
+        # -- [insert bank transaction]
+        # Category: Buy Investment/CD: The Name Of Account
+        # Buy: Mutual Fund Name 4.439 @ $22.754
+        whom1 = 'Buy : ' + ticker + ' ' + shares + ' @ ' + h_showmoney(costpershare)
+        whom2 = 'Buy Investment/CD: ' + ielectionname
+        sqlstr = """INSERT INTO devmoney_banktransactions (bacctid, transdate, type, updown, amt, whom1, whom2, numnote, splityn, transferbtransid, transferielectionid, itransid) \
+                    VALUES (%s, %s, 'w', %s, %s, %s, %s, 'INV', 0, %s, 0, 0)"""
+        cursor.execute(sqlstr, (fromacct, transdate, updown, cost, whom1, whom2, itransid))
+        h_logsql(cursor._executed)
+        dbcon.commit()
+        b_accounttally(fromacct)
+
+        update_btransid = cursor.lastrowid # use new btransid
+
+    # (2) it was bank funded before, but it isn't anymore
+    elif btransid > 0 and fromacct == 0:
+
+        # -- [delete bank transaction]
+        sqlstr = "SELECT bacctid FROM devmoney_banktransactions WHERE btransid=%s"
+        cursor.execute(sqlstr, (btransid))
+        h_logsql(cursor._executed)
+        dbrow = cursor.fetchone()
+        bacctid_lookup = dbrow['bacctid'] # need to parent bank acct for re-tally
+
+        # not assiciated with a bank account anymore, delete the bank entry
+        sqlstr = "DELETE FROM devmoney_banktransactions WHERE btransid=%s"
+        cursor.execute(sqlstr, (btransid))
+        h_logsql(cursor._executed)
+        dbcon.commit()
+        b_accounttally(bacctid_lookup)
+
+        update_btransid = 0
+
+    # 3) it was bank funded before and still is, but it might be from a different bank account
+    elif btransid > 0 and fromacct > 0:
+
+        # -- [update bank transaction]
+        # update the bank account transaction with new details
         # enter bank transaction
         # Category: Buy Investment/CD: The Name Of Account
         # Buy: Mutual Fund Name 4.439 @ $22.754
         whom1 = 'Buy : ' + ticker + ' ' + shares + ' @ ' + h_showmoney(costpershare)
         whom2 = 'Buy Investment/CD: ' + ielectionname
-        sqlstr = """INSERT INTO devmoney_banktransactions (ielectionid, transdate, type, updown, amt, whom1, whom2, numnote, splityn, transferbtransid, transferielectionid, itransid) \
-                    VALUES (%s, %s, 'w', %s, %s, %s, %s, 'INV', 0, %s, 0, 0)"""
-        cursor.execute(sqlstr, (fromacct, transdate, updown, cost, whom1, whom2, itransid))
+
+        sqlstr = """UPDATE devmoney_banktransactions SET \
+            transdate=%s,
+            type='w',
+            amt=%s,
+            whom1=%s,
+            whom2=%s,
+            itransid=%s WHERE btransid=%s"""
+
+        cursor.execute(sqlstr, (transdate, cost, whom1, whom2, itransid, btransid))
         h_logsql(cursor._executed)
         dbcon.commit()
-        banktransid = cursor.lastrowid # use new banktransid
+
         b_accounttally(fromacct)
 
-    # update the investment entry
+        sqlstr = "SELECT bacctid FROM devmoney_banktransactions WHERE btransid=%s"
+        cursor.execute(sqlstr, (btransid))
+        h_logsql(cursor._executed)
+        dbrow = cursor.fetchone()
+        bacctid_lookup = dbrow['bacctid'] # need to parent bank acct for re-tally
+
+        if fromacct != bacctid_lookup: # different bank account?
+            b_accounttally(bacctid_lookup)
+
+        # btransid is the same, we just changed parts of the bank transaction
+        update_btransid = btransid
+
+    # 4) it wasn't bank funded before and it still isn't
+    else:
+        update_btransid = 0
+
+
+    # -- [update investment transaction]
     sqlstr = """UPDATE devmoney_invtransactions SET \
         transdate=%s,
         action=%s,
@@ -642,56 +709,10 @@ def i_saveupdate(ticker, transdate, shares, cost, fromacct, action, ielectionid,
         transprice=%s,
         btransid=%s WHERE itransid=%s"""
 
-    cursor.execute(sqlstr, (transdate, action, updown, shares, costpershare, cost, btransid, itransid))
+    cursor.execute(sqlstr, (transdate, action, updown, shares, costpershare, cost, update_btransid, itransid))
     h_logsql(cursor._executed)
     dbcon.commit()
     i_electiontally(ielectionid)
-
-    # ---------  [update bank transaction]  ---------
-    # devmoney_banktransactions.ielectionid (fromacct)
-    # devmoney_banktransactions.id  <== devmoney_invtransactions.banktransid
-
-    if btransid > 0: # was this bank funded?
-
-        sqlstr = "SELECT ielectionid FROM devmoney_banktransactions WHERE btransid=%s"
-        cursor.execute(sqlstr, (banktransid))
-        h_logsql(cursor._executed)
-        dbrow = cursor.fetchone()
-        bacctid = dbrow['ielectionid'] # need to parent bank acct for re-tally
-
-        if fromacct == 0:
-            # not assiciated with a bank account anymore, delete the bank entry
-            sqlstr = "DELETE FROM devmoney_banktransactions WHERE btransid=%s"
-            cursor.execute(sqlstr, (btransid))
-            h_logsql(cursor._executed)
-            dbcon.commit()
-
-            b_accounttally(bankacctid)
-
-        else:
-            # update the bank account transaction with new details
-            # enter bank transaction
-            # Category: Buy Investment/CD: The Name Of Account
-            # Buy: Mutual Fund Name 4.439 @ $22.754
-            whom1 = 'Buy : ' + ticker + ' ' + shares + ' @ ' + h_showmoney(costpershare)
-            whom2 = 'Buy Investment/CD: ' + ielectionname
-
-            sqlstr = """UPDATE devmoney_banktransactions SET \
-                ielectionid=%s
-                transdate=%s,
-                type='w',
-                amt=%s,
-                whom1=%s,
-                whom2=%s,
-                transferbtransid=%s WHERE btransid=%s"""
-
-            cursor.execute(sqlstr, (fromacct, transdate, cost, whom1, whom2, itransid, btransid))
-            h_logsql(cursor._executed)
-            dbcon.commit()
-
-            b_accounttally(fromacct)
-            if fromacct != bacctid:
-                b_accounttally(bacctid)
 
     dbcon.close()
 
@@ -975,12 +996,12 @@ def b_entry_prepareadd():
 def b_entry_prepareedit():
     dbcon = mdb.connect(g_dbauth[0], g_dbauth[1], g_dbauth[2], g_dbauth[3])
     cursor = dbcon.cursor(mdb.cursors.DictCursor)
-    sqlstr = """SELECT bt.*, ba.bacctname AS bacctname FROM devmoney_banktransactions bt \
+    sqlstr = """SELECT bt.*, ba.bacctname FROM devmoney_banktransactions bt \
                 INNER JOIN devmoney_bankaccounts ba ON bt.bacctid=ba.bacctid WHERE bt.btransid=%s"""
     cursor.execute(sqlstr, (g_formdata.getvalue('btransid')))
     dbrow = cursor.fetchone()
     dbcon.close()
-    return b_edit_template(mode='edit', bacctname=dbrow['bacctname'], btransid=str(dbrow['btransid']), bacctid=str(dbrow['bt.bacctid']), transferbtransid=str(dbrow['transferbtransid']), transferbacctid=str(dbrow['transferbacctid']), transdate=dbrow['transdate'], ttype=dbrow['type'], updown="", amt="{:.2f}".format(float(dbrow['amt'])), numnote=dbrow['numnote'], whom1=dbrow['whom1'], whom2=dbrow['whom2'])
+    return b_edit_template(mode='edit', bacctname=dbrow['bacctname'], btransid=str(dbrow['btransid']), bacctid=str(dbrow['bacctid']), transferbtransid=str(dbrow['transferbtransid']), transferbacctid=str(dbrow['transferbacctid']), transdate=dbrow['transdate'], ttype=dbrow['type'], updown="", amt="{:.2f}".format(float(dbrow['amt'])), numnote=dbrow['numnote'], whom1=dbrow['whom1'], whom2=dbrow['whom2'])
 
 
 # created the single template
