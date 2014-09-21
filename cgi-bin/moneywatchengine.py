@@ -1194,7 +1194,7 @@ def b_saveadd(btransid, bacctid, transferbtransid, transferbacctid, transdate, t
         sqlstr = """UPDATE devmoney_banktransactions SET \
                     transferbtransid=%s
                     WHERE btransid=%s"""
-        cursor.execute(sqlstr, (btransid_learn2, btransid_learn2))
+        cursor.execute(sqlstr, (btransid_learn2, btransid_learn1))
         h_logsql(cursor._executed)
         dbcon.commit()
 
