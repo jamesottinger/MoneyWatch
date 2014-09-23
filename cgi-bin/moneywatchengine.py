@@ -23,6 +23,11 @@ g_formdata = cgi.FieldStorage()
 dirDebug = '/log/'
 
 
+cgitb.enable(
+    logdir=dirErrors,
+    display=True,
+    format='text'
+)
 
 '''
 CREATE TABLE `devmoney_invelections` (
