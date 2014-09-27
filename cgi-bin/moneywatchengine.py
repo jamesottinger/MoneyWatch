@@ -1177,16 +1177,17 @@ def b_saveadd(btransid, bacctid, transferbtransid, transferbacctid, transdate, t
         updown = '+'
 
     # enter transaction in db
-    sqlstr = """INSERT INTO devmoney_banktransactions (bacctid transdate, type, updown, amt, whom1, whom2, numnote, splityn, transferbtransid, transferbacctid, itransid) \
-                            VALUES (%s, '%s', '%s', '%s', %s, '%s', '%s', '%s', 0, %s, %s, 0)""" % (bacctid, transdate, ttype, updown, amt, whom1, whom2, numnote, transferbtransid, bacctid_transferselected)
-    h_logsql(sqlstr)
-    cursor.execute(sqlstr)
+    sqlstr = """INSERT INTO devmoney_banktransactions (bacctid, transdate, type, updown, amt, whom1, whom2, numnote, splityn, transferbtransid, transferbacctid, itransid) \
+                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, 0, %s, %s, 0)"""
+
+    cursor.execute(sqlstr, (bacctid, transdate, ttype, updown, amt, whom1, whom2, numnote, transferbtransid, bacctid_transferselected))
+    h_logsql(cursor._executed)
     dbcon.commit()
     btransid_learn1 = cursor.lastrowid
     b_accounttally(bacctid)
 
     if ttype == 'to' or ttype == 'ti': # do the transfer part
-        sqlstr = """INSERT INTO devmoney_banktransactions (bacctid transdate, type, updown, amt, whom1, whom2, numnote, splityn, transferbtransid, transferbacctid, itransid) \
+        sqlstr = """INSERT INTO devmoney_banktransactions (bacctid, transdate, type, updown, amt, whom1, whom2, numnote, splityn, transferbtransid, transferbacctid, itransid) \
                             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, 0, %s, %s, 0)"""
 
         cursor.execute(sqlstr, (bacctid_transferselected, transdate, transferaction , updownother, amt, whom1trans, whom2, numnote, btransid_learn1, bacctid))
