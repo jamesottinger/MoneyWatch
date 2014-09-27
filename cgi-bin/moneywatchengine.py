@@ -981,7 +981,7 @@ def b_accountget():
                         <span class="rup">%s</span>
                         <span class="rdown">%s</span>
                         <span class="%s">%s</span>
-                     </div>''' % (dbrow['bacctid'], classoe, classfuture, dbrow['bacctid'], dbrow['bacctid'], dbrow['bacctid'], dbrow['transdate'], dbrow['numnote'], whomclass, showwho, amtup, amtdown, rtotalclass, rtotalshow)
+                     </div>''' % (dbrow['btransid'], classoe, classfuture, dbrow['bacctid'], dbrow['btransid'], dbrow['btransid'], dbrow['transdate'], dbrow['numnote'], whomclass, showwho, amtup, amtdown, rtotalclass, rtotalshow)
         counter +=1
     return markup
 
