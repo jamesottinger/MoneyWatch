@@ -1,4 +1,8 @@
 log/*
 _backups/
+_libs/
 _notes/
 _retired/
+_tools/
+*.swo
+*.swp
