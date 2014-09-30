@@ -21,7 +21,7 @@ a:active  {color:#6a6aa2;}  /* selected link   */
     height: 30px;
     background-color: #ffffff;
     margin: 0 auto;
-}  
+}
 #container{
     width: 1200px;
     margin: 0 auto;
@@ -48,13 +48,13 @@ a:active  {color:#6a6aa2;}  /* selected link   */
 #rightblock{
     float: left;
     /*overflow: auto;
-    padding: 10px; 
+    padding: 10px;
     height: 900px;*/
     width: 990px;
     font: 12px "Helvetica Neue", Helvetica;
     color: #707070;
     text-shadow: #CCCCCC 0 1px 1px;
- 
+
 }
 #rightfixed{
     /*
@@ -70,9 +70,6 @@ a:active  {color:#6a6aa2;}  /* selected link   */
     box-shadow: 0 10px 20px #d5d5d5;
     border-left: solid 1px #CCCCCC;
 }
-
-
-
 .clear{
     clear: both;
 }
@@ -96,7 +93,6 @@ a:active  {color:#6a6aa2;}  /* selected link   */
     padding: 4px;
     background-color: #56ace2;
 }
-
 .recordeven.hover, .recordeven:hover{
     background-color: #d5e7fe;
 }
@@ -113,7 +109,6 @@ a:active  {color:#6a6aa2;}  /* selected link   */
     color: #A0A0A0;
     width: 80px;
 }
-
 .invinfo {
     color: #A0A0A0;
     display: inline-block;
@@ -154,11 +149,10 @@ a:active  {color:#6a6aa2;}  /* selected link   */
     display:  inline-block;
     width: 80px;
     text-align: right;
-    font-weight: bold;  
+    font-weight: bold;
     color: #707070;
     text-shadow: #CCCCCC 1px 1px;
 }
-
 .interestaccount{
     text-align: right;
     display:  inline-block;
@@ -178,7 +172,7 @@ a:active  {color:#6a6aa2;}  /* selected link   */
 
 /* === [ Account Summary ] ==*/
 .summary1heading{
-    width: 800px;    
+    width: 800px;
     font: 18px "Helvetica Neue", Helvetica;
     /* border-bottom: solid 2px #cccccc; */
     color: #6770c0;
@@ -209,13 +203,13 @@ a:active  {color:#6a6aa2;}  /* selected link   */
 /* === [ Investment Settings ] ==*/
 .ticker{
   display:  inline-block;
-  width: 80px;  
+  width: 80px;
 }
 .tickerheader{
     text-align: right;
     font: bold 16px "Helvetica Neue", Helvetica;
     color: #2049af; /* dark blue */
-    padding-right: 43px; 
+    padding-right: 43px;
     text-shadow: #CCCCCC 0 2px 1px;
 }
 .investmentparent{
@@ -232,7 +226,7 @@ a:active  {color:#6a6aa2;}  /* selected link   */
   color: #6d6d6d;
   width: 300px;
   padding-right: 20px;
-  padding-bottom: 12px;  
+  padding-bottom: 12px;
 }
 #paneluniversal-inner{
     padding: 10px;
@@ -441,7 +435,7 @@ a:active  {color:#6a6aa2;}  /* selected link   */
     display:  inline-block;
     width: 167px;
     text-align: right;
-    font-weight: bold;  
+    font-weight: bold;
     color: #707070;
     text-shadow: #CCCCCC 1px 1px;
 }
