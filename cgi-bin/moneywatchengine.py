@@ -1,23 +1,15 @@
 #!/usr/bin/python
-
-# sudo su
-# wget https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py -O - | python
-# easy_install pymongo
-# easy_install -U pymongo
-
-
 #===============================================================================
-# Code written by James Ottinger
+# Copyright (c) 2014, James Ottinger. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+# MoneyWatch - https://github.com/jamesottinger/moneywatch
 #===============================================================================
-import MySQLdb as mdb #sudo apt-get install python-mysqldb
-import pymongo
-from pymongo import Connection
+import MySQLdb as mdb # sudo apt-get install python-mysqldb
 import cgi, cgitb, os, datetime, locale, urllib2, csv, time, json
 
-cgitb.enable()
 locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
-g_c = Connection('192.168.15.102', 27017)
-g_db = g_c.moneywatch
 g_dbauth = ['192.168.15.102', 'xx', 'xxxx', 'devmoney']
 g_formdata = cgi.FieldStorage()
 dirDebug = '/log/'
@@ -621,7 +613,7 @@ def i_saveupdate(ticker, transdate, shares, cost, fromacct, action, ielectionid,
 
     # ---------  [update investment transaction]  ---------
     # 1) it wasn't bank funded before, but it is now
-    # 2) it was bank funded before, not it isn't anymore
+    # 2) it was bank funded before, but it isn't anymore
     # 3) it was bank funded before and still is, but it might be from a different bank account
     # 4) it wasn't bank funded before and it still isn't
 
