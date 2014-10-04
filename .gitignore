@@ -1,4 +1,4 @@
-log/*
+log/
 _backups/
 _libs/
 _notes/
@@ -7,3 +7,4 @@ _tools/
 *.swo
 *.swp
 *.pyc
+__FUTUREPLANS.md
