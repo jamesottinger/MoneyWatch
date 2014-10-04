@@ -2,15 +2,15 @@
 
 ### Introduction
 
-MoneyWatch is a web application that was created to help manage my money. The focus of MoneyWatch is on bank registers (Savings/Checking/Debt)
-and Investment (Stocks/Mutual Funds) portfolio and returns tracking.
+MoneyWatch is a web application that was created to help manage my money. The focus of MoneyWatch is on bank registers
+(Savings/Checking/Debt) and investment (Stocks/Mutual Funds) portfolio and returns tracking.
 
 ### Goals
 
 This is one of my personal projects that I work on in my spare time, usually each month during bill paying time! ;)
 
 The original goal was to track my own money and investments while tackling some of the pain points of my
-former money management tool (M$ Money 2002).  MoneyWatch does some things very well, and other it doesn't do at all.
+former money management tool (M$ Money 2002).  MoneyWatch does some things very well, and others just it doesn't do at all.
 
 ### What is it made out of?
 
