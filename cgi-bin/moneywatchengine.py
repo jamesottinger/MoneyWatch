@@ -22,7 +22,7 @@ cgitb.enable(
 )
 
 '''
-CREATE TABLE `devmoney_invelections` (
+CREATE TABLE `moneywatch_invelections` (
   `ielectionid` int(11) NOT NULL AUTO_INCREMENT,
   `iacctname` varchar(255) DEFAULT NULL,
   `ielectionname` varchar(255) DEFAULT NULL,
@@ -38,7 +38,7 @@ CREATE TABLE `devmoney_invelections` (
   PRIMARY KEY (`ielectionid`)
 ) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=latin1;
 
-CREATE TABLE `devmoney_invtransactions` (
+CREATE TABLE `moneywatch_invtransactions` (
   `itransid` int(11) NOT NULL AUTO_INCREMENT,
   `ielectionid` int(11) DEFAULT '0',
   `btransid` int(11) DEFAULT '0',
@@ -53,7 +53,7 @@ CREATE TABLE `devmoney_invtransactions` (
   PRIMARY KEY (`itransid`)
 ) ENGINE=InnoDB AUTO_INCREMENT=890 DEFAULT CHARSET=latin1;
 
-CREATE TABLE `devmoney_banktransactions` (
+CREATE TABLE `moneywatch_banktransactions` (
   `btransid` int(11) NOT NULL AUTO_INCREMENT,
   `bacctid` int(11) NOT NULL,
   `transdate` date NOT NULL,
@@ -70,7 +70,7 @@ CREATE TABLE `devmoney_banktransactions` (
   PRIMARY KEY (`btransid`)
 ) ENGINE=InnoDB AUTO_INCREMENT=216 DEFAULT CHARSET=latin1;
 
-CREATE TABLE `devmoney_banktransactions_splits` (
+CREATE TABLE `moneywatch_banktransactions_splits` (
   `bacctid` int(11) NOT NULL,
   `btransid` int(11) NOT NULL,
   `whom1` varchar(255) DEFAULT NULL,
@@ -78,7 +78,7 @@ CREATE TABLE `devmoney_banktransactions_splits` (
   `amt` double NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-CREATE TABLE `devmoney_bankaccounts` (
+CREATE TABLE `moneywatch_bankaccounts` (
   `bacctid` int(11) NOT NULL AUTO_INCREMENT,
   `bacctname` varchar(255) DEFAULT NULL,
   `mine` tinyint(4) DEFAULT '0',
@@ -90,7 +90,7 @@ CREATE TABLE `devmoney_bankaccounts` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
-CREATE TABLE `devmoney_bankbills` (
+CREATE TABLE `moneywatch_bankbills` (
   `payeeid` int(11) NOT NULL AUTO_INCREMENT,
   `payeename` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`payeeid`)
@@ -106,7 +106,7 @@ CREATE TABLE `devmoney_bankbills` (
 def i_electiontally(in_ielectionid):
     dbcon = mdb.connect(g_dbauth[0], g_dbauth[1], g_dbauth[2], g_dbauth[3])
     cursor = dbcon.cursor(mdb.cursors.DictCursor)
-    sqlstr = "SELECT * FROM devmoney_invtransactions WHERE ielectionid=%s ORDER BY transdate,action"
+    sqlstr = "SELECT * FROM moneywatch_invtransactions WHERE ielectionid=%s ORDER BY transdate,action"
     cursor.execute(sqlstr, (in_ielectionid))
     dbrows = cursor.fetchall()
     rtotal = 0
@@ -125,7 +125,7 @@ def i_electiontally(in_ielectionid):
             if dbrow['action'] == 'REINVDIV':
                 sharesbydividend -= float(dbrow['sharesamt'])
 
-    sqlstr = "UPDATE devmoney_invelections SET shares=%s, costbasis=%s, sharesbydividend=%s WHERE ielectionid=%s"
+    sqlstr = "UPDATE moneywatch_invelections SET shares=%s, costbasis=%s, sharesbydividend=%s WHERE ielectionid=%s"
     cursor.execute(sqlstr, (
         "{:.3f}".format(rtotal),
         "{:.3f}".format(costbasis),
@@ -138,7 +138,7 @@ def i_electiontally(in_ielectionid):
 def i_electiontallyall():
     dbcon = mdb.connect(g_dbauth[0], g_dbauth[1], g_dbauth[2], g_dbauth[3])
     cursor = dbcon.cursor(mdb.cursors.DictCursor)
-    sqlstr = "SELECT ielectionid FROM devmoney_invelections WHERE active=1"
+    sqlstr = "SELECT ielectionid FROM moneywatch_invelections WHERE active=1"
     cursor.execute(sqlstr)
     dbrows = cursor.fetchall()
 
@@ -150,7 +150,7 @@ def i_electiontallyall():
 def i_makeselectsparents(selected, identifier):
     dbcon = mdb.connect(g_dbauth[0], g_dbauth[1], g_dbauth[2], g_dbauth[3])
     cursor = dbcon.cursor(mdb.cursors.DictCursor)
-    sqlstr = "SELECT DISTINCT(iacctname) FROM devmoney_invelections ORDER BY iacctname"
+    sqlstr = "SELECT DISTINCT(iacctname) FROM moneywatch_invelections ORDER BY iacctname"
     cursor.execute(sqlstr)
     dbrows = cursor.fetchall()
 
@@ -169,7 +169,7 @@ def i_makeselectsparents(selected, identifier):
 def i_summary():
     dbcon = mdb.connect(g_dbauth[0], g_dbauth[1], g_dbauth[2], g_dbauth[3])
     cursor = dbcon.cursor(mdb.cursors.DictCursor)
-    sqlstr = "SELECT * FROM devmoney_invelections WHERE active > 0 AND ticker IS NOT NULL ORDER BY iacctname,ielectionname"
+    sqlstr = "SELECT * FROM moneywatch_invelections WHERE active > 0 AND ticker IS NOT NULL ORDER BY iacctname,ielectionname"
     cursor.execute(sqlstr)
     dbrows = cursor.fetchall()
 
@@ -293,7 +293,7 @@ def i_electionget():
     rtotal = 0
     dbcon = mdb.connect(g_dbauth[0], g_dbauth[1], g_dbauth[2], g_dbauth[3])
     cursor = dbcon.cursor(mdb.cursors.DictCursor)
-    sqlstr = "SELECT * FROM devmoney_invtransactions WHERE ielectionid=%s ORDER BY transdate,action"
+    sqlstr = "SELECT * FROM moneywatch_invtransactions WHERE ielectionid=%s ORDER BY transdate,action"
     cursor.execute(sqlstr, (g_formdata.getvalue('ielectionid')))
     dbrows = cursor.fetchall()
     #ielectionid, transdate, ticker, updown, action, sharesamt, shareprice, transprice, totalshould
@@ -344,7 +344,7 @@ def i_electionget():
 def i_bulkadd_edit():
     dbcon = mdb.connect(g_dbauth[0], g_dbauth[1], g_dbauth[2], g_dbauth[3])
     cursor = dbcon.cursor(mdb.cursors.DictCursor)
-    sqlstr = "SELECT * FROM devmoney_invelections WHERE ticker IS NOT NULL AND active=1 ORDER BY iacctname,ielectionname"
+    sqlstr = "SELECT * FROM moneywatch_invelections WHERE ticker IS NOT NULL AND active=1 ORDER BY iacctname,ielectionname"
     cursor.execute(sqlstr)
     dbrows = cursor.fetchall()
 
@@ -404,7 +404,7 @@ def i_bulkadd_edit():
 def i_bulkadd_save():
     dbcon = mdb.connect(g_dbauth[0], g_dbauth[1], g_dbauth[2], g_dbauth[3])
     cursor = dbcon.cursor(mdb.cursors.DictCursor)
-    sqlstr = "SELECT * FROM devmoney_invelections WHERE ticker IS NOT NULL AND active=1 ORDER BY iacctname,ielectionname"
+    sqlstr = "SELECT * FROM moneywatch_invelections WHERE ticker IS NOT NULL AND active=1 ORDER BY iacctname,ielectionname"
     cursor.execute(sqlstr)
     dbrows = cursor.fetchall()
 
@@ -426,7 +426,7 @@ def i_bulkadd_save():
 def i_entry_prepareadd():
     dbcon = mdb.connect(g_dbauth[0], g_dbauth[1], g_dbauth[2], g_dbauth[3])
     cursor = dbcon.cursor(mdb.cursors.DictCursor)
-    sqlstr = "SELECT * FROM devmoney_invelections WHERE ielectionid=%s"
+    sqlstr = "SELECT * FROM moneywatch_invelections WHERE ielectionid=%s"
     cursor.execute(sqlstr, (g_formdata.getvalue('ielectionid')))
     dbrows = cursor.fetchall()
     dbcon.close()
@@ -438,8 +438,8 @@ def i_entry_prepareadd():
 def i_entry_prepareedit():
     dbcon = mdb.connect(g_dbauth[0], g_dbauth[1], g_dbauth[2], g_dbauth[3])
     cursor = dbcon.cursor(mdb.cursors.DictCursor)
-    sqlstr = """SELECT it.*, ie.ielectionname FROM devmoney_invtransactions it \
-                INNER JOIN devmoney_invelections ie ON it.ielectionid=ie.ielectionid WHERE it.itransid=%s"""
+    sqlstr = """SELECT it.*, ie.ielectionname FROM moneywatch_invtransactions it \
+                INNER JOIN moneywatch_invelections ie ON it.ielectionid=ie.ielectionid WHERE it.itransid=%s"""
     cursor.execute(sqlstr, (g_formdata.getvalue('itransid')))
     dbrows = cursor.fetchall()
     dbcon.close()
@@ -570,7 +570,7 @@ def i_saveadd(ticker, transdate, shares, cost, fromacct, action, ielectionid, ie
         # Buy: Mutual Fund Name 4.439 @ $22.754
         whom1 = 'Buy : ' + ticker + ' ' + shares + ' @ ' + h_showmoney(float(cost) / float(shares))
         whom2 = 'Buy Investment/CD: ' + ielectionname
-        sqlstr = """INSERT INTO devmoney_banktransactions (bacctid, transdate, type, updown, amt, whom1, whom2, numnote, splityn, transferbtransid, transferbacctid, itransid) \
+        sqlstr = """INSERT INTO moneywatch_banktransactions (bacctid, transdate, type, updown, amt, whom1, whom2, numnote, splityn, transferbtransid, transferbacctid, itransid) \
                     VALUES (%s, %s, 'w', '-', %s, %s, %s, 'INV', 0, 0, 0, 0)"""
         cursor.execute(sqlstr, (fromacct, transdate, cost, whom1, whom2))
         h_logsql(cursor._executed)
@@ -579,7 +579,7 @@ def i_saveadd(ticker, transdate, shares, cost, fromacct, action, ielectionid, ie
         btransid = cursor.lastrowid
 
     # enter transaction in db
-    sqlstr = """INSERT INTO devmoney_invtransactions (ielectionid, btransid, transdate, ticker, updown, action, sharesamt, shareprice, transprice, totalshould)  \
+    sqlstr = """INSERT INTO moneywatch_invtransactions (ielectionid, btransid, transdate, ticker, updown, action, sharesamt, shareprice, transprice, totalshould)  \
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, 0)"""
 
     cursor.execute(sqlstr, (ielectionid, btransid, transdate, ticker, updown, action, shares, costpershare, cost))
@@ -589,7 +589,7 @@ def i_saveadd(ticker, transdate, shares, cost, fromacct, action, ielectionid, ie
 
     if fromacct > 0: # was this bank funded?
         # update the bank account to show investmentid
-        sqlstr = """UPDATE devmoney_banktransactions SET \
+        sqlstr = """UPDATE moneywatch_banktransactions SET \
             itransid=%s
             WHERE btransid=%s"""
         cursor.execute(sqlstr, (cursor.lastrowid, btransid))
@@ -626,7 +626,7 @@ def i_saveupdate(ticker, transdate, shares, cost, fromacct, action, ielectionid,
         # Buy: Mutual Fund Name 4.439 @ $22.754
         whom1 = 'Buy : ' + ticker + ' ' + shares + ' @ ' + h_showmoney(costpershare)
         whom2 = 'Buy Investment/CD: ' + ielectionname
-        sqlstr = """INSERT INTO devmoney_banktransactions (bacctid, transdate, type, updown, amt, whom1, whom2, numnote, splityn, transferbtransid, transferielectionid, itransid) \
+        sqlstr = """INSERT INTO moneywatch_banktransactions (bacctid, transdate, type, updown, amt, whom1, whom2, numnote, splityn, transferbtransid, transferielectionid, itransid) \
                     VALUES (%s, %s, 'w', %s, %s, %s, %s, 'INV', 0, %s, 0, 0)"""
         cursor.execute(sqlstr, (fromacct, transdate, updown, cost, whom1, whom2, itransid))
         h_logsql(cursor._executed)
@@ -639,14 +639,14 @@ def i_saveupdate(ticker, transdate, shares, cost, fromacct, action, ielectionid,
     elif btransid > 0 and fromacct == 0:
 
         # -- [delete bank transaction]
-        sqlstr = "SELECT bacctid FROM devmoney_banktransactions WHERE btransid=%s"
+        sqlstr = "SELECT bacctid FROM moneywatch_banktransactions WHERE btransid=%s"
         cursor.execute(sqlstr, (btransid))
         h_logsql(cursor._executed)
         dbrow = cursor.fetchone()
         bacctid_lookup = dbrow['bacctid'] # need to parent bank acct for re-tally
 
         # not assiciated with a bank account anymore, delete the bank entry
-        sqlstr = "DELETE FROM devmoney_banktransactions WHERE btransid=%s"
+        sqlstr = "DELETE FROM moneywatch_banktransactions WHERE btransid=%s"
         cursor.execute(sqlstr, (btransid))
         h_logsql(cursor._executed)
         dbcon.commit()
@@ -665,7 +665,7 @@ def i_saveupdate(ticker, transdate, shares, cost, fromacct, action, ielectionid,
         whom1 = 'Buy : ' + ticker + ' ' + shares + ' @ ' + h_showmoney(costpershare)
         whom2 = 'Buy Investment/CD: ' + ielectionname
 
-        sqlstr = """UPDATE devmoney_banktransactions SET \
+        sqlstr = """UPDATE moneywatch_banktransactions SET \
             transdate=%s,
             type='w',
             amt=%s,
@@ -679,7 +679,7 @@ def i_saveupdate(ticker, transdate, shares, cost, fromacct, action, ielectionid,
 
         b_accounttally(fromacct)
 
-        sqlstr = "SELECT bacctid FROM devmoney_banktransactions WHERE btransid=%s"
+        sqlstr = "SELECT bacctid FROM moneywatch_banktransactions WHERE btransid=%s"
         cursor.execute(sqlstr, (btransid))
         h_logsql(cursor._executed)
         dbrow = cursor.fetchone()
@@ -697,7 +697,7 @@ def i_saveupdate(ticker, transdate, shares, cost, fromacct, action, ielectionid,
 
 
     # -- [update investment transaction]
-    sqlstr = """UPDATE devmoney_invtransactions SET \
+    sqlstr = """UPDATE moneywatch_invtransactions SET \
         transdate=%s,
         action=%s,
         updown=%s,
@@ -718,21 +718,21 @@ def i_saveupdate(ticker, transdate, shares, cost, fromacct, action, ielectionid,
 def i_entry_delete():
     dbcon = mdb.connect(g_dbauth[0], g_dbauth[1], g_dbauth[2], g_dbauth[3])
     cursor = dbcon.cursor(mdb.cursors.DictCursor)
-    sqlstr = "SELECT * FROM devmoney_invtransactions WHERE itransid=%s"
+    sqlstr = "SELECT * FROM moneywatch_invtransactions WHERE itransid=%s"
     cursor.execute(sqlstr, (g_formdata.getvalue('itransid')))
     dbrow = cursor.fetchone()
 
 
     # delete a bank transaction?
     if dbrow['btransid'] > 0:
-        sqlstr = "DELETE FROM devmoney_banktransactions WHERE btransid=%s"
+        sqlstr = "DELETE FROM moneywatch_banktransactions WHERE btransid=%s"
         cursor.execute(sqlstr, (dbrow['btransid']))
         h_logsql(cursor._executed)
         dbcon.commit()
         u_banktotals()
 
     # delete inv transaction
-    sqlstr = "DELETE FROM devmoney_invtransactions WHERE itransid=%s"
+    sqlstr = "DELETE FROM moneywatch_invtransactions WHERE itransid=%s"
     cursor.execute(sqlstr, (dbrow['itransid']))
     h_logsql(cursor._executed)
     dbcon.commit()
@@ -745,7 +745,7 @@ def i_entry_delete():
 def i_entry_edit():
     dbcon = mdb.connect(g_dbauth[0], g_dbauth[1], g_dbauth[2], g_dbauth[3])
     cursor = dbcon.cursor(mdb.cursors.DictCursor)
-    sqlstr = "SELECT * FROM devmoney_invelections WHERE ticker IS NOT NULL AND active=1 AND ielectionid=%s ORDER BY iacctname,ielectionname"
+    sqlstr = "SELECT * FROM moneywatch_invelections WHERE ticker IS NOT NULL AND active=1 AND ielectionid=%s ORDER BY iacctname,ielectionname"
     cursor.execute(sqlstr, (g_formdata.getvalue('ielectionid')))
     dbrows = cursor.fetchall()
 
@@ -807,7 +807,7 @@ def i_entry_edit():
 def b_accounttally(in_bacctid):
     dbcon = mdb.connect(g_dbauth[0], g_dbauth[1], g_dbauth[2], g_dbauth[3])
     cursor = dbcon.cursor(mdb.cursors.DictCursor)
-    sqlstr = "SELECT * FROM devmoney_banktransactions WHERE bacctid=%s ORDER BY transdate,amt"
+    sqlstr = "SELECT * FROM moneywatch_banktransactions WHERE bacctid=%s ORDER BY transdate,amt"
     cursor.execute(sqlstr, (in_bacctid))
     dbrows = cursor.fetchall()
     totalall = 0
@@ -823,7 +823,7 @@ def b_accounttally(in_bacctid):
             if h_dateinfuture(dbrow['transdate']) == False:
                 totaluptotoday -= float(dbrow['amt'])
 
-    sqlstr = """UPDATE devmoney_bankaccounts SET totalall=%s, totaluptotoday=%s, todaywas='%s', tallytime='%s' WHERE bacctid=%s""" % ("{:.2f}".format(float(totalall)), "{:.2f}".format(float(totaluptotoday)), h_todaydateformysql(), h_todaydatetimeformysql(), str(in_bacctid))
+    sqlstr = """UPDATE moneywatch_bankaccounts SET totalall=%s, totaluptotoday=%s, todaywas='%s', tallytime='%s' WHERE bacctid=%s""" % ("{:.2f}".format(float(totalall)), "{:.2f}".format(float(totaluptotoday)), h_todaydateformysql(), h_todaydatetimeformysql(), str(in_bacctid))
     cursor.execute(sqlstr)
     dbcon.commit()
     dbcon.close()
@@ -832,7 +832,7 @@ def b_accounttally(in_bacctid):
 def b_makeselects(selected,identifier):
     dbcon = mdb.connect(g_dbauth[0], g_dbauth[1], g_dbauth[2], g_dbauth[3])
     cursor = dbcon.cursor(mdb.cursors.DictCursor)
-    sqlstr = "SELECT * FROM devmoney_bankaccounts ORDER BY bacctname"
+    sqlstr = "SELECT * FROM moneywatch_bankaccounts ORDER BY bacctname"
     cursor.execute(sqlstr)
     dbrows = cursor.fetchall()
 
@@ -850,7 +850,7 @@ def b_makeselects(selected,identifier):
 def b_saybacctname(in_bacctid):
     dbcon = mdb.connect(g_dbauth[0], g_dbauth[1], g_dbauth[2], g_dbauth[3])
     cursor = dbcon.cursor(mdb.cursors.DictCursor)
-    sqlstr = "SELECT bacctname FROM devmoney_bankaccounts WHERE bacctid=%s"
+    sqlstr = "SELECT bacctname FROM moneywatch_bankaccounts WHERE bacctid=%s"
     cursor.execute(sqlstr, (in_bacctid))
     dbrow = cursor.fetchone()
     dbcon.close()
@@ -861,7 +861,7 @@ def b_saybacctname(in_bacctid):
 def b_summary():
     dbcon = mdb.connect(g_dbauth[0], g_dbauth[1], g_dbauth[2], g_dbauth[3])
     cursor = dbcon.cursor(mdb.cursors.DictCursor)
-    sqlstr = "SELECT * FROM devmoney_bankaccounts ORDER BY bacctname"
+    sqlstr = "SELECT * FROM moneywatch_bankaccounts ORDER BY bacctname"
     cursor.execute(sqlstr)
     dbrows = cursor.fetchall()
 
@@ -917,7 +917,7 @@ def b_accountget():
     dbcon = mdb.connect(g_dbauth[0], g_dbauth[1], g_dbauth[2], g_dbauth[3])
     cursor = dbcon.cursor(mdb.cursors.DictCursor)
 
-    sqlstr = "SELECT * FROM devmoney_banktransactions WHERE bacctid=%s ORDER BY transdate,numnote"
+    sqlstr = "SELECT * FROM moneywatch_banktransactions WHERE bacctid=%s ORDER BY transdate,numnote"
     cursor.execute(sqlstr, (g_formdata.getvalue('bacctid')))
     dbrows = cursor.fetchall()
 
@@ -982,7 +982,7 @@ def b_accountget():
 def b_entry_prepareadd():
     dbcon = mdb.connect(g_dbauth[0], g_dbauth[1], g_dbauth[2], g_dbauth[3])
     cursor = dbcon.cursor(mdb.cursors.DictCursor)
-    sqlstr = "SELECT * FROM devmoney_bankaccounts WHERE bacctid=%s"
+    sqlstr = "SELECT * FROM moneywatch_bankaccounts WHERE bacctid=%s"
     cursor.execute(sqlstr, (g_formdata.getvalue('bacctid')))
     dbrow = cursor.fetchone()
     dbcon.close()
@@ -993,8 +993,8 @@ def b_entry_prepareadd():
 def b_entry_prepareedit():
     dbcon = mdb.connect(g_dbauth[0], g_dbauth[1], g_dbauth[2], g_dbauth[3])
     cursor = dbcon.cursor(mdb.cursors.DictCursor)
-    sqlstr = """SELECT bt.*, ba.bacctname FROM devmoney_banktransactions bt \
-                INNER JOIN devmoney_bankaccounts ba ON bt.bacctid=ba.bacctid WHERE bt.btransid=%s"""
+    sqlstr = """SELECT bt.*, ba.bacctname FROM moneywatch_banktransactions bt \
+                INNER JOIN moneywatch_bankaccounts ba ON bt.bacctid=ba.bacctid WHERE bt.btransid=%s"""
     cursor.execute(sqlstr, (g_formdata.getvalue('btransid')))
     dbrow = cursor.fetchone()
     dbcon.close()
@@ -1169,7 +1169,7 @@ def b_saveadd(btransid, bacctid, transferbtransid, transferbacctid, transdate, t
         updown = '+'
 
     # enter transaction in db
-    sqlstr = """INSERT INTO devmoney_banktransactions (bacctid, transdate, type, updown, amt, whom1, whom2, numnote, splityn, transferbtransid, transferbacctid, itransid) \
+    sqlstr = """INSERT INTO moneywatch_banktransactions (bacctid, transdate, type, updown, amt, whom1, whom2, numnote, splityn, transferbtransid, transferbacctid, itransid) \
                             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, 0, %s, %s, 0)"""
 
     cursor.execute(sqlstr, (bacctid, transdate, ttype, updown, amt, whom1, whom2, numnote, transferbtransid, bacctid_transferselected))
@@ -1179,7 +1179,7 @@ def b_saveadd(btransid, bacctid, transferbtransid, transferbacctid, transdate, t
     b_accounttally(bacctid)
 
     if ttype == 'to' or ttype == 'ti': # do the transfer part
-        sqlstr = """INSERT INTO devmoney_banktransactions (bacctid, transdate, type, updown, amt, whom1, whom2, numnote, splityn, transferbtransid, transferbacctid, itransid) \
+        sqlstr = """INSERT INTO moneywatch_banktransactions (bacctid, transdate, type, updown, amt, whom1, whom2, numnote, splityn, transferbtransid, transferbacctid, itransid) \
                             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, 0, %s, %s, 0)"""
 
         cursor.execute(sqlstr, (bacctid_transferselected, transdate, transferaction , updownother, amt, whom1trans, whom2, numnote, btransid_learn1, bacctid))
@@ -1189,7 +1189,7 @@ def b_saveadd(btransid, bacctid, transferbtransid, transferbacctid, transdate, t
         btransid_learn2 = cursor.lastrowid
 
         # update the bank account to show transid
-        sqlstr = """UPDATE devmoney_banktransactions SET \
+        sqlstr = """UPDATE moneywatch_banktransactions SET \
                     transferbtransid=%s
                     WHERE btransid=%s"""
         cursor.execute(sqlstr, (btransid_learn2, btransid_learn1))
@@ -1228,7 +1228,7 @@ def b_saveupdate(btransid, bacctid, transferbtransid, transferbacctid, transdate
         if transferbtransid > 0:
             # delete the transfer, as this is no longer a transfer type
             # delete bank transaction
-            sqlstr = "DELETE FROM devmoney_banktransactions WHERE bacctid=%s"
+            sqlstr = "DELETE FROM moneywatch_banktransactions WHERE bacctid=%s"
             cursor.execute(sqlstr, (transferbtransid))
             h_logsql(cursor._executed)
             dbcon.commit()
@@ -1238,7 +1238,7 @@ def b_saveupdate(btransid, bacctid, transferbtransid, transferbacctid, transdate
         # was it previously a transfer?
         if transferbtransid > 0:
             # update the transfer (bacctid may change!)
-            sqlstr = """UPDATE devmoney_banktransactions SET \
+            sqlstr = """UPDATE moneywatch_banktransactions SET \
                 bacctid=%s,
                 transdate=%s,
                 type=%s,
@@ -1257,7 +1257,7 @@ def b_saveupdate(btransid, bacctid, transferbtransid, transferbacctid, transdate
 
         else:
             # insert a transfer
-            sqlstr = """INSERT INTO devmoney_banktransactions (bacctid, transdate, type, updown, amt, whom1, whom2, numnote, splityn, transferbtransid, transferbacctid, itransid) \
+            sqlstr = """INSERT INTO moneywatch_banktransactions (bacctid, transdate, type, updown, amt, whom1, whom2, numnote, splityn, transferbtransid, transferbacctid, itransid) \
                         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, 0, %s, %s, 0)"""
             cursor.execute(sqlstr, (bacctid_transferselected, transdate, transferaction, updownother, amt, whom1trans, whom2, numnote, btransid, bacctid))
             h_logsql(cursor._executed)
@@ -1267,7 +1267,7 @@ def b_saveupdate(btransid, bacctid, transferbtransid, transferbacctid, transdate
             b_accounttally(bacctid_transferselected)
 
     # update the master bank entry
-    sqlstr = """UPDATE devmoney_banktransactions SET \
+    sqlstr = """UPDATE moneywatch_banktransactions SET \
         transdate=%s,
         type=%s,
         updown=%s,
@@ -1288,12 +1288,12 @@ def b_saveupdate(btransid, bacctid, transferbtransid, transferbacctid, transdate
 def b_entry_delete():
     dbcon = mdb.connect(g_dbauth[0], g_dbauth[1], g_dbauth[2], g_dbauth[3])
     cursor = dbcon.cursor(mdb.cursors.DictCursor)
-    sqlstr = "SELECT * FROM devmoney_banktransactions WHERE btransid=%s"
+    sqlstr = "SELECT * FROM moneywatch_banktransactions WHERE btransid=%s"
     cursor.execute(sqlstr, (g_formdata.getvalue('btransid')))
     dbrow = cursor.fetchone()
 
     # delete bank transaction
-    sqlstr = "DELETE FROM devmoney_banktransactions WHERE btransid=%s"
+    sqlstr = "DELETE FROM moneywatch_banktransactions WHERE btransid=%s"
     cursor.execute(sqlstr, (dbrow['btransid']))
     h_logsql(cursor._executed)
     dbcon.commit()
@@ -1301,14 +1301,14 @@ def b_entry_delete():
 
     if dbrow['splityn'] > 0:
         # delete any splits
-        sqlstr = "DELETE FROM devmoney_banktransactions_splits WHERE btransid=%s"
+        sqlstr = "DELETE FROM moneywatch_banktransactions_splits WHERE btransid=%s"
         cursor.execute(sqlstr, (dbrow['btransid']))
         h_logsql(cursor._executed)
         dbcon.commit()
 
     if dbrow['transferbtransid'] > 0:
         # delete any transfers
-        sqlstr = "DELETE FROM devmoney_banktransactions WHERE btransid=%s"
+        sqlstr = "DELETE FROM moneywatch_banktransactions WHERE btransid=%s"
         cursor.execute(sqlstr, (dbrow['transferbtransid']))
         h_logsql(cursor._executed)
         dbcon.commit()
@@ -1321,7 +1321,7 @@ def b_entry_delete():
 def b_bulkinterest_edit():
     dbcon = mdb.connect(g_dbauth[0], g_dbauth[1], g_dbauth[2], g_dbauth[3])
     cursor = dbcon.cursor(mdb.cursors.DictCursor)
-    sqlstr = "SELECT * FROM devmoney_bankaccounts ORDER BY bacctname"
+    sqlstr = "SELECT * FROM moneywatch_bankaccounts ORDER BY bacctname"
     cursor.execute(sqlstr)
     dbrows = cursor.fetchall()
 
@@ -1359,7 +1359,7 @@ def b_bulkinterest_edit():
 def b_bulkinterest_save():
     dbcon = mdb.connect(g_dbauth[0], g_dbauth[1], g_dbauth[2], g_dbauth[3])
     cursor = dbcon.cursor(mdb.cursors.DictCursor)
-    sqlstr = "SELECT * FROM devmoney_bankaccounts ORDER BY bacctname"
+    sqlstr = "SELECT * FROM moneywatch_bankaccounts ORDER BY bacctname"
     cursor.execute(sqlstr)
     dbrows = cursor.fetchall()
 
@@ -1368,7 +1368,7 @@ def b_bulkinterest_save():
     for dbrow in dbrows:
         each_amt = g_formdata.getvalue(str(dbrow['bacctid']) + '-amt')
         if each_amt is not None and in_date is not None:
-            sqlstr = """INSERT INTO devmoney_banktransactions (bacctid, transdate, type, updown, amt, whom1, whom2, numnote, splityn, transferbtransid, transferbacctid, itransid) \
+            sqlstr = """INSERT INTO moneywatch_banktransactions (bacctid, transdate, type, updown, amt, whom1, whom2, numnote, splityn, transferbtransid, transferbacctid, itransid) \
                         VALUES (%s, %s, 'd', '+', %s, 'Interest', '', 'INT', 0, 0, 0, 0)"""
             cursor.execute(sqlstr, (dbrow['bacctid'], in_date, each_amt))
             h_logsql(cursor._executed)
@@ -1382,7 +1382,7 @@ def b_bulkinterest_save():
 def b_bulkbills_edit():
     dbcon = mdb.connect(g_dbauth[0], g_dbauth[1], g_dbauth[2], g_dbauth[3])
     cursor = dbcon.cursor(mdb.cursors.DictCursor)
-    sqlstr = "SELECT * FROM devmoney_bankbills ORDER BY payeename"
+    sqlstr = "SELECT * FROM moneywatch_bankbills ORDER BY payeename"
     cursor.execute(sqlstr)
     dbrows = cursor.fetchall()
 
@@ -1425,7 +1425,7 @@ def b_bulkbills_edit():
 def b_bulkbills_save():
     dbcon = mdb.connect(g_dbauth[0], g_dbauth[1], g_dbauth[2], g_dbauth[3])
     cursor = dbcon.cursor(mdb.cursors.DictCursor)
-    sqlstr = "SELECT * FROM devmoney_bankbills ORDER BY payeename"
+    sqlstr = "SELECT * FROM moneywatch_bankbills ORDER BY payeename"
     cursor.execute(sqlstr)
     dbrows = cursor.fetchall()
 
@@ -1435,7 +1435,7 @@ def b_bulkbills_save():
         each_amt = g_formdata.getvalue(str(dbrow['payeeid']) + '-amt')
 
         if each_amt is not None and each_date is not None:
-            sqlstr = """INSERT INTO devmoney_banktransactions (bacctid, transdate, type, updown, amt, whom1, whom2, numnote, splityn, transferbtransid, transferbacctid, itransid) \
+            sqlstr = """INSERT INTO moneywatch_banktransactions (bacctid, transdate, type, updown, amt, whom1, whom2, numnote, splityn, transferbtransid, transferbacctid, itransid) \
                         VALUES (%s, %s, 'w', '-', %s, %s, 'Bill', 'EBILLPAY', 0, 0, 0, 0)"""
             cursor.execute(sqlstr, (each_fromacct, each_date, each_amt, dbrow['payeename']))
             h_logsql(cursor._executed)
@@ -1469,7 +1469,7 @@ def u_fetchquotes():
 
     dbcon = mdb.connect(g_dbauth[0], g_dbauth[1], g_dbauth[2], g_dbauth[3])
     cursor = dbcon.cursor(mdb.cursors.DictCursor)
-    sqlstr = "SELECT DISTINCT ticker FROM devmoney_invelections WHERE ticker IS NOT NULL"
+    sqlstr = "SELECT DISTINCT ticker FROM moneywatch_invelections WHERE ticker IS NOT NULL"
     cursor.execute(sqlstr)
 
     dbrows = cursor.fetchall()
@@ -1504,7 +1504,7 @@ def u_fetchquotes():
         if row[0] == 'VMMXX': # Yahoo thinks the quote is .01 for Vanguard Prime Money Market Fund, which is a $1 sweep account
             row[2] = '1.00'
 
-        sqlstr = "UPDATE devmoney_invelections SET quoteprice=%s, quotechange=%s, quotedate=%s, yield=%s, divdatenext=%s, divdateprev=%s WHERE ticker =%s"
+        sqlstr = "UPDATE moneywatch_invelections SET quoteprice=%s, quotechange=%s, quotedate=%s, yield=%s, divdatenext=%s, divdateprev=%s WHERE ticker =%s"
         cursor.execute(sqlstr, (row[2], row[4], h_todaydatetimeformysql(), row[7], row[8], row[9], row[0]))
         dbcon.commit()
     dbcon.close()
@@ -1514,7 +1514,7 @@ def u_fetchquotes():
 def u_banktotals():
     dbcon = mdb.connect(g_dbauth[0], g_dbauth[1], g_dbauth[2], g_dbauth[3])
     cursor = dbcon.cursor(mdb.cursors.DictCursor)
-    sqlstr = "SELECT * FROM devmoney_bankaccounts ORDER BY bacctname"
+    sqlstr = "SELECT * FROM moneywatch_bankaccounts ORDER BY bacctname"
     cursor.execute(sqlstr)
     dbrows = cursor.fetchall()
 
@@ -1588,8 +1588,8 @@ def h_logsql(in_sqlstr):
 def i_graph():
     dbcon = mdb.connect(g_dbauth[0], g_dbauth[1], g_dbauth[2], g_dbauth[3])
     cursor = dbcon.cursor(mdb.cursors.DictCursor)
-    sqlstr = """SELECT it.*, ie.ielectionname FROM devmoney_invtransactions it \
-                INNER JOIN devmoney_invelections ie ON it.ielectionid=ie.ielectionid WHERE it.ielectionid=%s ORDER BY it.transdate,it.action"""
+    sqlstr = """SELECT it.*, ie.ielectionname FROM moneywatch_invtransactions it \
+                INNER JOIN moneywatch_invelections ie ON it.ielectionid=ie.ielectionid WHERE it.ielectionid=%s ORDER BY it.transdate,it.action"""
     cursor.execute(sqlstr, (g_formdata.getvalue('ielectionid')))
     dbrows = cursor.fetchall()
     #ielectionid, transdate, ticker, updown, action, sharesamt, shareprice, transprice, totalshould
