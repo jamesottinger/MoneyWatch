@@ -27,14 +27,21 @@ CREATE TABLE `moneywatch_invelections` (
   `iacctname` varchar(255) DEFAULT NULL,
   `ielectionname` varchar(255) DEFAULT NULL,
   `ticker` varchar(20) DEFAULT NULL,
+  `divschedule` varchar(20) DEFAULT NULL,
   `shares` double DEFAULT NULL,
+  `sharesareunits` tinyint(4) DEFAULT '0',
   `active` tinyint(11) DEFAULT NULL,
+  `fetchquotes` tinyint(11) DEFAULT NULL,
   `sharesbydividend` double DEFAULT '0',
   `costbasis` double DEFAULT NULL,
   `balance` double DEFAULT NULL,
+  `manualoverrideprice` double DEFAULT NULL,
   `quotedate` datetime DEFAULT NULL,
   `quoteprice` double DEFAULT NULL,
+  `yield` varchar(100) DEFAULT NULL,
   `quotechange` varchar(100) DEFAULT NULL,
+  `divdatenext` varchar(100) DEFAULT NULL,
+  `divdateprev` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`ielectionid`)
 ) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=latin1;
 
@@ -200,6 +207,8 @@ def i_summary():
     election_income = 0
     election_appres = 0
     election_gain = 0
+    election_showquote = 0
+    election_useprice = 0
 
     for dbrow in dbrows:
         if dbrow['iacctname'] != parent:
@@ -223,13 +232,20 @@ def i_summary():
             markup += '<tr class="invtablehead"><td colspan="10"><b>' + dbrow['iacctname'] + '</b></td></tr>'
             parent = dbrow['iacctname']
 
-        each_market = dbrow['shares'] * dbrow['quoteprice']
-        each_appres = (dbrow['shares'] * dbrow['quoteprice']) - dbrow['costbasis']
+        if dbrow['manualoverrideprice'] is not None:
+            election_useprice = dbrow['manualoverrideprice']
+        else:
+           election_useprice = dbrow['quoteprice']
+
+        each_market = dbrow['shares'] * election_useprice
+        each_appres = (dbrow['shares'] * election_useprice) - dbrow['costbasis']
+        election_showquote = h_showmoney(election_useprice)
+        each_gain = (((dbrow['shares'] * election_useprice) - dbrow['costbasis']) + (dbrow['sharesbydividend'] * election_useprice))
+        each_income = dbrow['sharesbydividend'] * election_useprice
+
         each_apprecclass = 'numpos'
         if each_appres < 0:
             each_apprecclass = 'numneg'
-        each_income = dbrow['sharesbydividend'] * dbrow['quoteprice']
-        each_gain = (((dbrow['shares'] * dbrow['quoteprice']) - dbrow['costbasis']) + (dbrow['sharesbydividend'] * dbrow['quoteprice']))
         election_costbasis += dbrow['costbasis']
         election_market += each_market
         election_appres += each_appres
@@ -254,7 +270,7 @@ def i_summary():
                         <td style="text-align: right;"><!-- gain -->%s</td>
                         <td><a href="http://www.google.com/finance?q=%s" target="_blank">G</a> <a href="http://finance.yahoo.com/q?s=%s" target="_blank">Y</a> <a href="http://quotes.morningstar.com/fund/%s/f?t=%s" target="_blank">MS</a> [%s]</td>
                     </tr>
-        ''' % (dbrow['ielectionid'], dbrow['ticker'], dbrow['ielectionid'], dbrow['ielectionname'], "{:.3f}".format(dbrow['shares']), h_showmoney(dbrow['quoteprice']), h_showmoney(dbrow['costbasis']), h_showmoney(each_market), h_showmoney(each_income), each_apprecclass, h_showmoney(each_appres), h_showmoney(each_gain), dbrow['ticker'], dbrow['ticker'], dbrow['ticker'], dbrow['ticker'], dbrow['divschedule'])
+        ''' % (dbrow['ielectionid'], dbrow['ticker'], dbrow['ielectionid'], dbrow['ielectionname'], "{:.3f}".format(dbrow['shares']), election_showquote, h_showmoney(dbrow['costbasis']), h_showmoney(each_market), h_showmoney(each_income), each_apprecclass, h_showmoney(each_appres), h_showmoney(each_gain), dbrow['ticker'], dbrow['ticker'], dbrow['ticker'], dbrow['ticker'], dbrow['divschedule'])
 
     markup += '''\
                     <tr>
@@ -1469,7 +1485,7 @@ def u_fetchquotes():
 
     dbcon = mdb.connect(g_dbauth[0], g_dbauth[1], g_dbauth[2], g_dbauth[3])
     cursor = dbcon.cursor(mdb.cursors.DictCursor)
-    sqlstr = "SELECT DISTINCT ticker FROM moneywatch_invelections WHERE ticker IS NOT NULL"
+    sqlstr = "SELECT DISTINCT ticker FROM moneywatch_invelections WHERE active=1 and fetchquotes=1"
     cursor.execute(sqlstr)
 
     dbrows = cursor.fetchall()
@@ -1504,7 +1520,7 @@ def u_fetchquotes():
         if row[0] == 'VMMXX': # Yahoo thinks the quote is .01 for Vanguard Prime Money Market Fund, which is a $1 sweep account
             row[2] = '1.00'
 
-        sqlstr = "UPDATE moneywatch_invelections SET quoteprice=%s, quotechange=%s, quotedate=%s, yield=%s, divdatenext=%s, divdateprev=%s WHERE ticker =%s"
+        sqlstr = "UPDATE moneywatch_invelections SET quoteprice=%s, quotechange=%s, quotedate=%s, yield=%s, divdatenext=%s, divdateprev=%s WHERE ticker=%s"
         cursor.execute(sqlstr, (row[2], row[4], h_todaydatetimeformysql(), row[7], row[8], row[9], row[0]))
         dbcon.commit()
     dbcon.close()
