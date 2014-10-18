@@ -27,4 +27,4 @@ Frameworks used include a mix of jQuery, jQuery UI, YUI 3, and HighCharts for gr
 
 ### Screenshots
 
-Check out the [screenshots](https://github.com/jamesottinger/moneywatch/screenshots/SCREENSHOTS.md "Screenshots").
+Check out the [screenshots](https://github.com/jamesottinger/moneywatch/master/screenshots/SCREENSHOTS.md "Screenshots").
