@@ -1440,11 +1440,6 @@ def u_fetchquotes():
         row[7] = str(row[7].replace('"', ''))
         row[8] = str(row[8].replace('"', ''))
         row[9] = str(row[9].replace('"', ''))
-        #print row[0] + " " + row[2] + " " + row[3] + " " + row[4]
-        #sqlstr = "UPDATE newslettermanager SET id_active='Y', date_subactivated='" + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "' WHERE user_email='" + user_email_lookup + "'
-
-        if row[0] == 'VMMXX': # Yahoo thinks the quote is .01 for Vanguard Prime Money Market Fund, which is a $1 sweep account
-            row[2] = '1.00'
 
         sqlstr = "UPDATE moneywatch_invelections SET quoteprice=%s, quotechange=%s, quotedate=%s, yield=%s, divdatenext=%s, divdateprev=%s WHERE ticker=%s"
         cursor.execute(sqlstr, (row[2], row[4], h_todaydatetimeformysql(), row[7], row[8], row[9], row[0]))
