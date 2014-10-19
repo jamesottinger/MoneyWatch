@@ -289,13 +289,18 @@ def i_bulkadd_edit():
                         <td><strong>Action</strong></td>
                         <td><strong># Shares</strong></td>
                         <td><strong>Trade Cost</strong></td>
+                        <td><strong>Update Price</strong></td>
                     </tr>
     '''
     for dbrow in dbrows:
 
         if dbrow['iacctname'] != parent:
-            markup += '<tr><td colspan="7" style="background-color: #efefef;"><span class="bigbluetext">' + dbrow['iacctname'] + '</span></td></tr>'
+            markup += '<tr><td colspan="8" style="background-color: #efefef;"><span class="bigbluetext">' + dbrow['iacctname'] + '</span></td></tr>'
             parent = dbrow['iacctname']
+
+        tocheckornottocheck = ''
+        if dbrow['fetchquotes'] == 0:
+            tocheckornottocheck = 'checked'
 
         each_datepicker = str(dbrow['ielectionid']) + '-date'
         javascriptcalls.append(' jQuery("#' + each_datepicker + '").datepicker({ dateFormat: "yy-mm-dd" });')
@@ -315,8 +320,9 @@ def i_bulkadd_edit():
                         </td>
                         <td><input type="text" size="8" name="%s-shares" value="" onChange="checkValueDecimals(this, 3);"></td>
                         <td><nobr>$<input type="text" size="8" name="%s-cost" value="" onChange="checkValueDecimals(this, 2);"></nobr></td>
+                        <td><input type="checkbox" name="%s-updateprice" value="yes" %s/></td>
                     </tr>
-        ''' % (dbrow['ielectionname'], str(dbrow['ielectionid']), str(dbrow['ielectionid']), dbrow['ticker'], str(dbrow['ielectionid']), b_makeselects(selected='', identifier=''), each_datepicker, each_datepicker, str(dbrow['ielectionid']), str(dbrow['ielectionid']), str(dbrow['ielectionid']))
+        ''' % (dbrow['ielectionname'], str(dbrow['ielectionid']), str(dbrow['ielectionid']), dbrow['ticker'], str(dbrow['ielectionid']), b_makeselects(selected='', identifier=''), each_datepicker, each_datepicker, str(dbrow['ielectionid']), str(dbrow['ielectionid']), str(dbrow['ielectionid']), str(dbrow['ielectionid']), tocheckornottocheck)
 
         #markup += '<div><span>' +  dbrow['name'] + '</span><span><input type="text" class="tickerentry" size="8" name="' + dbrow['ticker'] + '-shares" value=""></span></div>'
     dbcon.close()
@@ -513,6 +519,14 @@ def i_saveadd(ticker, transdate, shares, cost, fromacct, action, ielectionid, ie
     cursor.execute(sqlstr, (ielectionid, btransid, transdate, ticker, updown, action, shares, costpershare, cost))
     h_logsql(cursor._executed)
     dbcon.commit()
+
+    if  str(ielectionid) + '-updateprice' in g_formdata: # update price based on new entry
+        # update the elections price
+        sqlstr = "UPDATE moneywatch_invelections SET quoteprice=%s, quotedate=%s WHERE ielectionid=%s"
+        cursor.execute(sqlstr, ("{:.3f}".format(float(cost) / float(shares)), h_todaydatetimeformysql(), ielectionid))
+        dbcon.commit()
+
+
     i_electiontally(ielectionid)
 
     if fromacct > 0: # was this bank funded?
