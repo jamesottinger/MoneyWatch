@@ -1052,8 +1052,10 @@ def b_edit_template(mode, bacctname, btransid, bacctid, transferbtransid, transf
                         }
                     }
 
+                    // autocomplete
+                    jQuery('#beditsingle-whom1').autocomplete({ source: [ %s ] });
                 </script>
-        ''' % (bacctname, typeselect, transdate, numnote, amt, transshow, transsay, b_makeselects(transferbacctid,''), whom1, whom2, sendcmd, bacctname, btransid, bacctid, transferbtransid, transferbacctid, buttonsay, sendcmd)
+        ''' % (bacctname, typeselect, transdate, numnote, amt, transshow, transsay, b_makeselects(transferbacctid,''), whom1, whom2, sendcmd, bacctname, btransid, bacctid, transferbtransid, transferbacctid, bacctid, buttonsay, sendcmd, b_autocomplete(bacctid))
 
     return markup
 
@@ -1385,6 +1387,22 @@ def b_bulkbills_save():
             b_accounttally(each_fromacct)
 
     dbcon.close()
+
+def b_autocomplete(in_bacctid):
+    # generates autocomplete possabilities, excludes fund purchases
+    dbcon = mdb.connect(**moneywatchconfig.db_creds)
+    cursor = dbcon.cursor(mdb.cursors.DictCursor)
+    sqlstr = "SELECT DISTINCT whom1 FROM moneywatch_banktransactions WHERE bacctid=%s AND whom1 NOT LIKE 'Buy : %%' ORDER BY whom1"
+    cursor.execute(sqlstr, (in_bacctid))
+    dbrows = cursor.fetchall()
+    whomlist = []
+
+    for dbrow in dbrows:
+        whomlist.append("'" + dbrow['whom1'] + "'")
+
+    dbcon.close()
+    return ', '.join(whomlist)
+
 
 
 #================================================================================================================
