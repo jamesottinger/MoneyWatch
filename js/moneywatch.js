@@ -501,7 +501,7 @@ function checkValueDecimals(in_obj, places) {
     // converts a number to a dollar (two decimals)  450.95 format
     in_obj.value = in_obj.value.toString().replace(/\$|\,/g, '');
     if (in_obj.value != "" && !isNaN(in_obj.value)) {
-        if ((in_obj.value * 1) > 0) {
+        if ((in_obj.value * 1) >= 0) {
             in_obj.value = (in_obj.value * 1.0).toFixed(places);
         } else {
             in_obj.value = '';
