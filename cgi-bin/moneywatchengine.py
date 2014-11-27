@@ -434,6 +434,7 @@ def i_edit_template(mode, ielectionname, ticker, itransid, ielectionid, btransid
 
                         <input type="hidden" name="itransid" value="%s">
                         <input type="hidden" name="btransid" value="%s">
+                        <input type="button" value="Cancel" onClick="cancelEdit('investment', '%s');">
                         <input type="button" name="doit" VALUE="%s" onClick="ieditsingle_validate('%s');">
                     </div>
                 </form><br>
@@ -452,7 +453,7 @@ def i_edit_template(mode, ielectionname, ticker, itransid, ielectionid, btransid
                         }
                     }
                 </script>
-        ''' % (ielectionname, ticker, b_makeselects(selected=fundsorigin, identifier=''), actionselect, transdate, shares, cost, sendcmd, ticker, ielectionname, ielectionid, itransid, btransid, buttonsay, sendcmd)
+        ''' % (ielectionname, ticker, b_makeselects(selected=fundsorigin, identifier=''), actionselect, transdate, shares, cost, sendcmd, ticker, ielectionname, ielectionid, itransid, btransid, ielectionid, buttonsay, sendcmd)
 
     return markup
 
@@ -1010,6 +1011,7 @@ def b_edit_template(mode, bacctname, btransid, bacctid, transferbtransid, transf
                         <input type="hidden" name="bacctid" id="beditsingle-bacctid" value="%s">
                         <input type="hidden" name="transferbtransid" value="%s">
                         <input type="hidden" name="transferbacctid" value="%s">
+                        <input type="button" value="Cancel" onClick="cancelEdit('bank', '%s');">
                         <input type="button" name="doit" VALUE="%s" onClick="beditsingle_validate('%s');">
                     </div>
                 </form><br>

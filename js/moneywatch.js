@@ -446,6 +446,29 @@ function getBankAccount(in_bacctid) {
     );
 }
 
+function cancelEdit(in_type, in_xacctid) {
+    // unhighlight the selected row
+    jQuery('#' + activeInvRowId).removeClass('activeinvrow');
+    // unhighlight the right control box
+    jQuery('#transactionsrightedit').removeClass('activeinveditmenu');
+    // reload the right side
+    if (in_type == 'bank') {
+        jQuery.post(moneyWatchX,
+            {job: 'B.ENTRY.ADD', 'bacctid': in_xacctid, pu: poisonURL()},
+            function(data) {
+                jQuery('#transactionsrightedit').html(data);
+            }
+        );
+    } else if (in_type == 'investment') {
+        jQuery.post(moneyWatchX,
+            {job: 'I.ENTRY.ADD', 'ielectionid': in_xacctid, pu: poisonURL()},
+            function(data) {
+                jQuery('#transactionsrightedit').html(data);
+            }
+        );
+    }
+
+}
 
 function addbank_typechange() {
     var selectedtype;
