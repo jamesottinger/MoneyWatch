@@ -419,6 +419,7 @@ function sendBankDelete(in_bacctid, in_btransid) {
                 }
             }
         );
+        return true;
     } else {
         return false;
     }
