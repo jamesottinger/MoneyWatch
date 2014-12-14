@@ -567,7 +567,7 @@ def i_saveupdate(ticker, transdate, shares, cost, fromacct, action, ielectionid,
         # -- [insert bank transaction]
         # Category: Buy Investment/CD: The Name Of Account
         # Buy: Mutual Fund Name 4.439 @ $22.754
-        whom1 = 'Buy : ' + ticker + ' ' + shares + ' @ ' + h_showmoney(costpershare)
+        whom1 = 'Buy : ' + ticker + ' ' + shares + ' @ ' + h_showmoney(float(cost) / float(shares))
         whom2 = 'Buy Investment/CD: ' + ielectionname
         sqlstr = """INSERT INTO moneywatch_banktransactions (bacctid, transdate, type, updown, amt, whom1, whom2, numnote, splityn, transferbtransid, transferielectionid, itransid) \
                     VALUES (%s, %s, 'w', %s, %s, %s, %s, 'INV', 0, %s, 0, 0)"""
@@ -605,7 +605,7 @@ def i_saveupdate(ticker, transdate, shares, cost, fromacct, action, ielectionid,
         # enter bank transaction
         # Category: Buy Investment/CD: The Name Of Account
         # Buy: Mutual Fund Name 4.439 @ $22.754
-        whom1 = 'Buy : ' + ticker + ' ' + shares + ' @ ' + h_showmoney(costpershare)
+        whom1 = 'Buy : ' + ticker + ' ' + shares + ' @ ' + h_showmoney(float(cost) / float(shares))
         whom2 = 'Buy Investment/CD: ' + ielectionname
 
         sqlstr = """UPDATE moneywatch_banktransactions SET \
