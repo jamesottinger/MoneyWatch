@@ -75,7 +75,7 @@ def i_makeselectsparents(selected, identifier):
 
     markup = ''
     for dbrow in dbrows:
-        if str(dbrow['iacctname']) == selected:
+        if str(dbrow['iacctname']) == str(selected):
             selectedsay = ' selected'
         else:
             selectedsay = ''
@@ -781,7 +781,7 @@ def b_makeselects(selected,identifier):
 
     markup = ''
     for dbrow in dbrows:
-        if str(dbrow['bacctid']) == selected:
+        if str(dbrow['bacctid']) == str(selected):
             selectedsay = ' selected'
         else:
             selectedsay = ''
