@@ -96,6 +96,7 @@ function calcNetWorth() {
 }
 
 function sendCommand(in_job) {
+    var formdata;
     switch(in_job) {
         case 'I.SUMMARY.GET':
             jQuery.post(moneyWatchX,
@@ -118,7 +119,7 @@ function sendCommand(in_job) {
             );
             break;
         case 'I.BULKADD.SAVE':
-            var formdata = jQuery('#ibulkedit').serialize();
+            formdata = jQuery('#ibulkedit').serialize();
             jQuery.post(moneyWatchX,
                 formdata,
                 function(data) {
@@ -133,7 +134,7 @@ function sendCommand(in_job) {
             break;
         case 'I.ENTRY.EDITSAVE':
         case 'I.ENTRY.ADDSAVE':
-            var formdata = jQuery('#ieditsingle').serialize();
+            formdata = jQuery('#ieditsingle').serialize();
             var ielectionid = jQuery('#ieditsingle-ielectionid').val();
             jQuery.post(moneyWatchX,
                 formdata,
@@ -183,7 +184,7 @@ function sendCommand(in_job) {
             );
             break;
         case 'B.BULKINTEREST.SAVE':
-            var formdata = jQuery('#bbulkinterestedit').serialize();
+            formdata = jQuery('#bbulkinterestedit').serialize();
             jQuery.post(moneyWatchX,
                 formdata,
                 function(data) {
@@ -210,7 +211,7 @@ function sendCommand(in_job) {
             );
             break;
         case 'B.BULKBILLS.SAVE':
-            var formdata = jQuery('#bbulkbillsedit').serialize();
+            formdata = jQuery('#bbulkbillsedit').serialize();
             jQuery.post(moneyWatchX,
                 formdata,
                 function(data) {
@@ -227,8 +228,8 @@ function sendCommand(in_job) {
             break;
         case 'B.ENTRY.EDITSAVE':
         case 'B.ENTRY.ADDSAVE':
-            var formdata = jQuery('#beditsingle').serialize();
             var bacctid = jQuery('#beditsingle-bacctid').val();
+            formdata = jQuery('#beditsingle').serialize();
             jQuery.post(moneyWatchX,
                 formdata,
                 function(data) {
