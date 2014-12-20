@@ -379,7 +379,7 @@ def i_entry_prepareedit():
     dbcon.close()
 
     for dbrow in dbrows:
-        return i_edit_template(mode='edit', ielectionname=dbrow['ielectionname'], ticker=dbrow['ticker'], itransid=str(dbrow['itransid']), ielectionid=str(dbrow['ielectionid']), btransid=dbrow['btransid'], transdate=str(dbrow['transdate']), action=dbrow['action'], shares="{:.3f}".format(float(dbrow['sharesamt'])), cost="{:.2f}".format(float(dbrow['transprice'])), fundsorigin=str(dbrow['btransid']))
+        return i_edit_template(mode='edit', ielectionname=dbrow['ielectionname'], ticker=dbrow['ticker'], itransid=str(dbrow['itransid']), ielectionid=str(dbrow['ielectionid']), btransid=dbrow['btransid'], transdate=str(dbrow['transdate']), action=dbrow['action'], shares="{:.3f}".format(float(dbrow['sharesamt'])), cost="{:.2f}".format(float(dbrow['transprice'])), fundsorigin=dbrow['btransid'])
 
 
 # created the single
@@ -403,6 +403,11 @@ def i_edit_template(mode, ielectionname, ticker, itransid, ielectionid, btransid
         actionselect = '<option value="BUY">Buy</option><option value="REINVDIV">Dividend(ReInvest)</option><option value="SELL" selected>Sell</option>'
     else:
         actionselect = '<option value="BUY">Buy</option><option value="REINVDIV">Dividend(ReInvest)</option><option value="SELL">Sell</option>'
+
+    bacctid = 0
+    if fundsorigin > 0:
+        bacctid = b_bacctidfrombtransid(fundsorigin)
+
 
     markup = '''<form name="ieditsingle" id="ieditsingle">\
                     <table class="cleantable" width="300">
@@ -434,6 +439,7 @@ def i_edit_template(mode, ielectionname, ticker, itransid, ielectionid, btransid
 
                         <input type="hidden" name="itransid" value="%s">
                         <input type="hidden" name="btransid" value="%s">
+                        <input type="hidden" name="bacctid" value="%s">
                         <input type="button" value="Cancel" onClick="cancelEdit('investment', '%s');">
                         <input type="button" name="doit" VALUE="%s" onClick="ieditsingle_validate('%s');">
                     </div>
@@ -453,7 +459,7 @@ def i_edit_template(mode, ielectionname, ticker, itransid, ielectionid, btransid
                         }
                     }
                 </script>
-        ''' % (ielectionname, ticker, b_makeselects(selected=fundsorigin, identifier=''), actionselect, transdate, shares, cost, sendcmd, ticker, ielectionname, ielectionid, itransid, btransid, ielectionid, buttonsay, sendcmd)
+        ''' % (ielectionname, ticker, b_makeselects(selected=bacctid, identifier=''), actionselect, transdate, shares, cost, sendcmd, ticker, ielectionname, ielectionid, itransid, btransid, bacctid, ielectionid, buttonsay, sendcmd)
 
     return markup
 
@@ -798,6 +804,16 @@ def b_saybacctname(in_bacctid):
     dbrow = cursor.fetchone()
     dbcon.close()
     return dbrow['bacctname']
+
+
+def b_bacctidfrombtransid(in_btransid):
+    dbcon = mdb.connect(**moneywatchconfig.db_creds)
+    cursor = dbcon.cursor(mdb.cursors.DictCursor)
+    sqlstr = "SELECT bacctid FROM moneywatch_banktransactions WHERE btransid=%s"
+    cursor.execute(sqlstr, (in_btransid))
+    dbrow = cursor.fetchone()
+    dbcon.close()
+    return dbrow['bacctid']
 
 
 # B.SUMMARY.GET = Shows Summary of Bank Accounts
