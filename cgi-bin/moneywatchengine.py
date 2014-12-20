@@ -523,7 +523,7 @@ def i_saveadd(ticker, transdate, shares, cost, fromacct, action, ielectionid, ie
 
     if  str(ielectionid) + '-updateprice' in g_formdata: # update price based on new entry
         # update the elections price
-        sqlstr = "UPDATE moneywatch_invelections SET quoteprice=%s, quotedate=%s WHERE ielectionid=%s"
+        sqlstr = "UPDATE moneywatch_invelections SET manualoverrideprice=%s, quotedate=%s WHERE ielectionid=%s"
         cursor.execute(sqlstr, ("{:.3f}".format(float(cost) / float(shares)), h_todaydatetimeformysql(), ielectionid))
         dbcon.commit()
 
