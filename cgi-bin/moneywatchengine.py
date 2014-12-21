@@ -429,6 +429,9 @@ def i_edit_template(mode, ielectionname, ticker, itransid, ielectionid, btransid
                             <td class="tdborderright"># Shares:<br><input type="text" size="10" id="ieditsingle-shares" name="shares" value="%s" onChange="checkValueDecimals(this, 3);"></td>
                             <td>Trade Cost:<br><nobr>$<input type="text" size="8" id="ieditsingle-cost" name="cost" value="%s" onChange="checkValueDecimals(this, 2);"></nobr></td>
                         </tr>
+                        <tr>
+                            <td colspan="2"><input type="checkbox" name="%s-updateprice" value="yes"/> Manually calculate and update latest quote price</td>
+                        </tr>
                     </table>
                     <div style="text-align:right; padding-top: 20px; padding-right: 25px;">
                         <input type="hidden" name="job" value="%s">
@@ -459,7 +462,7 @@ def i_edit_template(mode, ielectionname, ticker, itransid, ielectionid, btransid
                         }
                     }
                 </script>
-        ''' % (ielectionname, ticker, b_makeselects(selected=bacctid, identifier=''), actionselect, transdate, shares, cost, sendcmd, ticker, ielectionname, ielectionid, itransid, btransid, bacctid, ielectionid, buttonsay, sendcmd)
+        ''' % (ielectionname, ticker, b_makeselects(selected=bacctid, identifier=''), actionselect, transdate, shares, cost, ielectionid, sendcmd, ticker, ielectionname, ielectionid, itransid, btransid, bacctid, ielectionid, buttonsay, sendcmd)
 
     return markup
 
@@ -658,6 +661,13 @@ def i_saveupdate(ticker, transdate, shares, cost, fromacct, action, ielectionid,
     cursor.execute(sqlstr, (transdate, action, updown, shares, costpershare, cost, update_btransid, itransid))
     h_logsql(cursor._executed)
     dbcon.commit()
+
+    if  str(ielectionid) + '-updateprice' in g_formdata: # update price based on new entry
+        # update the elections price
+        sqlstr = "UPDATE moneywatch_invelections SET manualoverrideprice=%s, quotedate=%s WHERE ielectionid=%s"
+        cursor.execute(sqlstr, ("{:.3f}".format(float(cost) / float(shares)), h_todaydatetimeformysql(), ielectionid))
+        dbcon.commit()
+
     i_electiontally(ielectionid)
 
     dbcon.close()
