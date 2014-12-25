@@ -334,7 +334,7 @@ function getInvElectionEdit(in_ielectionid, in_itransid) {
         {job: 'I.ENTRY.EDIT', 'ielectionid': in_ielectionid, 'itransid': in_itransid, pu: poisonURL()},
         function(data) {
             jQuery('#transactionsrightedit').html(data);
-            if (activeInvRowId != '') {
+            if (activeInvRowId !== '') {
                 jQuery('#' + activeInvRowId).removeClass('activeinvrow');
             }
             activeInvRowId = in_ielectionid + in_itransid;
@@ -358,7 +358,7 @@ function getInvGraph(in_ielectionid) {
 
 function sendInvDelete(in_ielectionid, in_itransid) {
     var r = confirm("Are you sure you want to delete this transaction?");
-    if (r == true) {
+    if (r === true) {
         jQuery.post(moneyWatchX,
             {job: 'I.ENTRY.DELETE', 'itransid': in_itransid, pu: poisonURL()},
             function(data) {
@@ -388,7 +388,7 @@ function getBankEdit(in_btransid) {
         {job: 'B.ENTRY.EDIT', 'btransid': in_btransid, pu: poisonURL()},
         function(data) {
             jQuery('#transactionsrightedit').html(data);
-            if (activeInvRowId != '') {
+            if (activeInvRowId !== '') {
                 jQuery('#' + activeInvRowId).removeClass('activeinvrow');
             }
             activeInvRowId = 'b' + in_btransid;
@@ -400,7 +400,7 @@ function getBankEdit(in_btransid) {
 
 function sendBankDelete(in_bacctid, in_btransid) {
     var r = confirm("Are you sure you want to delete this transaction?");
-    if (r == true) {
+    if (r === true) {
         jQuery.post(moneyWatchX,
             {job: 'B.ENTRY.DELETE', 'btransid': in_btransid, pu: poisonURL()},
             function(data) {
@@ -527,7 +527,7 @@ function formatCurrency(num) {
 function checkValueDecimals(in_obj, places) {
     // converts a number to a dollar (two decimals)  450.95 format
     in_obj.value = in_obj.value.toString().replace(/\$|\,/g, '');
-    if (in_obj.value != "" && !isNaN(in_obj.value)) {
+    if (in_obj.value !== "" && !isNaN(in_obj.value)) {
         if ((in_obj.value * 1) >= 0) {
             in_obj.value = (in_obj.value * 1.0).toFixed(places);
         } else {
