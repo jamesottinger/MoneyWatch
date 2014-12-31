@@ -839,7 +839,7 @@ def b_summary():
                 <table class="invtable">
                     <tr style="background-color: #ffffff;">
                         <td style="border-bottom: solid 1px #cccccc;">Bank</td>
-                        <td style="border-bottom: solid 1px #cccccc;"width="326">Account</td>
+                        <td style="border-bottom: solid 1px #cccccc;" width="326">Account</td>
                         <td style="border-bottom: solid 1px #cccccc;">Value</td>
                         <td style="border-bottom: solid 1px #cccccc;">Me (Today)</td>
                         <td style="border-bottom: solid 1px #cccccc;">Me (Future)</td>
