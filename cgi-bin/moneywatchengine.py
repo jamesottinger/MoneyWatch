@@ -314,7 +314,8 @@ def i_bulkadd_edit():
                         <td>
                             <select name="%s-action">
                               <option value="BUY">Buy</option>
-                              <option value="REINVDIV">Dividend(ReInvest)</option>
+                              <option value="BUYE">Buy (Employer)</option>
+                              <option value="REINVDIV">Dividend (ReInvest)</option>
                               <option value="SELL">Sell</option>
                             </select>
                         </td>
@@ -502,7 +503,7 @@ def i_saveadd(ticker, transdate, shares, cost, fromacct, action, ielectionid, ie
 
     if action == 'SELL' or action == 'SELLX':
         updown = '-'
-    else: # BUY BUYX REINVDIV
+    else: # BUY BUYX BUYE REINVDIV
         updown = '+'
 
     btransid = 0
@@ -560,7 +561,7 @@ def i_saveupdate(ticker, transdate, shares, cost, fromacct, action, ielectionid,
 
     if action == 'SELL' or action == 'SELLX':
         updown = '-'
-    else: # BUY BUYX REINVDIV
+    else: # BUY BUYX BUYE REINVDIV
         updown = '+'
 
     # ---------  [update investment transaction]  ---------
