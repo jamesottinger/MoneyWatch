@@ -87,6 +87,7 @@ U.UPDATEQUOTES
 function init_loadaccounts() {
     sendCommand('I.SUMMARY.GET');
     sendCommand('B.SUMMARY.GET');
+    sendCommand('U.LINKS.GET');
 }
 function calcNetWorth() {
     var nw = formatCurrency((jQuery('#networth-investments').val() * 1.00) + (jQuery('#networth-banks').val() * 1.00));
@@ -291,6 +292,14 @@ function sendCommand(in_job) {
                 function(data) {
                     jQuery('#paneluniversal-inner').html(data);
                     panelUniversal.show();
+                }
+            );
+            break;
+        case 'U.LINKS.GET':
+            jQuery.post(moneyWatchX,
+                {job: in_job, pu: poisonURL()},
+                function(data) {
+                    jQuery('#ui-links').html(data);
                 }
             );
             break;
