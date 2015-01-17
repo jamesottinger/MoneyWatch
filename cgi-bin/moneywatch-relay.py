@@ -42,6 +42,7 @@ B.ENTRY.DEL
 *- U.IMPORTFILE.EDIT
 *- U.IMPORTFILE.SAVE
 U.UPDATEQUOTES
+U.LINKS.GET
 '''
 #===============================================================================
 
@@ -127,6 +128,9 @@ def main():
         p_content()
         moneywatchengine.u_banktotals()
         print "ok"
+    elif moneywatchengine.g_formdata.getvalue('job') == 'U.LINKS.GET':
+        p_content()
+        print moneywatchengine.u_linksgenerate()
     else:
         p_content()
         print ")("# invalid, print ass cheeks
