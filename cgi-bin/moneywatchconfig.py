@@ -10,3 +10,14 @@ db_creds   = { 'host':'xxx.xxx.xxx.xxx', 'user':'youruser', 'passwd':'yourpasswo
 dirlogs    = '/log/'
 direrrors  = '/log/errors/'
 
+uilinks = [
+            [
+                ('Google Drive', 'https://drive.google.com/#my-drive')
+            ], [
+                ('Capital One 360', 'https://home.capitalone360.com'),
+                ('Discover Bank', 'https://www.discover.com/online-banking/')
+            ], [
+                ('Fidelity', 'https://www.fidelity.com'),
+                ('Vanguard', 'https://www.vanguard.com/')
+            ]
+        ]
