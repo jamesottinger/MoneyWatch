@@ -1510,6 +1510,16 @@ def u_banktotals():
     dbcon.close()
 
 
+# U.LINKS.GET
+def u_linksgenerate():
+    markup = ''
+    for linksets in moneywatchconfig.uilinks:
+        for name, link in linksets:
+            markup += '''<br><a href="%s" target="_blank">%s</a>''' % ( link, name )
+        markup += '<br>'
+    return markup
+
+
 #================================================================================================================
 # HELPER FUNCTIONS
 #================================================================================================================
