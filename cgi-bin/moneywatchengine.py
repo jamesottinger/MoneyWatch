@@ -394,7 +394,7 @@ def i_edit_template(mode, ielectionname, ticker, itransid, ielectionid, btransid
         buttonsay = 'Add New'
 
     if action == 'BUY' or action == 'BUYX':
-        # the save will deal with the difference of a BUY or a BUYX (one finded by a bank transfer)
+        # the save will deal with the difference of a BUY or a BUYX (one funded by a bank transfer)
         actionselect = '<option value="BUY" selected>Buy</option><option value="BUYE">Buy (Employer)</option><option value="REINVDIV">Dividend (ReInvest)</option><option value="SELL">Sell</option>'
     elif action == 'BUYE':
         # BUYE is a Buy funded by an employer (match)
@@ -402,7 +402,7 @@ def i_edit_template(mode, ielectionname, ticker, itransid, ielectionid, btransid
     elif action == 'REINVDIV':
         actionselect = '<option value="BUY">Buy</option><option value="BUYE">Buy (Employer)</option><option value="REINVDIV" selected>Dividend (ReInvest)</option><option value="SELL">Sell</option>'
     elif action == 'SELL' or action == 'SELLX':
-        # the save will deal with the difference of a SELL or a SELLX(one finded by a bank transfer)
+        # the save will deal with the difference of a SELL or a SELLX(one funded by a bank transfer)
         # TODO: may need to revisit when dealing with SELLs that transfer money to a bank account (SELLX)
         actionselect = '<option value="BUY">Buy</option><option value="BUYE">Buy (Employer)</option><option value="REINVDIV">Dividend (ReInvest)</option><option value="SELL" selected>Sell</option>'
     else:
@@ -601,7 +601,7 @@ def i_saveupdate(ticker, transdate, shares, cost, fromacct, action, ielectionid,
         dbrow = cursor.fetchone()
         bacctid_lookup = dbrow['bacctid'] # need to parent bank acct for re-tally
 
-        # not assiciated with a bank account anymore, delete the bank entry
+        # not associated with a bank account anymore, delete the bank entry
         sqlstr = "DELETE FROM moneywatch_banktransactions WHERE btransid=%s"
         cursor.execute(sqlstr, (btransid))
         h_logsql(cursor._executed)
