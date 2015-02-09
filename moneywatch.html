@@ -172,6 +172,7 @@
        // Register listeners
        jQuery('#addbanktype').change(function(){ addbank_typechange(); }); 
        jQuery('#addbackpayee').focusout(function(){addbank_payeechange(); }); 
+       setInterval(stockFetchTimer, 60000); // tick every minute
    });
 </script>
     </body>
