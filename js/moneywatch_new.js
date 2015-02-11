@@ -510,39 +510,48 @@ function stockFetchTimer() {
     }
 }
 
-// ==== UTILITY
-
-function poisonURL() {
-    return new Date().getTime();
-}
-
-function formatCurrency(num) {
-    if (typeof num != 'undefined') {
-        num = num.toString().replace(/\$|\,/g, '');
-        if (isNaN(num)) num = "0";
-        sign = (num == (num = Math.abs(num)));
-        num = Math.floor(num * 100 + 0.50000000001);
-        cents = num % 100;
-        num = Math.floor(num / 100).toString();
-        if (cents < 10) cents = "0" + cents;
-        for (var i = 0; i < Math.floor((num.length - (1 + i)) / 3); i++)
-        num = num.substring(0, num.length - (4 * i + 3)) + ',' + num.substring(num.length - (4 * i + 3));
-        return (((sign) ? "" : "-") + "$" + num + '.' + cents);
-    } else {
-        return "$0.00";
-    }
-}
-
-function checkValueDecimals(in_obj, places) {
+// ------------------------------------------------------------------
+// [== UTILITIES ==]
+// ------------------------------------------------------------------
+MW.util = {
+    // ------------------------------------------------------------------
+    // poison part of the URL so that it doesn't cache
+    // ------------------------------------------------------------------
+    poisonURL: function () {
+        return new Date().getTime();
+    },
+    // ------------------------------------------------------------------
+    // converts number to $xx.xx format (readable, not for math)
+    // ------------------------------------------------------------------
+    formatCurrency: function (num) {
+        if (typeof num != 'undefined') {
+            num = num.toString().replace(/\$|\,/g, '');
+            if (isNaN(num)) num = "0";
+            sign = (num == (num = Math.abs(num)));
+            num = Math.floor(num * 100 + 0.50000000001);
+            cents = num % 100;
+            num = Math.floor(num / 100).toString();
+            if (cents < 10) cents = "0" + cents;
+            for (var i = 0; i < Math.floor((num.length - (1 + i)) / 3); i++)
+            num = num.substring(0, num.length - (4 * i + 3)) + ',' + num.substring(num.length - (4 * i + 3));
+            return (((sign) ? "" : "-") + "$" + num + '.' + cents);
+        } else {
+            return "$0.00";
+        }
+    },
+    // ------------------------------------------------------------------
     // converts a number to a dollar (two decimals)  450.95 format
-    in_obj.value = in_obj.value.toString().replace(/\$|\,/g, '');
-    if (in_obj.value !== "" && !isNaN(in_obj.value)) {
-        if ((in_obj.value * 1) >= 0) {
-            in_obj.value = (in_obj.value * 1.0).toFixed(places);
+    // ------------------------------------------------------------------
+    checkValueDecimals: function (in_obj, places) {
+        in_obj.value = in_obj.value.toString().replace(/\$|\,/g, '');
+        if (in_obj.value !== "" && !isNaN(in_obj.value)) {
+            if ((in_obj.value * 1) >= 0) {
+                in_obj.value = (in_obj.value * 1.0).toFixed(places);
+            } else {
+                in_obj.value = '';
+            }
         } else {
             in_obj.value = '';
         }
-    } else {
-        in_obj.value = '';
     }
-}
+};
