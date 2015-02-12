@@ -476,39 +476,33 @@ function addbank_typechange() {
     }
 }
 
-function addbank_payeechange() {
-    var textboxpayee;
-    textboxpayee = $('#addbackpayee').val();
 
-    if(textboxpayee.toUpperCase() === "INTEREST") {
-         $('#addbankcategory').val('Interest');
-         $('#addbanknum').val('INT');
-    } else {
-         // withdraw|deposit
-         //$('#addbanktransaccount').hide();
-    }
-}
-
-function stockFetchTimer() {
-    // fetch quotes every day at 6 PM local time
-    var getdate = new Date();
-    if (getdate.getDate() !== g_laststockfetch) { // day of the month, new day?
-        // we didn't already do the stock fetch dance today
-        if (g_laststockfetch === 0) {
-            if( getdate.getHours() >= 18) {
-                // this will be the one for today
+// ------------------------------------------------------------------
+// [== TIMER RELATED ==]
+// ------------------------------------------------------------------
+MW.timers = {
+    stockFetchTimer: function () {
+        // fetch quotes every day at 6 PM local time
+        var getdate = new Date();
+        if (getdate.getDate() !== g_laststockfetch) { // day of the month, new day?
+            // we didn't already do the stock fetch dance today
+            if (g_laststockfetch === 0) {
+                if( getdate.getHours() >= 18) {
+                    // this will be the one for today
+                    g_laststockfetch = getdate.getDate();
+                } else {
+                    // runs now below, but we will need to run again later today
+                    g_laststockfetch = -1;
+                }
+                this.comm.sendCommand('U.UPDATEQUOTES');
+            } else if (getdate.getHours() >= 18) { // 6 PM local time
                 g_laststockfetch = getdate.getDate();
-            } else {
-                // runs now below, but we will need to run again later today
-                g_laststockfetch = -1;
+                this.comm.sendCommand('U.UPDATEQUOTES');
             }
-            sendCommand('U.UPDATEQUOTES');
-        } else if (getdate.getHours() >= 18) { // 6 PM local time
-            g_laststockfetch = getdate.getDate();
-            sendCommand('U.UPDATEQUOTES');
         }
     }
-}
+};
+
 
 // ------------------------------------------------------------------
 // [== UTILITIES ==]
