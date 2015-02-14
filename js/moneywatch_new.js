@@ -484,26 +484,26 @@ MW.timers = {
     laststockfetch: 0,
 
     startTimers: function () {
-        setInterval(this.stockFetchTimer, 60000); // tick every minute
+        setInterval(MW.stockFetchTimer, 60000); // tick every minute
     },
 
     stockFetchTimer: function () {
         // fetch quotes every day at 6 PM local time
         var getdate = new Date();
-        if (getdate.getDate() !== this.timers.laststockfetch) { // day of the month, new day?
+        if (getdate.getDate() !== MW.timers.laststockfetch) { // day of the month, new day?
             // we didn't already do the stock fetch dance today
-            if (this.timers.laststockfetch === 0) {
+            if (MW.timers.laststockfetch === 0) {
                 if( getdate.getHours() >= 18) {
-                    // this will be the one for today
-                    this.timers.laststockfetch = getdate.getDate();
+                    // MW will be the one for today
+                    MW.timers.laststockfetch = getdate.getDate();
                 } else {
                     // runs now below, but we will need to run again later today
-                    this.timers.laststockfetch = -1;
+                    MW.timers.laststockfetch = -1;
                 }
-                this.comm.sendCommand('U.UPDATEQUOTES');
+                MW.comm.sendCommand('U.UPDATEQUOTES');
             } else if (getdate.getHours() >= 18) { // 6 PM local time
-                this.timers.laststockfetch = getdate.getDate();
-                this.comm.sendCommand('U.UPDATEQUOTES');
+                MW.timers.laststockfetch = getdate.getDate();
+                MW.comm.sendCommand('U.UPDATEQUOTES');
             }
         }
     }
