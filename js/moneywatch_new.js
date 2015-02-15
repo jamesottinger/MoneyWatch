@@ -7,53 +7,25 @@
 //===============================================================================
 var MW = MW || {};
 
+MW = {
+    moneyWatchURL: '/x/moneywatch-relay.py',
+    activeRowId: '',
 
+    paintScreen: function () {
+        MW.comm.sendCommand('I.SUMMARY.GET');
+        MW.comm.sendCommand('B.SUMMARY.GET');
+        MW.comm.sendCommand('U.LINKS.GET');
+        MW.timers.startTimers();
+    },
 
-var moneyWatchX = '/x/moneywatch-relay.py';
-//var moneyWatchX = '/devmoney-x/moneywatch-relay.py';
-var activeInvRowId = '';
-var g_laststockfetch = 0;
+    calcNetWorth: function () {
+        var nw = MW.util.formatCurrency(($('#networth-investments').val() * 1.00) + ($('#networth-banks').val() * 1.00));
+        $('#sum-worth-inv').html(MW.util.formatCurrency($('#networth-investments').val()));
+        $('#sum-worth-bank').html(MW.util.formatCurrency($('#networth-banks').val()));
+        $('#sum-worth-all').html(nw);
+    }
+};
 
-var panelUniversal, panelTransactions; // global variables (YUI panels)
-
-
-
-// make the YUI control close my way
-var YUIcloseMarkup = '<span class="yui3-widget-button-wrapper"><a href="#" class="yui3-button yui3-button-close" onClick="utilClosePanel();"><span class="yui3-button-content"><span class="yui3-button-icon"></span></span></a></span>';
-
-function utilClosePanel() {
-    panelUniversal.hide();
-    $('#paneluniversal-inner').html('');
-}
-
-/*
-===========================================================
-CALL LIST:
-
-I.SUMMARY.GET
-I.ELECTION.GET
-I.BULKADD.EDIT
-I.BULKADD.SAVE
-*- I.TICKERS.EDIT
-*- I.TICKERS.SAVE
-I.ENTRY.ADD
-I.ENTRY.EDIT
-I.ENTRY.SAVE
-I.ENTRY.DEL
-I.GRAPH.GET
-
-B.SUMMARY.GET
-B.ACCOUNT.GET
-B.BULKADD.EDIT
-B.BULKADD.SAVE
-B.BULKINT.EDIT
-B.BULKINT.SAVE
-*- B.MYACCT.ON
-*- B.MYACCT.OFF
-B.ENTRY.ADD
-B.ENTRY.EDIT
-B.ENTRY.SAVE
-B.ENTRY.DEL
 
 *- U.IMPORTFILE.EDIT
 *- U.IMPORTFILE.SAVE
