@@ -93,8 +93,8 @@ def i_summary():
     dbrows = cursor.fetchall()
 
     markup = '''\
-                <div class="summary1heading">Investment Accounts <span class="smgraytext">( last fetch: %s <a href="#" onClick="return sendCommand('U.UPDATEQUOTES');">fetch</a> )</span></div>
-                <table class="invtable">
+                <div class="summary1heading">Investment Accounts <span class="smgraytext">( last fetch: %s <a href="#" onClick="return MW.comm.sendCommand('U.UPDATEQUOTES');">fetch</a> )</span></div>
+                <table class="invtable" align="center">
                     <tr>
                         <td>Symbol</td>
                         <td>Name</td>
@@ -171,8 +171,8 @@ def i_summary():
 
         markup += '''\
                     <tr>
-                        <td><a href="#" onClick="getInvGraph('%s');">%s</a></td>
-                        <td><a href="#" onClick="getInvElection('%s');">%s</a></td>
+                        <td><a href="#" onClick="MW.comm.getInvGraph('%s');">%s</a></td>
+                        <td><a href="#" onClick="MW.comm.getInvElection('%s');">%s</a></td>
                         <td style="text-align: right;">%s</td>
                         <td style="text-align: right;">%s</td>
                         <td style="text-align: right;">%s</td>
@@ -254,7 +254,7 @@ def i_electionget():
         identifier = str(dbrow['ielectionid']) + str(dbrow['itransid'])
 
         markup += '''<div class="%s" id="%s">\
-                        <span class="irow0"><input type="button" value="D" onclick="return sendInvDelete('%s','%s');"> <input type="button" value="E" onclick="return getInvElectionEdit('%s', '%s');"></span>
+                        <span class="irow0"><input type="button" value="D" onclick="return MW.comm.sendInvDelete('%s','%s');"> <input type="button" value="E" onclick="return MW.comm.getInvElectionEdit('%s', '%s');"></span>
                         <span class="irow1"> %s</span>
                         <span class="irow2">%s</span>
                         <span class="irow3"> ($%s @ $%s each)</span>
@@ -319,8 +319,8 @@ def i_bulkadd_edit():
                               <option value="SELL">Sell</option>
                             </select>
                         </td>
-                        <td><input type="text" size="8" name="%s-shares" value="" onChange="checkValueDecimals(this, 3);"></td>
-                        <td><nobr>$<input type="text" size="8" name="%s-cost" value="" onChange="checkValueDecimals(this, 2);"></nobr></td>
+                        <td><input type="text" size="8" name="%s-shares" value="" onChange="MW.util.checkValueDecimals(this, 3);"></td>
+                        <td><nobr>$<input type="text" size="8" name="%s-cost" value="" onChange="MW.util.checkValueDecimals(this, 2);"></nobr></td>
                         <td><input type="checkbox" name="%s-updateprice" value="yes" %s/></td>
                     </tr>
         ''' % (dbrow['ielectionname'], str(dbrow['ielectionid']), str(dbrow['ielectionid']), dbrow['ticker'], str(dbrow['ielectionid']), b_makeselects(selected='', identifier=''), each_datepicker, each_datepicker, str(dbrow['ielectionid']), str(dbrow['ielectionid']), str(dbrow['ielectionid']), str(dbrow['ielectionid']), tocheckornottocheck)
@@ -328,7 +328,7 @@ def i_bulkadd_edit():
         #markup += '<div><span>' +  dbrow['name'] + '</span><span><input type="text" class="tickerentry" size="8" name="' + dbrow['ticker'] + '-shares" value=""></span></div>'
     dbcon.close()
 
-    markup += '''</table><div style="text-align:right; padding-top: 20px; padding-right: 25px;"><input type="hidden" name="job" value="I.BULKADD.SAVE"><input type="button" name="doit" VALUE="Save" onClick="sendCommand('I.BULKADD.SAVE');"></div></form><script>'''
+    markup += '''</table><div style="text-align:right; padding-top: 20px; padding-right: 25px;"><input type="hidden" name="job" value="I.BULKADD.SAVE"><input type="button" name="doit" VALUE="Save" onClick="MW.comm.sendCommand('I.BULKADD.SAVE');"></div></form><script>'''
     for js in javascriptcalls:
         markup += js
 
@@ -430,8 +430,8 @@ def i_edit_template(mode, ielectionname, ticker, itransid, ielectionid, btransid
                             <td>Trade Date:<br><input type="text" name="tradedate" id="ieditsingle-tradedate" size="10" value="%s"></td>
                         </tr>
                         <tr>
-                            <td class="tdborderright"># Shares:<br><input type="text" size="10" id="ieditsingle-shares" name="shares" value="%s" onChange="checkValueDecimals(this, 3);"></td>
-                            <td>Trade Cost:<br><nobr>$<input type="text" size="8" id="ieditsingle-cost" name="cost" value="%s" onChange="checkValueDecimals(this, 2);"></nobr></td>
+                            <td class="tdborderright"># Shares:<br><input type="text" size="10" id="ieditsingle-shares" name="shares" value="%s" onChange="MW.util.checkValueDecimals(this, 3);"></td>
+                            <td>Trade Cost:<br><nobr>$<input type="text" size="8" id="ieditsingle-cost" name="cost" value="%s" onChange="MW.util.checkValueDecimals(this, 2);"></nobr></td>
                         </tr>
                         <tr>
                             <td colspan="2"><input type="checkbox" name="%s-updateprice" value="yes"/> Manually calculate and update latest quote price</td>
@@ -447,7 +447,7 @@ def i_edit_template(mode, ielectionname, ticker, itransid, ielectionid, btransid
                         <input type="hidden" name="itransid" value="%s">
                         <input type="hidden" name="btransid" value="%s">
                         <input type="hidden" name="bacctid" value="%s">
-                        <input type="button" value="Cancel" onClick="cancelEdit('investment', '%s');">
+                        <input type="button" value="Cancel" onClick="MW.comm.cancelEdit('investment', '%s');">
                         <input type="button" name="doit" VALUE="%s" onClick="ieditsingle_validate('%s');">
                     </div>
                 </form><br>
@@ -462,7 +462,7 @@ def i_edit_template(mode, ielectionname, ticker, itransid, ielectionid, btransid
                         } else if(jQuery('#ieditsingle-cost').val() == '') {
                             alert("Please provide the total cost for this transaction.");
                         } else {
-                            sendCommand(in_sendjob);
+                            MW.comm.sendCommand(in_sendjob);
                         }
                     }
                 </script>
@@ -744,8 +744,8 @@ def i_entry_edit():
                         </td>
                     </tr>
                     <tr>
-                        <td class="tdborderright"># Shares:<br><input type="text" size="10" name="%s-shares" value="" onChange="checkValueDecimals(this, 3);"></td>
-                        <td>Trade Cost:<br><nobr>$<input type="text" size="8" name="%s-cost" value="" onChange="checkValueDecimals(this, 2);"></nobr></td>
+                        <td class="tdborderright"># Shares:<br><input type="text" size="10" name="%s-shares" value="" onChange="MW.util.checkValueDecimals(this, 3);"></td>
+                        <td>Trade Cost:<br><nobr>$<input type="text" size="8" name="%s-cost" value="" onChange="MW.util.checkValueDecimals(this, 2);"></nobr></td>
                     </tr>
         ''' % (dbrow['ielectionname'], dbrow['ticker'], dbrow['ielectionid'], dbrow['ticker'], dbrow['ticker'], b_makeselects(selected='', identifier=''), each_datepicker, each_datepicker, dbrow['ticker'], dbrow['ticker'], dbrow['ticker'])
 
@@ -839,7 +839,7 @@ def b_summary():
     dbrows = cursor.fetchall()
 
     markup = '''\
-                <div class="summary1heading">Bank Accounts <span class="smgraytext">( last tally: %s <a href="#" onClick="return sendCommand('U.UPDATEBANKTOTALS');">tally</a> )</span></div>
+                <div class="summary1heading">Bank Accounts <span class="smgraytext">( last tally: %s <a href="#" onClick="return MW.comm.sendCommand('U.UPDATEBANKTOTALS');">tally</a> )</span></div>
                 <table class="invtable">
                     <tr style="background-color: #ffffff;">
                         <td style="border-bottom: solid 1px #cccccc;">Bank</td>
@@ -863,7 +863,7 @@ def b_summary():
         markup += '''\
                     <tr>
                         <td>%s</td>
-                        <td><a href="#" onClick="getBankAccount('%s');">%s</a></td>
+                        <td><a href="#" onClick="MW.comm.getBankAccount('%s');">%s</a></td>
                         <td style="text-align: right;"><!-- value extended -->%s</td>
                         <td style="text-align: right;"><!-- MINE - value current/today -->%s</td>
                         <td style="text-align: right;"><!-- MINE - value extended -->%s</td>
@@ -939,7 +939,7 @@ def b_accountget():
             classoe = 'recordodd'
 
         markup += '''<div id="b%s" class="%s %s">\
-                        <span class="irow0"><input type="button" value="D" onclick="return sendBankDelete('%s','%s');"> <input type="button" value="E" onclick="return getBankEdit('%s');"></span>
+                        <span class="irow0"><input type="button" value="D" onclick="return MW.comm.sendBankDelete('%s','%s');"> <input type="button" value="E" onclick="return MW.comm.getBankEdit('%s');"></span>
                         <span class="rdate">%s</span>
                         <span class="rnum">%s</span>
                         <span class="%s">%s</span>
@@ -1015,7 +1015,7 @@ def b_edit_template(mode, bacctname, btransid, bacctid, transferbtransid, transf
                         </tr>
                         <tr>
                             <td class="tdborderright">Num-Note:<br><input type="text" size="10" placeholder="Num" name="numnote" id="beditsingle-numnote" value="%s"></td>
-                            <td>Value:<br><nobr>$<input type="text" size="10" name="amt" id="beditsingle-amt" value="%s" onChange="checkValueDecimals(this, 2);"></nobr></td>
+                            <td>Value:<br><nobr>$<input type="text" size="10" name="amt" id="beditsingle-amt" value="%s" onChange="MW.util.checkValueDecimals(this, 2);"></nobr></td>
                         </tr>
                         <tr>
                             <td colspan="2">
@@ -1041,7 +1041,7 @@ def b_edit_template(mode, bacctname, btransid, bacctid, transferbtransid, transf
                         <input type="hidden" name="bacctid" id="beditsingle-bacctid" value="%s">
                         <input type="hidden" name="transferbtransid" value="%s">
                         <input type="hidden" name="transferbacctid" value="%s">
-                        <input type="button" value="Cancel" onClick="cancelEdit('bank', '%s');">
+                        <input type="button" value="Cancel" onClick="MW.comm.cancelEdit('bank', '%s');">
                         <input type="button" name="doit" VALUE="%s" onClick="beditsingle_validate('%s');">
                     </div>
                 </form><br>
@@ -1060,7 +1060,7 @@ def b_edit_template(mode, bacctname, btransid, bacctid, transferbtransid, transf
                         } else if((jQuery('#beditsingle-ttype').val() == 'ti' || jQuery('#beditsingle-ttype').val() == 'to') && jQuery('#beditsingle-transferaccount').val() == '0') {
                             alert("Please select the transfer account.");
                         } else {
-                            sendCommand(in_sendjob);
+                            MW.comm.sendCommand(in_sendjob);
                         }
                     }
 
@@ -1319,7 +1319,7 @@ def b_bulkinterest_edit():
         markup += '''\
                     <tr>
                         <td>%s</td>
-                        <td><nobr>$<input type="text" size="8" name="%s-amt" value="" onChange="checkValueDecimals(this, 2);"></nobr></td>
+                        <td><nobr>$<input type="text" size="8" name="%s-amt" value="" onChange="MW.util.checkValueDecimals(this, 2);"></nobr></td>
                     </tr>
         ''' % (dbrow['bacctname'], str(dbrow['bacctid']))
 
@@ -1384,13 +1384,13 @@ def b_bulkbills_edit():
                         <td>%s</td>
                         <td><select name="%s-fromaccount">%s</select></td>
                         <td><input type="text" name="%s" id="%s" size="10"></td>
-                        <td><nobr>$<input type="text" size="8" name="%s-amt" value="" onChange="checkValueDecimals(this, 2);"></nobr></td>
+                        <td><nobr>$<input type="text" size="8" name="%s-amt" value="" onChange="MW.util.checkValueDecimals(this, 2);"></nobr></td>
                     </tr>
         ''' % (dbrow['payeename'], str(dbrow['payeeid']), b_makeselects(selected='8', identifier=''), each_datepicker, each_datepicker, str(dbrow['payeeid']))
 
     dbcon.close()
 
-    markup += '''</table><div style="text-align:right; padding-top: 20px; padding-right: 25px;"><input type="hidden" name="job" value="B.BULKBILLS.SAVE"><input type="button" name="doit" VALUE="Save" onClick="sendCommand('B.BULKBILLS.SAVE');"></div></form><script>'''
+    markup += '''</table><div style="text-align:right; padding-top: 20px; padding-right: 25px;"><input type="hidden" name="job" value="B.BULKBILLS.SAVE"><input type="button" name="doit" VALUE="Save" onClick="MW.comm.sendCommand('B.BULKBILLS.SAVE');"></div></form><script>'''
     for js in javascriptcalls:
         markup += js
 
