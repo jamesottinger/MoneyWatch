@@ -500,43 +500,48 @@ MW.util = {
 
 
 // -------  YUI STUFF
-
 var panelUniversal, panelTransactions; // global variables (YUI panels)
-
-// YUI Components
-YUI({
-     gallery: 'gallery-2011.06.01-20-18' // Last Gallery Build of this module
-}).use("panel", "dd-plugin", "autocomplete", "autocomplete-filters", "autocomplete-highlighters", "json", "json-parse", function(Y) {
-
-
-    panelTransactions = new Y.Panel({
-        srcNode: '#paneltransactions',
-        width: 1200,
-        centered: true,
-        zIndex: 5,
-        headerContent: "Transactions",
-        plugins: [Y.Plugin.Drag],
-        visible: false,
-        render: true
-    });
-
-    panelUniversal = new Y.Panel({
-        srcNode: '#paneluniversal',
-        width: 420,
-        centered: true,
-        zIndex: 5,
-        headerContent: "hiya",
-        plugins: [Y.Plugin.Drag],
-        visible: false,
-        render: true
-    });
-
-});
 
 // make the YUI control close my way
 var YUIcloseMarkup = '<span class="yui3-widget-button-wrapper"><a href="#" class="yui3-button yui3-button-close" onClick="utilClosePanel();"><span class="yui3-button-content"><span class="yui3-button-icon"></span></span></a></span>';
 
+
 function utilClosePanel() {
     panelUniversal.hide();
     jQuery('#paneluniversal-inner').html('');
+}
+
+if (typeof (YUI) !== 'undefined') {
+
+    // YUI Components
+    YUI({
+         gallery: 'gallery-2011.06.01-20-18' // Last Gallery Build of this module
+    }).use("panel", "dd-plugin", "autocomplete", "autocomplete-filters", "autocomplete-highlighters", "json", "json-parse", function(Y) {
+
+        panelTransactions = new Y.Panel({
+            srcNode: '#paneltransactions',
+            width: 1200,
+            centered: true,
+            zIndex: 5,
+            headerContent: "Transactions",
+            plugins: [Y.Plugin.Drag],
+            visible: false,
+            render: true
+        });
+
+        panelUniversal = new Y.Panel({
+            srcNode: '#paneluniversal',
+            width: 420,
+            centered: true,
+            zIndex: 5,
+            headerContent: "hiya",
+            plugins: [Y.Plugin.Drag],
+            visible: false,
+            render: true
+        });
+    });
+
+
+
+
 }
