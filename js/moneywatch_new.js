@@ -420,6 +420,28 @@ MW.comm = {
 
 
 // ------------------------------------------------------------------
+// [== MOVEMENT ==]
+// ------------------------------------------------------------------
+MW.move = {
+    viewcurrent: 'investments',
+    viewprevious: 'none',
+
+    goTo: function ( whereto) {
+        if (whereto === 'investments') {
+            $('#accttype-toggle1').addClass('active');
+            $('#accttype-toggle2').removeClass('active');
+
+            //$('#1-investments').hide();
+            //$('#2-').hide();
+            //$('#rightcontent1').show();
+        } else if (whereto === 'bank') {
+            $('#accttype-toggle2').addClass('active');
+            $('#accttype-toggle1').removeClass('active');
+        }
+    }
+};
+
+// ------------------------------------------------------------------
 // [== TIMER RELATED ==]
 // ------------------------------------------------------------------
 MW.timers = {
