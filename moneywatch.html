@@ -14,7 +14,7 @@
     <link type="text/css" href="https://jquery-ui.googlecode.com/svn/tags/1.8.16/themes/smoothness/jquery-ui.css" rel="stylesheet" />
     <link rel="stylesheet" type="text/css" href="css/moneywatch.css">
 </head>
-    <body class="yui3-skin-sam" onload="return init_loadaccounts();">
+    <body class="yui3-skin-sam">
     <div id="header" style="height: 245px;">
         <iframe id="forecast_embed" type="text/html" frameborder="0" height="245" width="100%" src="http://forecast.io/embed/#lat=39.7344443&lon=-75.0072787&name=Chipotle - Sicklerville, NJ"> </iframe>
     </div>
@@ -173,6 +173,8 @@
        jQuery('#addbanktype').change(function(){ addbank_typechange(); }); 
        jQuery('#addbackpayee').focusout(function(){addbank_payeechange(); }); 
        setInterval(stockFetchTimer, 60000); // tick every minute
+       //setInterval(stockFetchTimer, 60000); // tick every minute
+       MW.paintScreen();
    });
 </script>
     </body>
