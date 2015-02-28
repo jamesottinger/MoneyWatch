@@ -443,3 +443,10 @@ a:active  {color:#6a6aa2;}  /* selected link   */
     background-color: #E6E6FA;
     border-bottom: 1px dashed #CCCCCC;
 }
+
+/* ---- over-ride some bootstrappy stuff --- */
+#paneltransactions * {
+    -webkit-box-sizing: content-box;
+    -moz-box-sizing: content-box;
+    box-sizing: content-box;
+}
