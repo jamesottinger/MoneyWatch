@@ -237,6 +237,15 @@ MW.comm = {
                     }
                 );
                 break;
+            case 'U.WEATHER.GET':
+                $('#weather-forcast').html('');
+                $.post(MW.moneyWatchURL,
+                    {job: in_job, pu: MW.util.poisonURL()},
+                    function(data) {
+                        $('#weather-forcast').html(data);
+                    }
+                );
+                break;
             default:
         }
     },

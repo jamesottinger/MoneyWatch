@@ -43,6 +43,7 @@ B.ENTRY.DEL
 *- U.IMPORTFILE.SAVE
 U.UPDATEQUOTES
 U.LINKS.GET
+U.WEATHER.GET
 '''
 #===============================================================================
 
@@ -131,6 +132,9 @@ def main():
     elif moneywatchengine.g_formdata.getvalue('job') == 'U.LINKS.GET':
         p_content()
         print moneywatchengine.u_linksgenerate()
+    elif moneywatchengine.g_formdata.getvalue('job') == 'U.WEATHER.GET':
+        p_content()
+        print moneywatchengine.u_weathergenerate()
     else:
         p_content()
         print ")("# invalid, print ass cheeks
