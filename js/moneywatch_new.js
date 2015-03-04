@@ -43,13 +43,13 @@ MW.comm = {
                 );
                 break;
             case 'I.BULKADD.EDIT':
-                panelUniversal.set('width', 950);
-                panelUniversal.set('headerContent', "Investments - Bulk Add" + YUIcloseMarkup);
+                MW.yui.panelUniversal.set('width', 950);
+                MW.yui.panelUniversal.set('headerContent', "Investments - Bulk Add" + MW.yui.YUIcloseMarkup);
                 $.post(MW.moneyWatchURL,
                     {job: in_job, pu: MW.util.poisonURL()},
                     function(data) {
                         $('#paneluniversal-inner').html(data);
-                        panelUniversal.show();
+                        MW.yui.panelUniversal.show();
                     }
                 );
                 break;
@@ -60,7 +60,7 @@ MW.comm = {
                     function(data) {
                         data = data.replace(/\n/gm, '');
                         if (data == 'ok') {
-                            panelUniversal.hide();
+                            MW.yui.panelUniversal.hide();
                             MW.comm.sendCommand('I.SUMMARY.GET');
                             MW.comm.sendCommand('B.SUMMARY.GET');
                         }
@@ -108,13 +108,13 @@ MW.comm = {
                 );
                 break;
             case 'B.BULKINTEREST.EDIT':
-                panelUniversal.set('width', 350);
-                panelUniversal.set('headerContent', "Bank - Bulk Interest" + YUIcloseMarkup);
+                MW.yui.panelUniversal.set('width', 350);
+                MW.yui.panelUniversal.set('headerContent', "Bank - Bulk Interest" + MW.yui.YUIcloseMarkup);
                 $.post(MW.moneyWatchURL,
                     {job: in_job, pu: MW.util.poisonURL()},
                     function(data) {
                         $('#paneluniversal-inner').html(data);
-                        panelUniversal.show();
+                        MW.yui.panelUniversal.show();
                     }
                 );
                 break;
@@ -125,7 +125,7 @@ MW.comm = {
                     function(data) {
                         data = data.replace(/\n/gm, '');
                         if (data == 'ok') {
-                            panelUniversal.hide();
+                            MW.yui.panelUniversal.hide();
                             MW.comm.sendCommand('I.SUMMARY.GET');
                             MW.comm.sendCommand('B.SUMMARY.GET');
                         } else {
@@ -135,13 +135,13 @@ MW.comm = {
                 );
                 break;
             case 'B.BULKBILLS.EDIT':
-                panelUniversal.set('width', 750);
-                panelUniversal.set('headerContent', "Bank - Bulk Bills" + YUIcloseMarkup);
+                MW.yui.panelUniversal.set('width', 750);
+                MW.yui.panelUniversal.set('headerContent', "Bank - Bulk Bills" + MW.yui.YUIcloseMarkup);
                 $.post(MW.moneyWatchURL,
                     {job: in_job, pu: MW.util.poisonURL()},
                     function(data) {
                         $('#paneluniversal-inner').html(data);
-                        panelUniversal.show();
+                        MW.yui.panelUniversal.show();
                     }
                 );
                 break;
@@ -152,7 +152,7 @@ MW.comm = {
                     function(data) {
                         data = data.replace(/\n/gm, '');
                         if (data == 'ok') {
-                            panelUniversal.hide();
+                            MW.yui.panelUniversal.hide();
                             MW.comm.sendCommand('I.SUMMARY.GET');
                             MW.comm.sendCommand('B.SUMMARY.GET');
                         } else {
@@ -219,13 +219,13 @@ MW.comm = {
                 );
                 break;
             case 'U.IMPORTFILE.EDIT':
-                panelUniversal.set('width', 420);
-                panelUniversal.set('headerContent', "Import Menu" + YUIcloseMarkup);
+                MW.yui.panelUniversal.set('width', 420);
+                MW.yui.panelUniversal.set('headerContent', "Import Menu" + MW.yui.YUIcloseMarkup);
                 $.post(MW.moneyWatchURL,
                     {job: in_job, pu: MW.util.poisonURL()},
                     function(data) {
                         $('#paneluniversal-inner').html(data);
-                        panelUniversal.show();
+                        MW.yui.panelUniversal.show();
                     }
                 );
                 break;
@@ -260,7 +260,7 @@ MW.comm = {
                 $('#transactionsrightedit').removeClass('activeinveditmenu');
                 $('#transactionsheaderinv').show();
                 $('#transactionsheaderbank').hide();
-                panelTransactions.show();
+                MW.yui.panelTransactions.show();
                 // animate scroll to bottom
                 // $('#transactionslist').stop().animate({ scrollTop: $('#scrollmeinv').offset().top },120);
                 $("#transactionslist").scrollTop($("#transactionslist")[0].scrollHeight);
@@ -297,15 +297,14 @@ MW.comm = {
     },
 
     getInvGraph: function (in_ielectionid) {
-        //panelUniversal.set('width', 950);
-        //panelUniversal.set('headerContent', "Investment - Graph" + YUIcloseMarkup);
-        $('#paneluniversal-title').html("Investment - Graph");
+        MW.yui.panelUniversal.set('width', 950);
+        MW.yui.panelUniversal.set('headerContent', "Investment - Graph" + MW.yui.YUIcloseMarkup);
         $.post(MW.moneyWatchURL,
             {job: 'I.GRAPH.GET', 'ielectionid': in_ielectionid, pu: MW.util.poisonURL()},
             function(data) {
                 $('#paneluniversal-inner').html(data);
-                //panelUniversal.show();
                 $.mobile.navigate( "#paneluniversal" );
+                MW.yui.panelUniversal.show();
             }
         );
     },
@@ -390,7 +389,7 @@ MW.comm = {
                 $('#transactionsrightedit').removeClass('activeinveditmenu');
                 $('#transactionsheaderinv').hide();
                 $('#transactionsheaderbank').show();
-                panelTransactions.show();
+                MW.yui.panelTransactions.show();
                 $("#transactionslist").scrollTop($("#transactionslist")[0].scrollHeight);
             }
         );
@@ -531,25 +530,27 @@ MW.util = {
 
 
 // -------  YUI STUFF
-var panelUniversal, panelTransactions; // global variables (YUI panels)
-
-// make the YUI control close my way
-var YUIcloseMarkup = '<span class="yui3-widget-button-wrapper"><a href="#" class="yui3-button yui3-button-close" onClick="utilClosePanel();"><span class="yui3-button-content"><span class="yui3-button-icon"></span></span></a></span>';
-
-
-function utilClosePanel() {
-    panelUniversal.hide();
-    jQuery('#paneluniversal-inner').html('');
-}
-
 if (typeof (YUI) !== 'undefined') {
+
+    MW.yui = {
+        // YUI panels
+        panelUniversal: null,
+        panelTransactions: null,
+        // make the YUI control close my way
+        YUIcloseMarkup: '<span class="yui3-widget-button-wrapper"><a href="#" class="yui3-button yui3-button-close" onClick="MW.yui.utilClosePanel();"><span class="yui3-button-content"><span class="yui3-button-icon"></span></span></a></span>',
+
+        utilClosePanel: function () {
+            MW.yui.panelUniversal.hide();
+            $('#paneluniversal-inner').html('');
+        }
+    };
 
     // YUI Components
     YUI({
          gallery: 'gallery-2011.06.01-20-18' // Last Gallery Build of this module
     }).use("panel", "dd-plugin", "autocomplete", "autocomplete-filters", "autocomplete-highlighters", "json", "json-parse", function(Y) {
 
-        panelTransactions = new Y.Panel({
+        MW.yui.panelTransactions = new Y.Panel({
             srcNode: '#paneltransactions',
             width: 1200,
             centered: true,
@@ -560,19 +561,15 @@ if (typeof (YUI) !== 'undefined') {
             render: true
         });
 
-        panelUniversal = new Y.Panel({
+        MW.yui.panelUniversal = new Y.Panel({
             srcNode: '#paneluniversal',
             width: 420,
             centered: true,
             zIndex: 5,
-            headerContent: "hiya",
+            headerContent: "i'm all of the windoze",
             plugins: [Y.Plugin.Drag],
             visible: false,
             render: true
         });
     });
-
-
-
-
 }
