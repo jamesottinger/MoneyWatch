@@ -456,7 +456,7 @@ MW.timers = {
     laststockfetch: 0,
 
     startTimers: function () {
-        setInterval(MW.stockFetchTimer, 60000); // tick every minute
+        setInterval(MW.timers.stockFetchTimer, 60000); // tick every minute
     },
 
     stockFetchTimer: function () {
