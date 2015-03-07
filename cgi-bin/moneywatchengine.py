@@ -1520,6 +1520,10 @@ def u_linksgenerate():
     return markup
 
 
+# U.WEATHER.GET
+def u_weathergenerate():
+    return '''<iframe id="forecast_embed" type="text/html" frameborder="0" height="245" width="100%%" src="http://forecast.io/embed/#lat=%s&lon=%s&name=%s"> </iframe>''' % ( moneywatchconfig.weather['latitude'], moneywatchconfig.weather['longitude'], moneywatchconfig.weather['title'] )
+
 #================================================================================================================
 # HELPER FUNCTIONS
 #================================================================================================================
