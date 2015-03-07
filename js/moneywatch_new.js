@@ -15,6 +15,7 @@ MW = {
     paintScreen: function () {
         MW.comm.sendCommand('I.SUMMARY.GET');
         MW.comm.sendCommand('B.SUMMARY.GET');
+        $('#rightcontent2').hide();
         MW.comm.sendCommand('U.LINKS.GET');
         MW.timers.startTimers();
     },
