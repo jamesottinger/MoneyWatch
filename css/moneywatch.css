@@ -26,6 +26,10 @@ a:active  {color:#6a6aa2;}  /* selected link   */
     width: 1200px;
     margin: 0 auto;
 }
+#containercenter{
+    width: 1000px;
+    margin: 0 auto;
+}
 #leftblock{
     float: left;
     padding: 10px;
