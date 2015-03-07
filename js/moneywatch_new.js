@@ -304,7 +304,6 @@ MW.comm = {
             {job: 'I.GRAPH.GET', 'ielectionid': in_ielectionid, pu: MW.util.poisonURL()},
             function(data) {
                 $('#paneluniversal-inner').html(data);
-                $.mobile.navigate( "#paneluniversal" );
                 MW.yui.panelUniversal.show();
             }
         );
