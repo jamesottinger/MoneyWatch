@@ -291,10 +291,13 @@ a:active  {color:#6a6aa2;}  /* selected link   */
     text-align: right;
     color: #3B6AA0; /* #3B4990; */
     text-shadow: #CCCCCC 0 1px 1px;
-    background-color: #efefef;
     border-top-color: #cccccc;
     border-top-style: double;
-    border-top-width: 2px;
+    border-top-width: 1px;
+}
+.investmenttotals{
+    font: 11px "Helvetica Neue",Helvetica;
+    padding-left:10px;
 }
 /* Popup Transactions */
 

@@ -42,6 +42,27 @@
                         </li>
                         <li class="nav-divider-vertical"></li>
                     </ul>
+
+                    <ul class="nav navbar-nav navbar-right">
+                        <li style="background-color: #EFEFEF;">
+                            <div style="padding-top:6px;padding-left:20px;padding-right:20px;height:50px;">
+                                <table cellspacing="0" cellpadding="0" width="100%" class="investmenttotals">
+                                    <tr>
+                                        <td><b>Investments: </b></td>
+                                        <td style="width:60px;text-align: right;"><span id="sum-worth-inv">loading...</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>Banks (Cash): </b></td>
+                                        <td style="width:60px;text-align: right;"><span id="sum-worth-bank">loading...</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="invtotalsbottom">&nbsp;</td>
+                                        <td class="invtotalsbottom" style="width:90px;text-align: right;"><b><span id="sum-worth-all">loading...</b></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </li>
+                        <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" onClick="return MW.comm.sendCommand('U.WEATHER.GET');">Weather <span class="caret"></span></a>
                             <ul class="dropdown-menu" role="menu" id="ui-weather">
                                 <li>
