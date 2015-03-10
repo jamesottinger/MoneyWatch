@@ -9,7 +9,7 @@
 db_creds   = { 'host':'xxx.xxx.xxx.xxx', 'user':'youruser', 'passwd':'yourpassword', 'db':'thedbname' }
 dirlogs    = '/log/'
 direrrors  = '/log/errors/'
-weather = { 'latitude':'39.7344443', 'longitude':'75.0072787', 'title':'Chipotle - Sicklerville, NJ' }
+weather = { 'latitude':'39.7344443', 'longitude':'-75.0072787', 'title':'Chipotle - Sicklerville, NJ' }
 
 uilinks = [
             [
