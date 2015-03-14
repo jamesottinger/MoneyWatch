@@ -1476,10 +1476,11 @@ def u_fetchquotes():
         response = urllib2.urlopen('http://finance.yahoo.com/d/quotes.csv?s=' + stockstring + '&f=snl1d1cjkyr1q&e=.csv')
     except urllib2.URLError, e:
         print "There was an error fetching quotes: " + e
+        h_logsql("There was an error fetching quotes: " + e + 'http://finance.yahoo.com/d/quotes.csv?s=' + stockstring + '&f=snl1d1cjkyr1q&e=.csv')
         return
         #raise MyException("There was an error fetching quotes: %r" % e)
 
-    csvdatalines = filter(None, response.read().split('\r\n'))
+    csvdatalines = filter(None, response.read().split('\n'))
     #csvreader = csv.reader(csvdata)
     #print csvdatalines
     for line in csvdatalines:
@@ -1493,6 +1494,7 @@ def u_fetchquotes():
 
         sqlstr = "UPDATE moneywatch_invelections SET quoteprice=%s, quotechange=%s, quotedate=%s, yield=%s, divdatenext=%s, divdateprev=%s WHERE ticker=%s"
         cursor.execute(sqlstr, (row[2], row[4], h_todaydatetimeformysql(), row[7], row[8], row[9], row[0]))
+        # h_logsql(cursor._executed)
         dbcon.commit()
     dbcon.close()
     i_electiontallyall()
