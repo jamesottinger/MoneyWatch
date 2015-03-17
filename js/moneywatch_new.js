@@ -435,18 +435,27 @@ MW.move = {
     viewcurrent: 'investments',
     viewprevious: 'none',
 
-    goTo: function ( whereto) {
+    goTo: function ( whereto ) {
         if (whereto === 'investments') {
             $('#accttype-toggle1').addClass('active');
             $('#accttype-toggle2').removeClass('active');
 
-            //$('#1-investments').hide();
-            //$('#2-').hide();
-            //$('#rightcontent1').show();
+            $('#rightcontent2').hide();
+            $('#rightcontent1').show();
         } else if (whereto === 'bank') {
             $('#accttype-toggle2').addClass('active');
             $('#accttype-toggle1').removeClass('active');
+
+            $('#rightcontent1').hide();
+            $('#rightcontent2').show();
         }
+    },
+
+    back: function () {
+        // close the level 2 view
+
+        // load correct level 1 view
+        // MW.move.goTo(MW.move.viewcurrent);
     }
 };
 
