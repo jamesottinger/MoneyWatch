@@ -794,7 +794,9 @@ def i_entry_edit():
         #markup += '<div><span>' +  dbrow['name'] + '</span><span><input type="text" class="tickerentry" size="8" name="' + dbrow['ticker'] + '-shares" value=""></span></div>'
     dbcon.close()
 
-    markup += '</table><div style="text-align:right; padding-top: 20px; padding-right: 25px;"><input type="hidden" name="job" value="I.ENTRY.ADD"><input type="button" name="doit" VALUE="Add New" onClick="sendCommand("I.BULKADD.SAVE");"></div></form><script>'
+    markup += '''</table><div style="text-align:right; padding-top: 20px; padding-right: 25px;"> \
+        <input type="hidden" name="job" value="I.ENTRY.ADD"><input type="button" name="doit" VALUE="Add New" \
+        onClick="MW.comm.sendCommand("I.BULKADD.SAVE");"></div></form><script>'''
     for js in javascriptcalls:
         markup += js
 
