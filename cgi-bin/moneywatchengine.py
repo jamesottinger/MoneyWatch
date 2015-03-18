@@ -182,7 +182,12 @@ def i_summary():
                         <td style="text-align: right;"><!-- gain -->%s</td>
                         <td><a href="http://www.google.com/finance?q=%s" target="_blank">G</a> <a href="http://finance.yahoo.com/q?s=%s" target="_blank">Y</a> <a href="http://quotes.morningstar.com/fund/%s/f?t=%s" target="_blank">MS</a> [%s]</td>
                     </tr>
-        ''' % (dbrow['ielectionid'], dbrow['ticker'], dbrow['ielectionid'], dbrow['ielectionname'], "{:.3f}".format(dbrow['shares']), election_showquote, h_showmoney(dbrow['costbasis']), h_showmoney(each_market), h_showmoney(each_income), each_apprecclass, h_showmoney(each_appres), h_showmoney(each_gain), dbrow['ticker'], dbrow['ticker'], dbrow['ticker'], dbrow['ticker'], dbrow['divschedule'])
+        ''' % (
+            dbrow['ielectionid'], dbrow['ticker'], dbrow['ielectionid'], dbrow['ielectionname'],
+            "{:.3f}".format(dbrow['shares']), election_showquote, h_showmoney(dbrow['costbasis']),
+            h_showmoney(each_market), h_showmoney(each_income), each_apprecclass, h_showmoney(each_appres),
+            h_showmoney(each_gain), dbrow['ticker'], dbrow['ticker'], dbrow['ticker'], dbrow['ticker'], dbrow['divschedule']
+        )
 
     markup += '''\
                     <tr>
@@ -194,7 +199,10 @@ def i_summary():
                         <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;"><!-- gain -->%s</td>
                         <td class="invtabletrgraytop">&nbsp;</td>
                     </tr>
-        ''' % (h_showmoney(election_costbasis), h_showmoney(election_market), h_showmoney(election_income), h_showmoney(election_appres), h_showmoney(election_gain))
+        ''' % (
+            h_showmoney(election_costbasis), h_showmoney(election_market), h_showmoney(election_income),
+            h_showmoney(election_appres), h_showmoney(election_gain)
+        )
 
 
     markup += '''\
@@ -207,7 +215,10 @@ def i_summary():
                         <td class="invtotalsbottom"><!-- gain -->%s</td>
                         <td>&nbsp;</td>
                     </tr>
-        ''' % (h_showmoney(all_costbasis), h_showmoney(all_market), all_market, h_showmoney(all_income), h_showmoney(all_appres), h_showmoney(all_gain))
+        ''' % (
+            h_showmoney(all_costbasis), h_showmoney(all_market), all_market, h_showmoney(all_income),
+            h_showmoney(all_appres), h_showmoney(all_gain)
+        )
 
 
     dbcon.close()
@@ -261,7 +272,12 @@ def i_electionget():
                         <span class="irow4">%s</span>
                         <span class="irow5">%s</span>
                         <span class="irow6pos"> %s %s</span>
-                     </div>''' % (classoe, identifier, str(dbrow['ielectionid']), str(dbrow['itransid']), str(dbrow['ielectionid']), str(dbrow['itransid']), dbrow['transdate'], dbrow['action'], "{:.2f}".format(float(dbrow['transprice'])), "{:.3f}".format(float(dbrow['shareprice'])), amtup, amtdown, "{:.3f}".format(rtotal), showcheck)
+                     </div>''' % (
+                        classoe, identifier, str(dbrow['ielectionid']), str(dbrow['itransid']),
+                        str(dbrow['ielectionid']), str(dbrow['itransid']), dbrow['transdate'],
+                        dbrow['action'], "{:.2f}".format(float(dbrow['transprice'])),
+                        "{:.3f}".format(float(dbrow['shareprice'])), amtup, amtdown, "{:.3f}".format(rtotal), showcheck
+                    )
                     #//$R .= $ecounter . "==" . $election['shares'] . "|"; //'<a href="#" onClick="return bank_gettransactions(' . "'" . $document['name'] . "');" . '">' . $document['name'] . " $" .  number_format($document['total'], 2, '.', ',') . "</a><br>";
         counter +=1
         markup += '<div id="scrollmeinv"></div>'
@@ -323,7 +339,12 @@ def i_bulkadd_edit():
                         <td><nobr>$<input type="text" size="8" name="%s-cost" value="" onChange="MW.util.checkValueDecimals(this, 2);"></nobr></td>
                         <td><input type="checkbox" name="%s-updateprice" value="yes" %s/></td>
                     </tr>
-        ''' % (dbrow['ielectionname'], str(dbrow['ielectionid']), str(dbrow['ielectionid']), dbrow['ticker'], str(dbrow['ielectionid']), b_makeselects(selected='', identifier=''), each_datepicker, each_datepicker, str(dbrow['ielectionid']), str(dbrow['ielectionid']), str(dbrow['ielectionid']), str(dbrow['ielectionid']), tocheckornottocheck)
+        ''' % (
+            dbrow['ielectionname'], str(dbrow['ielectionid']), str(dbrow['ielectionid']),
+            dbrow['ticker'], str(dbrow['ielectionid']), b_makeselects(selected='', identifier=''),
+            each_datepicker, each_datepicker, str(dbrow['ielectionid']), str(dbrow['ielectionid']),
+            str(dbrow['ielectionid']), str(dbrow['ielectionid']), tocheckornottocheck
+        )
 
         #markup += '<div><span>' +  dbrow['name'] + '</span><span><input type="text" class="tickerentry" size="8" name="' + dbrow['ticker'] + '-shares" value=""></span></div>'
     dbcon.close()
@@ -352,7 +373,10 @@ def i_bulkadd_save():
             each_fromid = int(g_formdata.getvalue(str(dbrow['ielectionid']) + '-fromaccount'))
             each_action = g_formdata.getvalue(str(dbrow['ielectionid']) + '-action')
 
-            i_saveadd(ticker=dbrow['ticker'], transdate=each_date, shares=each_shares, cost=each_cost, fromacct=each_fromid, action=each_action, ielectionid=each_ielectionid, ielectionname=dbrow['ielectionname'])
+            i_saveadd(
+                ticker=dbrow['ticker'], transdate=each_date, shares=each_shares, cost=each_cost,
+                fromacct=each_fromid, action=each_action, ielectionid=each_ielectionid, ielectionname=dbrow['ielectionname']
+            )
 
     dbcon.close()
 
@@ -367,7 +391,11 @@ def i_entry_prepareadd():
     dbcon.close()
 
     for dbrow in dbrows:
-        return i_edit_template(mode='add', ielectionname=dbrow['ielectionname'], ticker=dbrow['ticker'], itransid="", ielectionid=str(dbrow['ielectionid']), btransid="", transdate="", action="", shares="", cost="", fundsorigin=0)
+        return i_edit_template(
+            mode='add', ielectionname=dbrow['ielectionname'], ticker=dbrow['ticker'],
+            itransid="", ielectionid=str(dbrow['ielectionid']), btransid="", transdate="",
+            action="", shares="", cost="", fundsorigin=0
+        )
 
 # I.ENTRY.EDIT = generates body needed for "Investment Single Edit" Section
 def i_entry_prepareedit():
@@ -380,7 +408,13 @@ def i_entry_prepareedit():
     dbcon.close()
 
     for dbrow in dbrows:
-        return i_edit_template(mode='edit', ielectionname=dbrow['ielectionname'], ticker=dbrow['ticker'], itransid=str(dbrow['itransid']), ielectionid=str(dbrow['ielectionid']), btransid=dbrow['btransid'], transdate=str(dbrow['transdate']), action=dbrow['action'], shares="{:.3f}".format(float(dbrow['sharesamt'])), cost="{:.2f}".format(float(dbrow['transprice'])), fundsorigin=dbrow['btransid'])
+        return i_edit_template(
+            mode='edit', ielectionname=dbrow['ielectionname'], ticker=dbrow['ticker'],
+            itransid=str(dbrow['itransid']), ielectionid=str(dbrow['ielectionid']),
+            btransid=dbrow['btransid'], transdate=str(dbrow['transdate']), action=dbrow['action'],
+            shares="{:.3f}".format(float(dbrow['sharesamt'])), cost="{:.2f}".format(float(dbrow['transprice'])),
+            fundsorigin=dbrow['btransid']
+        )
 
 
 # created the single
@@ -466,7 +500,11 @@ def i_edit_template(mode, ielectionname, ticker, itransid, ielectionid, btransid
                         }
                     }
                 </script>
-        ''' % (ielectionname, ticker, b_makeselects(selected=bacctid, identifier=''), actionselect, transdate, shares, cost, ielectionid, sendcmd, ticker, ielectionname, ielectionid, itransid, btransid, bacctid, ielectionid, buttonsay, sendcmd)
+        ''' % (
+            ielectionname, ticker, b_makeselects(selected=bacctid, identifier=''), actionselect,
+            transdate, shares, cost, ielectionid, sendcmd, ticker, ielectionname, ielectionid,
+            itransid, btransid, bacctid, ielectionid, buttonsay, sendcmd
+        )
 
     return markup
 
@@ -747,7 +785,11 @@ def i_entry_edit():
                         <td class="tdborderright"># Shares:<br><input type="text" size="10" name="%s-shares" value="" onChange="MW.util.checkValueDecimals(this, 3);"></td>
                         <td>Trade Cost:<br><nobr>$<input type="text" size="8" name="%s-cost" value="" onChange="MW.util.checkValueDecimals(this, 2);"></nobr></td>
                     </tr>
-        ''' % (dbrow['ielectionname'], dbrow['ticker'], dbrow['ielectionid'], dbrow['ticker'], dbrow['ticker'], b_makeselects(selected='', identifier=''), each_datepicker, each_datepicker, dbrow['ticker'], dbrow['ticker'], dbrow['ticker'])
+        ''' % (
+            dbrow['ielectionname'], dbrow['ticker'], dbrow['ielectionid'], dbrow['ticker'],
+            dbrow['ticker'], b_makeselects(selected='', identifier=''), each_datepicker, each_datepicker,
+            dbrow['ticker'], dbrow['ticker'], dbrow['ticker']
+        )
 
         #markup += '<div><span>' +  dbrow['name'] + '</span><span><input type="text" class="tickerentry" size="8" name="' + dbrow['ticker'] + '-shares" value=""></span></div>'
     dbcon.close()
@@ -786,7 +828,9 @@ def b_accounttally(in_bacctid):
             if h_dateinfuture(dbrow['transdate']) == False:
                 totaluptotoday -= float(dbrow['amt'])
 
-    sqlstr = """UPDATE moneywatch_bankaccounts SET totalall=%s, totaluptotoday=%s, todaywas='%s', tallytime='%s' WHERE bacctid=%s""" % ("{:.2f}".format(float(totalall)), "{:.2f}".format(float(totaluptotoday)), h_todaydateformysql(), h_todaydatetimeformysql(), str(in_bacctid))
+    sqlstr = """UPDATE moneywatch_bankaccounts SET totalall=%s, totaluptotoday=%s, todaywas='%s', tallytime='%s' WHERE bacctid=%s""" % (
+        "{:.2f}".format(float(totalall)), "{:.2f}".format(float(totaluptotoday)), h_todaydateformysql(), h_todaydatetimeformysql(), str(in_bacctid)
+    )
     cursor.execute(sqlstr)
     dbcon.commit()
     dbcon.close()
@@ -946,7 +990,11 @@ def b_accountget():
                         <span class="rup">%s</span>
                         <span class="rdown">%s</span>
                         <span class="%s">%s</span>
-                     </div>''' % (dbrow['btransid'], classoe, classfuture, dbrow['bacctid'], dbrow['btransid'], dbrow['btransid'], dbrow['transdate'], dbrow['numnote'], whomclass, showwho, amtup, amtdown, rtotalclass, rtotalshow)
+                     </div>''' % (
+                     dbrow['btransid'], classoe, classfuture, dbrow['bacctid'], dbrow['btransid'],
+                     dbrow['btransid'], dbrow['transdate'], dbrow['numnote'], whomclass, showwho,
+                     amtup, amtdown, rtotalclass, rtotalshow
+                    )
         counter +=1
     return markup
 
@@ -959,7 +1007,11 @@ def b_entry_prepareadd():
     cursor.execute(sqlstr, (g_formdata.getvalue('bacctid')))
     dbrow = cursor.fetchone()
     dbcon.close()
-    return b_edit_template(mode='add', bacctname=dbrow['bacctname'], btransid="0", bacctid=str(dbrow['bacctid']), transferbtransid="0", transferbacctid="0", transdate="", ttype="", updown="", amt="", numnote="", whom1="", whom2="")
+    return b_edit_template(
+        mode='add', bacctname=dbrow['bacctname'], btransid="0", bacctid=str(dbrow['bacctid']),
+        transferbtransid="0", transferbacctid="0", transdate="", ttype="", updown="", amt="",
+        numnote="", whom1="", whom2=""
+    )
 
 
 # B.ENTRY.EDIT = generates body needed for "Bank Single Edit" Section
@@ -971,7 +1023,13 @@ def b_entry_prepareedit():
     cursor.execute(sqlstr, (g_formdata.getvalue('btransid')))
     dbrow = cursor.fetchone()
     dbcon.close()
-    return b_edit_template(mode='edit', bacctname=dbrow['bacctname'], btransid=str(dbrow['btransid']), bacctid=str(dbrow['bacctid']), transferbtransid=str(dbrow['transferbtransid']), transferbacctid=str(dbrow['transferbacctid']), transdate=dbrow['transdate'], ttype=dbrow['type'], updown="", amt="{:.2f}".format(float(dbrow['amt'])), numnote=dbrow['numnote'], whom1=dbrow['whom1'], whom2=dbrow['whom2'])
+    return b_edit_template(
+        mode='edit', bacctname=dbrow['bacctname'], btransid=str(dbrow['btransid']),
+        bacctid=str(dbrow['bacctid']), transferbtransid=str(dbrow['transferbtransid']),
+        transferbacctid=str(dbrow['transferbacctid']), transdate=dbrow['transdate'],
+        ttype=dbrow['type'], updown="", amt="{:.2f}".format(float(dbrow['amt'])),
+        numnote=dbrow['numnote'], whom1=dbrow['whom1'], whom2=dbrow['whom2']
+    )
 
 
 # created the single template
@@ -1087,7 +1145,11 @@ def b_edit_template(mode, bacctname, btransid, bacctid, transferbtransid, transf
                     // autocomplete
                     jQuery('#beditsingle-whom1').autocomplete({ source: [ %s ] });
                 </script>
-        ''' % (bacctname, typeselect, transdate, numnote, amt, transshow, transsay, b_makeselects(transferbacctid,''), whom1, whom2, sendcmd, bacctname, btransid, bacctid, transferbtransid, transferbacctid, bacctid, buttonsay, sendcmd, b_autocomplete(bacctid))
+        ''' % (
+            bacctname, typeselect, transdate, numnote, amt, transshow, transsay,
+            b_makeselects(transferbacctid,''), whom1, whom2, sendcmd, bacctname, btransid,
+            bacctid, transferbtransid, transferbacctid, bacctid, buttonsay, sendcmd, b_autocomplete(bacctid)
+        )
 
     return markup
 
@@ -1117,10 +1179,18 @@ def b_prepare_addupdate():
         in_whom2 = ''
 
     if in_job == 'B.ENTRY.ADDSAVE':
-        b_saveadd(btransid=in_btransid, bacctid=in_bacctid, transferbtransid=in_transferbtransid, transferbacctid=in_transferbacctid, transdate=in_date, ttype=in_type, amt=in_amt, numnote=in_numnote, whom1=in_whom1, whom2=in_whom2, bacctid_transferselected=in_bacctid_transferselected)
+        b_saveadd(
+            btransid=in_btransid, bacctid=in_bacctid, transferbtransid=in_transferbtransid,
+            transferbacctid=in_transferbacctid, transdate=in_date, ttype=in_type, amt=in_amt,
+            numnote=in_numnote, whom1=in_whom1, whom2=in_whom2, bacctid_transferselected=in_bacctid_transferselected
+        )
 
     if in_job == 'B.ENTRY.EDITSAVE':
-        b_saveupdate(btransid=in_btransid, bacctid=in_bacctid, transferbtransid=in_transferbtransid, transferbacctid=in_transferbacctid, transdate=in_date, ttype=in_type, amt=in_amt, numnote=in_numnote, whom1=in_whom1, whom2=in_whom2, bacctid_transferselected=in_bacctid_transferselected)
+        b_saveupdate(
+            btransid=in_btransid, bacctid=in_bacctid, transferbtransid=in_transferbtransid,
+            transferbacctid=in_transferbacctid, transdate=in_date, ttype=in_type, amt=in_amt,
+            numnote=in_numnote, whom1=in_whom1, whom2=in_whom2, bacctid_transferselected=in_bacctid_transferselected
+        )
 
 
 def b_saveadd(btransid, bacctid, transferbtransid, transferbacctid, transdate, ttype, amt, numnote, whom1, whom2, bacctid_transferselected):
@@ -1325,7 +1395,8 @@ def b_bulkinterest_edit():
 
     dbcon.close()
 
-    markup += '''</table><div style="text-align:right; padding-top: 20px; padding-right: 25px;"><input type="hidden" name="job" value="B.BULKINTEREST.SAVE"><input type="button" name="doit" VALUE="Save" onClick="sendCommand('B.BULKINTEREST.SAVE');"></div></form><script>'''
+    markup += '''</table><div style="text-align:right; padding-top: 20px; padding-right: 25px;"> \
+        <input type="hidden" name="job" value="B.BULKINTEREST.SAVE"><input type="button" name="doit" VALUE="Save" onClick="sendCommand('B.BULKINTEREST.SAVE');"></div></form><script>'''
     markup += '''jQuery("#bbulkinterest-date").datepicker({ dateFormat: "yy-mm-dd" });'''
 
     return markup + '</script>'
