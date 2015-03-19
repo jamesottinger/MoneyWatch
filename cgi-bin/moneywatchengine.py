@@ -94,7 +94,7 @@ def i_summary():
 
     markup = '''\
                 <div class="summary1heading">Investment Accounts <span class="smgraytext">( last fetch: %s <a href="#" onClick="return MW.comm.sendCommand('U.UPDATEQUOTES');">fetch</a> )</span></div>
-                <table class="invtable" align="center">
+                <table class="invtable" align="center" width="100%%">
                     <tr>
                         <td>Symbol</td>
                         <td>Name</td>
@@ -886,13 +886,13 @@ def b_summary():
 
     markup = '''\
                 <div class="summary1heading">Bank Accounts <span class="smgraytext">( last tally: %s <a href="#" onClick="return MW.comm.sendCommand('U.UPDATEBANKTOTALS');">tally</a> )</span></div>
-                <table class="invtable">
+                <table class="invtable" width="100%%">
                     <tr style="background-color: #ffffff;">
-                        <td style="border-bottom: solid 1px #cccccc;">Bank</td>
-                        <td style="border-bottom: solid 1px #cccccc;" width="326">Account</td>
-                        <td style="border-bottom: solid 1px #cccccc;">Value</td>
-                        <td style="border-bottom: solid 1px #cccccc;">Me (Today)</td>
-                        <td style="border-bottom: solid 1px #cccccc;">Me (Future)</td>
+                        <td style="border-bottom: solid 1px #cccccc;" width="150">Bank</td>
+                        <td style="border-bottom: solid 1px #cccccc;">Account</td>
+                        <td style="border-bottom: solid 1px #cccccc;" width="100">Value</td>
+                        <td style="border-bottom: solid 1px #cccccc;" width="100">Me (Today)</td>
+                        <td style="border-bottom: solid 1px #cccccc;" width="100">Me (Future)</td>
                     </tr>
     ''' % (str(dbrows[0]['tallytime'].strftime("%A  %B %d, %Y %r")))
     totalmytoday = 0
