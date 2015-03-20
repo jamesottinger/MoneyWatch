@@ -39,14 +39,14 @@
         <br><br><br>
 
         Investment:
-        <br><a href="#" onClick="return sendCommand('U.UPDATEQUOTES');">Get Quotes</a>
-        <br><a href="#" onClick="return sendCommand('I.BULKADD.EDIT');">Bulk Investments</a>
+        <br><a href="#" onClick="return MW.comm.sendCommand('U.UPDATEQUOTES');">Get Quotes</a>
+        <br><a href="#" onClick="return MW.comm.sendCommand('I.BULKADD.EDIT');">Bulk Investments</a>
 
         <br><br>
         Bank:
-        <br><a href="#" onClick="return sendCommand('U.UPDATEBANKTOTALS');">Total Bank Accounts</a>
-        <br><a href="#" onClick="return sendCommand('B.BULKINTEREST.EDIT');">Bulk Interest</a>
-        <br><a href="#" onClick="return sendCommand('B.BULKBILLS.EDIT');">Bulk Bills</a>
+        <br><a href="#" onClick="return MW.comm.sendCommand('U.UPDATEBANKTOTALS');">Total Bank Accounts</a>
+        <br><a href="#" onClick="return MW.comm.sendCommand('B.BULKINTEREST.EDIT');">Bulk Interest</a>
+        <br><a href="#" onClick="return MW.comm.sendCommand('B.BULKBILLS.EDIT');">Bulk Bills</a>
         <br><br>
 
         <br><br>
@@ -76,10 +76,10 @@
             <option value="transfer">Transfer</option>
             </select>
             Date: <input type="text" name="entrydate" id="datepicker1"><br>
-            
+
             <!-- inner start -->
             <div id="bankentryinner"></div>
-            <!-- inner end --> 
+            <!-- inner end -->
 
           </td><td width="300" style="text-align:right; vertical-align: top;">
             Whom: <input type="text" name="whom" id="addbackpayee" size="35" /><br>
@@ -166,13 +166,12 @@
 <script type="text/javascript" src="js/jquery-ui-1.8.16.custom.min.js"></script><!-- jQuery UI, datepicker -->
 <script src="http://code.highcharts.com/highcharts.js"></script>
 <script src="http://code.highcharts.com/modules/exporting.js"></script>
-<script type="text/javascript" src="js/moneywatch.js"></script>
+<script type="text/javascript" src="js/moneywatch_new.js"></script>
 <script type="text/javascript">
    $(document).ready( function(){
        // Register listeners
-       jQuery('#addbanktype').change(function(){ addbank_typechange(); }); 
-       jQuery('#addbackpayee').focusout(function(){addbank_payeechange(); }); 
-       setInterval(stockFetchTimer, 60000); // tick every minute
+       jQuery('#addbanktype').change(function(){ addbank_typechange(); });
+       jQuery('#addbackpayee').focusout(function(){addbank_payeechange(); });
        //setInterval(stockFetchTimer, 60000); // tick every minute
        MW.paintScreen();
    });
