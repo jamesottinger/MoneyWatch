@@ -170,7 +170,7 @@ def i_summary():
         all_gain += each_gain
 
         markup += '''\
-                    <tr>
+                    <tr class="highlightaccount">
                         <td><a href="#" onClick="MW.comm.getInvGraph('%s');">%s</a></td>
                         <td><a href="#" onClick="MW.comm.getInvElection('%s');">%s</a></td>
                         <td style="text-align: right;">%s</td>
@@ -907,7 +907,7 @@ def b_summary():
             ownvalueextended = ''
 
         markup += '''\
-                    <tr>
+                    <tr class="highlightaccount">
                         <td>%s</td>
                         <td><a href="#" onClick="MW.comm.getBankAccount('%s');">%s</a></td>
                         <td style="text-align: right;"><!-- value extended -->%s</td>

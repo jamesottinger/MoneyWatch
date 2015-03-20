@@ -450,6 +450,16 @@ a:active  {color:#6a6aa2;}  /* selected link   */
     background-color: #E6E6FA;
     border-bottom: 1px dashed #CCCCCC;
 }
+.highlightaccount td {
+    /* background: #E0E0E0; */
+    -moz-box-shadow:0 0px 2px #dddddd;
+    -webkit-box-shadow: 0 0px 2px #dddddd;
+    box-shadow: 0 0px 2px #dddddd;
+}
+.highlightaccount:hover {
+    /* background-color: #d5e7fe; */
+    background-color: #f0f8ff;
+}
 
 /* ---- over-ride some bootstrappy stuff --- */
 #paneltransactions * {
