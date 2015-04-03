@@ -1398,7 +1398,7 @@ def b_bulkinterest_edit():
     dbcon.close()
 
     markup += '''</table><div style="text-align:right; padding-top: 20px; padding-right: 25px;"> \
-        <input type="hidden" name="job" value="B.BULKINTEREST.SAVE"><input type="button" name="doit" VALUE="Save" onClick="sendCommand('B.BULKINTEREST.SAVE');"></div></form><script>'''
+        <input type="hidden" name="job" value="B.BULKINTEREST.SAVE"><input type="button" name="doit" VALUE="Save" onClick="MW.comm.sendCommand('B.BULKINTEREST.SAVE');"></div></form><script>'''
     markup += '''jQuery("#bbulkinterest-date").datepicker({ dateFormat: "yy-mm-dd" });'''
 
     return markup + '</script>'
