@@ -1588,10 +1588,14 @@ def u_banktotals():
 # U.LINKS.GET
 def u_linksgenerate():
     markup = ''
+    sets = 0
     for linksets in moneywatchconfig.uilinks:
+        sets += 1
         for name, link in linksets:
-            markup += '''<br><a href="%s" target="_blank">%s</a>''' % ( link, name )
-        markup += '<br>'
+            markup += '''<li><a tabindex="-1" href="%s" target="_blank"><span class="glyphicon glyphicon-globe" aria-hidden="true"></span> %s</a></li>''' % ( link, name )
+
+        if sets != len(moneywatchconfig.uilinks):
+            markup += '<li class="divider"></li>'
     return markup
 
 
