@@ -31,6 +31,7 @@ def i_electiontally(in_ielectionid):
     rtotal = 0
     costbasis = 0
     sharesbydividend = 0 # from dividends (shown as income)
+    sharesfromemployer = 0 # from employer match or employer direct
 
     for dbrow in dbrows:
         if dbrow['updown'] == '+':
@@ -38,17 +39,20 @@ def i_electiontally(in_ielectionid):
             costbasis += float(dbrow['transprice'])
             if dbrow['action'] == 'REINVDIV':
                 sharesbydividend += float(dbrow['sharesamt'])
+            if dbrow['action'] == 'BUYE':
+                sharesfromemployer += float(dbrow['sharesamt'])
         else:
             rtotal -= float(dbrow['sharesamt'])
             costbasis -= float(dbrow['transprice'])
             if dbrow['action'] == 'REINVDIV':
                 sharesbydividend -= float(dbrow['sharesamt'])
 
-    sqlstr = "UPDATE moneywatch_invelections SET shares=%s, costbasis=%s, sharesbydividend=%s WHERE ielectionid=%s"
+    sqlstr = "UPDATE moneywatch_invelections SET shares=%s, costbasis=%s, sharesbydividend=%s, sharesfromemployer=%s WHERE ielectionid=%s"
     cursor.execute(sqlstr, (
         "{:.3f}".format(rtotal),
         "{:.3f}".format(costbasis),
         "{:.3f}".format(sharesbydividend),
+        "{:.3f}".format(sharesfromemployer),
         in_ielectionid))
     dbcon.commit()
     dbcon.close()

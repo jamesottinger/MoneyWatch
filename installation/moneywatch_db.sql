@@ -71,6 +71,7 @@ CREATE TABLE `moneywatch_invelections` (
   `active` tinyint(11) DEFAULT NULL,
   `fetchquotes` tinyint(11) DEFAULT NULL,
   `sharesbydividend` double DEFAULT '0',
+  `sharesfromemployer` double DEFAULT '0',
   `costbasis` double DEFAULT NULL,
   `balance` double DEFAULT NULL,
   `manualoverrideprice` double DEFAULT NULL,
