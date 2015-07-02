@@ -32,27 +32,43 @@ def i_electiontally(in_ielectionid):
     costbasis = 0
     sharesbydividend = 0 # from dividends (shown as income)
     sharesfromemployer = 0 # from employer match or employer direct
+    costbasisbydividend = 0
+    costbasisfromemployer = 0
+    costbasisme = 0
 
     for dbrow in dbrows:
         if dbrow['updown'] == '+':
             rtotal += float(dbrow['sharesamt'])
             costbasis += float(dbrow['transprice'])
+
             if dbrow['action'] == 'REINVDIV':
                 sharesbydividend += float(dbrow['sharesamt'])
-            if dbrow['action'] == 'BUYE':
+                costbasisbydividend += float(dbrow['transprice'])
+            elif dbrow['action'] == 'BUYE':
                 sharesfromemployer += float(dbrow['sharesamt'])
+                costbasisfromemployer += float(dbrow['transprice'])
+            else:
+                costbasisme += float(dbrow['transprice'])
         else:
             rtotal -= float(dbrow['sharesamt'])
             costbasis -= float(dbrow['transprice'])
             if dbrow['action'] == 'REINVDIV':
                 sharesbydividend -= float(dbrow['sharesamt'])
+            elif dbrow['action'] == 'BUYE':
+                sharesfromemployer -= float(dbrow['sharesamt'])
+                costbasisfromemployer -= float(dbrow['transprice'])
+            else:
+                costbasisme -= float(dbrow['transprice'])
 
-    sqlstr = "UPDATE moneywatch_invelections SET shares=%s, costbasis=%s, sharesbydividend=%s, sharesfromemployer=%s WHERE ielectionid=%s"
+    sqlstr = "UPDATE moneywatch_invelections SET shares=%s, costbasis=%s, sharesbydividend=%s, sharesfromemployer=%s, costbasisbydividend=%s, costbasisfromemployer=%s, costbasisme=%s WHERE ielectionid=%s"
     cursor.execute(sqlstr, (
         "{:.3f}".format(rtotal),
         "{:.3f}".format(costbasis),
         "{:.3f}".format(sharesbydividend),
         "{:.3f}".format(sharesfromemployer),
+        "{:.3f}".format(costbasisbydividend),
+        "{:.3f}".format(costbasisfromemployer),
+        "{:.3f}".format(costbasisme),
         in_ielectionid))
     dbcon.commit()
     dbcon.close()
