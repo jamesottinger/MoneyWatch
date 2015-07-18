@@ -411,34 +411,44 @@ def i_entry_prepareadd():
     dbcon.close()
 
     for dbrow in dbrows:
+
+        tocheckornottocheck = ''
+        if dbrow['fetchquotes'] == 0:
+            tocheckornottocheck = 'checked'
+
         return i_edit_template(
             mode='add', ielectionname=dbrow['ielectionname'], ticker=dbrow['ticker'],
             itransid=0, ielectionid=str(dbrow['ielectionid']), btransid=0, transdate="",
-            action="", shares="", cost="", fundsorigin=0
+            action="", shares="", cost="", fundsorigin=0, manuallyupdateprice=tocheckornottocheck
         )
 
 # I.ENTRY.EDIT = generates body needed for "Investment Single Edit" Section
 def i_entry_prepareedit():
     dbcon = mdb.connect(**moneywatchconfig.db_creds)
     cursor = dbcon.cursor(mdb.cursors.DictCursor)
-    sqlstr = """SELECT it.*, ie.ielectionname FROM moneywatch_invtransactions it \
+    sqlstr = """SELECT it.*, ie.ielectionname, ie.fetchquotes FROM moneywatch_invtransactions it \
                 INNER JOIN moneywatch_invelections ie ON it.ielectionid=ie.ielectionid WHERE it.itransid=%s"""
     cursor.execute(sqlstr, (g_formdata.getvalue('itransid')))
     dbrows = cursor.fetchall()
     dbcon.close()
 
     for dbrow in dbrows:
+
+        tocheckornottocheck = ''
+        if dbrow['fetchquotes'] == 0:
+            tocheckornottocheck = 'checked'
+
         return i_edit_template(
             mode='edit', ielectionname=dbrow['ielectionname'], ticker=dbrow['ticker'],
             itransid=str(dbrow['itransid']), ielectionid=str(dbrow['ielectionid']),
             btransid=dbrow['btransid'], transdate=str(dbrow['transdate']), action=dbrow['action'],
             shares="{:.3f}".format(float(dbrow['sharesamt'])), cost="{:.2f}".format(float(dbrow['transprice'])),
-            fundsorigin=dbrow['btransid']
+            fundsorigin=dbrow['btransid'], manuallyupdateprice=tocheckornottocheck
         )
 
 
 # created the single
-def i_edit_template(mode, ielectionname, ticker, itransid, ielectionid, btransid, transdate, action, shares, cost, fundsorigin):
+def i_edit_template(mode, ielectionname, ticker, itransid, ielectionid, btransid, transdate, action, shares, cost, fundsorigin, manuallyupdateprice):
 
     if mode == 'edit':
         sendcmd = 'I.ENTRY.EDITSAVE'
@@ -488,7 +498,7 @@ def i_edit_template(mode, ielectionname, ticker, itransid, ielectionid, btransid
                             <td>Trade Cost:<br><nobr>$<input type="text" size="8" id="ieditsingle-cost" name="cost" value="%s" onChange="MW.util.checkValueDecimals(this, 2);"></nobr></td>
                         </tr>
                         <tr>
-                            <td colspan="2"><input type="checkbox" name="%s-updateprice" value="yes"/> Manually calculate and update latest quote price</td>
+                            <td colspan="2"><input type="checkbox" name="%s-updateprice" value="yes" %s/> Manually calculate and update latest quote price</td>
                         </tr>
                     </table>
                     <div style="text-align:right; padding-top: 20px; padding-right: 25px;">
@@ -522,7 +532,7 @@ def i_edit_template(mode, ielectionname, ticker, itransid, ielectionid, btransid
                 </script>
         ''' % (
             ielectionname, ticker, b_makeselects(selected=bacctid, identifier=''), actionselect,
-            transdate, shares, cost, ielectionid, sendcmd, ticker, ielectionname, ielectionid,
+            transdate, shares, cost, ielectionid, manuallyupdateprice, sendcmd, ticker, ielectionname, ielectionid,
             itransid, btransid, bacctid, ielectionid, buttonsay, sendcmd
         )
 
