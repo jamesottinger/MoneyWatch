@@ -413,7 +413,7 @@ def i_entry_prepareadd():
     for dbrow in dbrows:
         return i_edit_template(
             mode='add', ielectionname=dbrow['ielectionname'], ticker=dbrow['ticker'],
-            itransid="", ielectionid=str(dbrow['ielectionid']), btransid="", transdate="",
+            itransid=0, ielectionid=str(dbrow['ielectionid']), btransid=0, transdate="",
             action="", shares="", cost="", fundsorigin=0
         )
 
