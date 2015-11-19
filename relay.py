@@ -13,7 +13,7 @@ import moneywatchengine3
 
 relay = Flask('relay')
 #===============================================================================
-@relay.route('/action/<job>')
+@relay.route('/action/<job>', methods=['GET', 'POST'])
 def actionhandler(job):
     if job == 'I.SUMMARY.GET':
         return moneywatchengine3.i_summary()
