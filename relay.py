@@ -83,4 +83,4 @@ def actionhandler(job):
         return ")(" # invalid, return ass cheeks
 
 if __name__ == '__main__':
-    relay.run(debug=True)
+    relay.run(debug=True, port=5000, host='0.0.0.0')
