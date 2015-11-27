@@ -11,8 +11,13 @@ import sys
 sys.path.append('./cgi-bin/')
 import moneywatchengine3
 
-relay = Flask('relay')
+relay = Flask('relay', static_url_path='')
 #===============================================================================
+
+@relay.route('/', methods=['GET', 'POST'])
+def index():
+    return relay.send_static_file('moneywatch.html')
+
 @relay.route('/action/<job>', methods=['GET', 'POST'])
 def actionhandler(job):
     if job == 'I.SUMMARY.GET':
