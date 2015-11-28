@@ -6,7 +6,6 @@
 #
 # MoneyWatch - https://github.com/jamesottinger/moneywatch
 #===============================================================================
-import MySQLdb as mdb # sudo apt-get install python-mysqldb
 import cgi, cgitb, os, datetime, locale, urllib2, csv, time, json
 import moneywatchconfig
 import mysql.connector  # python3-mysql.connector
