@@ -34,15 +34,19 @@ MW = {
 MW.comm = {
     sendCommand: function (in_job) {
         var formdata;
+        var urlpost = MW.moneyWatchURL + '/action/' + in_job;
+
         switch(in_job) {
             case 'I.SUMMARY.GET':
-                $.post(MW.moneyWatchURL,
-                    {job: in_job, pu: MW.util.poisonURL()},
-                    function(data) {
+                $.ajax({
+                    url: urlpost,
+                    data: {},
+                    success: function(data) {
                         $('#rightcontent1').html(data);
                         MW.calcNetWorth();
                     }
                 );
+                });
                 break;
             case 'I.BULKADD.EDIT':
                 MW.yui.panelUniversal.set('width', 950);
@@ -101,13 +105,14 @@ MW.comm = {
                 );
                 break;
             case 'B.SUMMARY.GET':
-                $.post(MW.moneyWatchURL,
-                    {job: in_job, pu: MW.util.poisonURL()},
-                    function(data) {
+                $.ajax({
+                    url: urlpost,
+                    data: {},
+                    success: function(data) {
                         $('#rightcontent2').html(data);
                         MW.calcNetWorth();
                     }
-                );
+                });
                 break;
             case 'B.BULKINTEREST.EDIT':
                 MW.yui.panelUniversal.set('width', 350);
