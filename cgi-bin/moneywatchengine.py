@@ -25,10 +25,10 @@ cgitb.enable(
 #================================================================================================================
 
 def i_electiontally(in_ielectionid):
-    cursor = dbcon.cursor(mdb.cursors.DictCursor)
     sqlstr = "SELECT * FROM moneywatch_invtransactions WHERE ielectionid=%s ORDER BY transdate,action"
     cursor.execute(sqlstr, (in_ielectionid))
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
+    cursor = dbcon.cursor(dictionary=True)
     dbrows = cursor.fetchall()
     rtotal = 0
     costbasis = 0
@@ -77,8 +77,8 @@ def i_electiontally(in_ielectionid):
 
 
 def i_electiontallyall():
-    cursor = dbcon.cursor(mdb.cursors.DictCursor)
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
+    cursor = dbcon.cursor(dictionary=True)
     sqlstr = "SELECT ielectionid FROM moneywatch_invelections WHERE active=1"
     cursor.execute(sqlstr)
     dbrows = cursor.fetchall()
@@ -89,8 +89,8 @@ def i_electiontallyall():
 
 
 def i_makeselectsparents(selected, identifier):
-    cursor = dbcon.cursor(mdb.cursors.DictCursor)
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
+    cursor = dbcon.cursor(dictionary=True)
     sqlstr = "SELECT DISTINCT(iacctname) FROM moneywatch_invelections ORDER BY iacctname"
     cursor.execute(sqlstr)
     dbrows = cursor.fetchall()
@@ -108,8 +108,8 @@ def i_makeselectsparents(selected, identifier):
 
 # I.SUMMARY.GET = Shows Summary of Investment Accounts
 def i_summary():
-    cursor = dbcon.cursor(mdb.cursors.DictCursor)
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
+    cursor = dbcon.cursor(dictionary=True)
     sqlstr = "SELECT * FROM moneywatch_invelections WHERE active > 0 AND ticker IS NOT NULL ORDER BY iacctname,ielectionname"
     cursor.execute(sqlstr)
     dbrows = cursor.fetchall()
@@ -252,8 +252,8 @@ def i_electionget():
     markup = ''
     counter = 0
     rtotal = 0
-    cursor = dbcon.cursor(mdb.cursors.DictCursor)
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
+    cursor = dbcon.cursor(dictionary=True)
     sqlstr = "SELECT * FROM moneywatch_invtransactions WHERE ielectionid=%s ORDER BY transdate,action"
     cursor.execute(sqlstr, (g_formdata.getvalue('ielectionid')))
     dbrows = cursor.fetchall()
@@ -308,8 +308,8 @@ def i_electionget():
 
 # I.BULKADD.EDIT = generates body needed for "Investment Bulk Add" utility panel
 def i_bulkadd_edit():
-    cursor = dbcon.cursor(mdb.cursors.DictCursor)
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
+    cursor = dbcon.cursor(dictionary=True)
     sqlstr = "SELECT * FROM moneywatch_invelections WHERE ticker IS NOT NULL AND active=1 ORDER BY iacctname,ielectionname"
     cursor.execute(sqlstr)
     dbrows = cursor.fetchall()
@@ -380,8 +380,8 @@ def i_bulkadd_edit():
 
 # I.BULKADD.SAVE = save "Investment Bulk Add" submission
 def i_bulkadd_save():
-    cursor = dbcon.cursor(mdb.cursors.DictCursor)
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
+    cursor = dbcon.cursor(dictionary=True)
     sqlstr = "SELECT * FROM moneywatch_invelections WHERE ticker IS NOT NULL AND active=1 ORDER BY iacctname,ielectionname"
     cursor.execute(sqlstr)
     dbrows = cursor.fetchall()
@@ -405,8 +405,8 @@ def i_bulkadd_save():
 
 # I.ENTRY.ADD = generates body needed for "Investment Single Add" Section
 def i_entry_prepareadd():
-    cursor = dbcon.cursor(mdb.cursors.DictCursor)
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
+    cursor = dbcon.cursor(dictionary=True)
     sqlstr = "SELECT * FROM moneywatch_invelections WHERE ielectionid=%s"
     cursor.execute(sqlstr, (g_formdata.getvalue('ielectionid')))
     dbrows = cursor.fetchall()
@@ -426,8 +426,8 @@ def i_entry_prepareadd():
 
 # I.ENTRY.EDIT = generates body needed for "Investment Single Edit" Section
 def i_entry_prepareedit():
-    cursor = dbcon.cursor(mdb.cursors.DictCursor)
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
+    cursor = dbcon.cursor(dictionary=True)
     sqlstr = """SELECT it.*, ie.ielectionname, ie.fetchquotes FROM moneywatch_invtransactions it \
                 INNER JOIN moneywatch_invelections ie ON it.ielectionid=ie.ielectionid WHERE it.itransid=%s"""
     cursor.execute(sqlstr, (g_formdata.getvalue('itransid')))
@@ -569,8 +569,8 @@ def i_prepare_addupdate():
 
 
 def i_saveadd(ticker, transdate, shares, cost, fromacct, action, ielectionid, ielectionname):
-    cursor = dbcon.cursor(mdb.cursors.DictCursor)
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
+    cursor = dbcon.cursor(dictionary=True)
 
     costpershare = "{:.3f}".format(float(cost) / float(shares))
 
@@ -626,8 +626,8 @@ def i_saveadd(ticker, transdate, shares, cost, fromacct, action, ielectionid, ie
 
 
 def i_saveupdate(ticker, transdate, shares, cost, fromacct, action, ielectionid, ielectionname, btransid, itransid):
-    cursor = dbcon.cursor(mdb.cursors.DictCursor)
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
+    cursor = dbcon.cursor(dictionary=True)
 
     update_btransid = 0
     costpershare = "{:.3f}".format(float(cost) / float(shares))
@@ -749,8 +749,8 @@ def i_saveupdate(ticker, transdate, shares, cost, fromacct, action, ielectionid,
 
     # I.ENTRY.DELETE = removes an investment entry and possibly a transfer
 def i_entry_delete():
-    cursor = dbcon.cursor(mdb.cursors.DictCursor)
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
+    cursor = dbcon.cursor(dictionary=True)
     sqlstr = "SELECT * FROM moneywatch_invtransactions WHERE itransid=%s"
     cursor.execute(sqlstr, (g_formdata.getvalue('itransid')))
     dbrow = cursor.fetchone()
@@ -776,8 +776,8 @@ def i_entry_delete():
 
 # I.ENTRY.ADD = generates body needed for "Investment Single Add" Section
 def i_entry_edit():
-    cursor = dbcon.cursor(mdb.cursors.DictCursor)
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
+    cursor = dbcon.cursor(dictionary=True)
     sqlstr = "SELECT * FROM moneywatch_invelections WHERE ticker IS NOT NULL AND active=1 AND ielectionid=%s ORDER BY iacctname,ielectionname"
     cursor.execute(sqlstr, (g_formdata.getvalue('ielectionid')))
     dbrows = cursor.fetchall()
@@ -844,8 +844,8 @@ def i_entry_edit():
 #================================================================================================================
 
 def b_accounttally(in_bacctid):
-    cursor = dbcon.cursor(mdb.cursors.DictCursor)
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
+    cursor = dbcon.cursor(dictionary=True)
     sqlstr = "SELECT * FROM moneywatch_banktransactions WHERE bacctid=%s ORDER BY transdate,amt"
     cursor.execute(sqlstr, (in_bacctid))
     dbrows = cursor.fetchall()
@@ -871,8 +871,8 @@ def b_accounttally(in_bacctid):
 
 
 def b_makeselects(selected,identifier):
-    cursor = dbcon.cursor(mdb.cursors.DictCursor)
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
+    cursor = dbcon.cursor(dictionary=True)
     sqlstr = "SELECT * FROM moneywatch_bankaccounts ORDER BY bacctname"
     cursor.execute(sqlstr)
     dbrows = cursor.fetchall()
@@ -889,8 +889,8 @@ def b_makeselects(selected,identifier):
 
 
 def b_saybacctname(in_bacctid):
-    cursor = dbcon.cursor(mdb.cursors.DictCursor)
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
+    cursor = dbcon.cursor(dictionary=True)
     sqlstr = "SELECT bacctname FROM moneywatch_bankaccounts WHERE bacctid=%s"
     cursor.execute(sqlstr, (in_bacctid))
     dbrow = cursor.fetchone()
@@ -899,8 +899,8 @@ def b_saybacctname(in_bacctid):
 
 
 def b_bacctidfrombtransid(in_btransid):
-    cursor = dbcon.cursor(mdb.cursors.DictCursor)
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
+    cursor = dbcon.cursor(dictionary=True)
     sqlstr = "SELECT bacctid FROM moneywatch_banktransactions WHERE btransid=%s"
     cursor.execute(sqlstr, (in_btransid))
     dbrow = cursor.fetchone()
@@ -910,8 +910,8 @@ def b_bacctidfrombtransid(in_btransid):
 
 # B.SUMMARY.GET = Shows Summary of Bank Accounts
 def b_summary():
-    cursor = dbcon.cursor(mdb.cursors.DictCursor)
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
+    cursor = dbcon.cursor(dictionary=True)
     sqlstr = "SELECT * FROM moneywatch_bankaccounts ORDER BY bacctname"
     cursor.execute(sqlstr)
     dbrows = cursor.fetchall()
@@ -965,8 +965,8 @@ def b_accountget():
     markup = ''
     counter = 0
     rtotal = 0
-    cursor = dbcon.cursor(mdb.cursors.DictCursor)
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
+    cursor = dbcon.cursor(dictionary=True)
 
     sqlstr = "SELECT * FROM moneywatch_banktransactions WHERE bacctid=%s ORDER BY transdate,numnote"
     cursor.execute(sqlstr, (g_formdata.getvalue('bacctid')))
@@ -1035,8 +1035,8 @@ def b_accountget():
 
 # B.ENTRY.ADD = generates body needed for "Bank Single Add" Section
 def b_entry_prepareadd():
-    cursor = dbcon.cursor(mdb.cursors.DictCursor)
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
+    cursor = dbcon.cursor(dictionary=True)
     sqlstr = "SELECT * FROM moneywatch_bankaccounts WHERE bacctid=%s"
     cursor.execute(sqlstr, (g_formdata.getvalue('bacctid')))
     dbrow = cursor.fetchone()
@@ -1050,8 +1050,8 @@ def b_entry_prepareadd():
 
 # B.ENTRY.EDIT = generates body needed for "Bank Single Edit" Section
 def b_entry_prepareedit():
-    cursor = dbcon.cursor(mdb.cursors.DictCursor)
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
+    cursor = dbcon.cursor(dictionary=True)
     sqlstr = """SELECT bt.*, ba.bacctname FROM moneywatch_banktransactions bt \
                 INNER JOIN moneywatch_bankaccounts ba ON bt.bacctid=ba.bacctid WHERE bt.btransid=%s"""
     cursor.execute(sqlstr, (g_formdata.getvalue('btransid')))
@@ -1228,8 +1228,8 @@ def b_prepare_addupdate():
 
 
 def b_saveadd(btransid, bacctid, transferbtransid, transferbacctid, transdate, ttype, amt, numnote, whom1, whom2, bacctid_transferselected):
-    cursor = dbcon.cursor(mdb.cursors.DictCursor)
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
+    cursor = dbcon.cursor(dictionary=True)
 
     if ttype == 'w':     # withdrawal
         updown = '-'
@@ -1280,8 +1280,8 @@ def b_saveadd(btransid, bacctid, transferbtransid, transferbacctid, transdate, t
 
 
 def b_saveupdate(btransid, bacctid, transferbtransid, transferbacctid, transdate, ttype, amt, numnote, whom1, whom2, bacctid_transferselected):
-    cursor = dbcon.cursor(mdb.cursors.DictCursor)
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
+    cursor = dbcon.cursor(dictionary=True)
 
     # these are the previously saved values -> transferbtransid, transferbacctid
 
@@ -1366,8 +1366,8 @@ def b_saveupdate(btransid, bacctid, transferbtransid, transferbacctid, transdate
 
     # B.ENTRY.DELETE = removes a bank entry and possibly a transfer
 def b_entry_delete():
-    cursor = dbcon.cursor(mdb.cursors.DictCursor)
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
+    cursor = dbcon.cursor(dictionary=True)
     sqlstr = "SELECT * FROM moneywatch_banktransactions WHERE btransid=%s"
     cursor.execute(sqlstr, (g_formdata.getvalue('btransid')))
     dbrow = cursor.fetchone()
@@ -1399,8 +1399,8 @@ def b_entry_delete():
 
 # B.BULKINTEREST.EDIT = generates body needed for "Interest Bulk Add" utility panel
 def b_bulkinterest_edit():
-    cursor = dbcon.cursor(mdb.cursors.DictCursor)
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
+    cursor = dbcon.cursor(dictionary=True)
     sqlstr = "SELECT * FROM moneywatch_bankaccounts ORDER BY bacctname"
     cursor.execute(sqlstr)
     dbrows = cursor.fetchall()
@@ -1438,8 +1438,8 @@ def b_bulkinterest_edit():
 
 # B.BULKINTEREST.SAVE = save "Interest Bulk Save" submission
 def b_bulkinterest_save():
-    cursor = dbcon.cursor(mdb.cursors.DictCursor)
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
+    cursor = dbcon.cursor(dictionary=True)
     sqlstr = "SELECT * FROM moneywatch_bankaccounts ORDER BY bacctname"
     cursor.execute(sqlstr)
     dbrows = cursor.fetchall()
@@ -1461,8 +1461,8 @@ def b_bulkinterest_save():
 
 # B.BULKBILLS.EDIT = generates body needed for "Bills Bulk Add" utility panel
 def b_bulkbills_edit():
-    cursor = dbcon.cursor(mdb.cursors.DictCursor)
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
+    cursor = dbcon.cursor(dictionary=True)
     sqlstr = "SELECT * FROM moneywatch_bankbills ORDER BY payeename"
     cursor.execute(sqlstr)
     dbrows = cursor.fetchall()
@@ -1504,8 +1504,8 @@ def b_bulkbills_edit():
 
 # B.BULKBILLS.SAVE = save "Bills Bulk SAVE" submission
 def b_bulkbills_save():
-    cursor = dbcon.cursor(mdb.cursors.DictCursor)
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
+    cursor = dbcon.cursor(dictionary=True)
     sqlstr = "SELECT * FROM moneywatch_bankbills ORDER BY payeename"
     cursor.execute(sqlstr)
     dbrows = cursor.fetchall()
@@ -1527,8 +1527,8 @@ def b_bulkbills_save():
 
 def b_autocomplete(in_bacctid):
     # generates autocomplete possabilities, excludes fund purchases
-    cursor = dbcon.cursor(mdb.cursors.DictCursor)
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
+    cursor = dbcon.cursor(dictionary=True)
     sqlstr = "SELECT DISTINCT whom1 FROM moneywatch_banktransactions WHERE bacctid=%s AND whom1 NOT LIKE 'Buy : %%' ORDER BY whom1"
     cursor.execute(sqlstr, (in_bacctid))
     dbrows = cursor.fetchall()
@@ -1564,8 +1564,8 @@ def u_fetchquotes():
 #   8 = (r1) dividend date (next)
 #   9 = (q) dividend date (prev)
 
-    cursor = dbcon.cursor(mdb.cursors.DictCursor)
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
+    cursor = dbcon.cursor(dictionary=True)
     sqlstr = "SELECT DISTINCT ticker FROM moneywatch_invelections WHERE active=1 and fetchquotes=1"
     cursor.execute(sqlstr)
 
@@ -1606,8 +1606,8 @@ def u_fetchquotes():
 
 
 def u_banktotals():
-    cursor = dbcon.cursor(mdb.cursors.DictCursor)
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
+    cursor = dbcon.cursor(dictionary=True)
     sqlstr = "SELECT * FROM moneywatch_bankaccounts ORDER BY bacctname"
     cursor.execute(sqlstr)
     dbrows = cursor.fetchall()
@@ -1698,8 +1698,8 @@ def h_logsql(in_sqlstr):
 #================================================================================================================
 
 def i_graph():
-    cursor = dbcon.cursor(mdb.cursors.DictCursor)
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
+    cursor = dbcon.cursor(dictionary=True)
     sqlstr = """SELECT it.*, ie.ielectionname FROM moneywatch_invtransactions it \
                 INNER JOIN moneywatch_invelections ie ON it.ielectionid=ie.ielectionid WHERE it.ielectionid=%s ORDER BY it.transdate,it.action"""
     cursor.execute(sqlstr, (g_formdata.getvalue('ielectionid')))
