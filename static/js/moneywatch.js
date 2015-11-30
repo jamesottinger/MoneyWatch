@@ -200,9 +200,10 @@ MW.comm = {
                 );
                 break;
             case 'U.UPDATEQUOTES':
-                $.post(MW.moneyWatchURL,
-                    {job: in_job, pu: MW.util.poisonURL()},
-                    function(data) {
+                $.ajax({
+                    url: urlpost,
+                    data: {},
+                    success: function(data) {
                         data = data.replace(/\n/gm, '');
                         if (data == 'ok') {
                             MW.comm.sendCommand('I.SUMMARY.GET');
@@ -210,7 +211,7 @@ MW.comm = {
                             alert(data.substr(0,500));
                         }
                     }
-                );
+                });
                 break;
             case 'U.UPDATEBANKTOTALS':
                 $.post(MW.moneyWatchURL,

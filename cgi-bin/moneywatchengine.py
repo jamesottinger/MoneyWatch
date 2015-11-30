@@ -6,7 +6,7 @@
 #
 # MoneyWatch - https://github.com/jamesottinger/moneywatch
 #===============================================================================
-import cgi, cgitb, os, datetime, locale, urllib2, csv, time, json
+import cgi, cgitb, os, datetime, locale, csv, time, json, requests
 import moneywatchconfig
 import mysql.connector  # python3-mysql.connector
 
@@ -1577,17 +1577,14 @@ def u_fetchquotes():
       else:
         stockstring += '+' + dbrow['ticker']
 
-    try:
-        response = urllib2.urlopen('http://finance.yahoo.com/d/quotes.csv?s=' + stockstring + '&f=snl1d1cjkyr1q&e=.csv')
-    except urllib2.URLError, e:
-        print "There was an error fetching quotes: " + e
-        h_logsql("There was an error fetching quotes: " + e + 'http://finance.yahoo.com/d/quotes.csv?s=' + stockstring + '&f=snl1d1cjkyr1q&e=.csv')
+    # fetch from Yahoo
+    response = requests.get('http://finance.yahoo.com/d/quotes.csv?s=' + stockstring + '&f=snl1d1cjkyr1q&e=.csv')
+    if response.status_code != 200:
+        h_logsql('There was an error fetching quotes: http://finance.yahoo.com/d/quotes.csv?s=' + stockstring + '&f=snl1d1cjkyr1q&e=.csv')
         return
-        #raise MyException("There was an error fetching quotes: %r" % e)
 
-    csvdatalines = filter(None, response.read().split('\n'))
-    #csvreader = csv.reader(csvdata)
-    #print csvdatalines
+    csvdatalines = response.text.rstrip().split('\n')
+
     for line in csvdatalines:
         row = line.split(',')
         row[0] = str(row[0].replace('"', ''))
