@@ -1431,7 +1431,7 @@ def b_bulkinterest_edit():
     dbcon.close()
 
     markup += '''</table><div style="text-align:right; padding-top: 20px; padding-right: 25px;"> \
-        <input type="hidden" name="job" value="B.BULKINTEREST.SAVE"><input type="button" name="doit" VALUE="Save" onClick="MW.comm.sendCommand('B.BULKINTEREST.SAVE');"></div></form><script>'''
+        <input type="button" name="doit" VALUE="Save" onClick="MW.comm.sendCommand('B.BULKINTEREST.SAVE');"></div></form><script>'''
     markup += '''jQuery("#bbulkinterest-date").datepicker({ dateFormat: "yy-mm-dd" });'''
 
     return markup + '</script>'
@@ -1445,11 +1445,11 @@ def b_bulkinterest_save():
     cursor.execute(sqlstr)
     dbrows = cursor.fetchall()
 
-    in_date = g_formdata.getvalue('bbulkinterest-date')
+    in_date = request.form.get('bbulkinterest-date')
 
     for dbrow in dbrows:
-        each_amt = g_formdata.getvalue(str(dbrow['bacctid']) + '-amt')
-        if each_amt is not None and in_date is not None:
+        each_amt = request.form.get(str(dbrow['bacctid']) + '-amt')
+        if each_amt != '' and in_date != '':
             sqlstr = """INSERT INTO moneywatch_banktransactions (bacctid, transdate, type, updown, amt, whom1, whom2, numnote, splityn, transferbtransid, transferbacctid, itransid) \
                         VALUES (%s, %s, 'd', '+', %s, 'Interest', '', 'INT', 0, 0, 0, 0)"""
             cursor.execute(sqlstr, (dbrow['bacctid'], in_date, each_amt))
