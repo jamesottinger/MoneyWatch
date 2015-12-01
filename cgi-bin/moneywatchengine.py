@@ -591,7 +591,7 @@ def i_saveadd(ticker, transdate, shares, cost, fromacct, action, ielectionid, ie
         sqlstr = """INSERT INTO moneywatch_banktransactions (bacctid, transdate, type, updown, amt, whom1, whom2, numnote, splityn, transferbtransid, transferbacctid, itransid) \
                     VALUES (%s, %s, 'w', '-', %s, %s, %s, 'INV', 0, 0, 0, 0)"""
         cursor.execute(sqlstr, (fromacct, transdate, cost, whom1, whom2))
-        h_logsql(cursor._executed)
+        h_logsql(cursor.statement)
         dbcon.commit()
         b_accounttally(fromacct)
         btransid = cursor.lastrowid
@@ -601,7 +601,7 @@ def i_saveadd(ticker, transdate, shares, cost, fromacct, action, ielectionid, ie
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, 0)"""
 
     cursor.execute(sqlstr, (ielectionid, btransid, transdate, ticker, updown, action, shares, costpershare, cost))
-    h_logsql(cursor._executed)
+    h_logsql(cursor.statement)
     dbcon.commit()
 
     if  str(ielectionid) + '-updateprice' in g_formdata: # update price based on new entry
@@ -619,7 +619,7 @@ def i_saveadd(ticker, transdate, shares, cost, fromacct, action, ielectionid, ie
             itransid=%s
             WHERE btransid=%s"""
         cursor.execute(sqlstr, (cursor.lastrowid, btransid))
-        h_logsql(cursor._executed)
+        h_logsql(cursor.statement)
         dbcon.commit()
 
     dbcon.close()
@@ -655,7 +655,7 @@ def i_saveupdate(ticker, transdate, shares, cost, fromacct, action, ielectionid,
         sqlstr = """INSERT INTO moneywatch_banktransactions (bacctid, transdate, type, updown, amt, whom1, whom2, numnote, splityn, transferbtransid, transferbacctid, itransid) \
                     VALUES (%s, %s, 'w', '-', %s, %s, %s, 'INV', 0, 0, 0, %s)"""
         cursor.execute(sqlstr, (fromacct, transdate, cost, whom1, whom2, itransid))
-        h_logsql(cursor._executed)
+        h_logsql(cursor.statement)
         dbcon.commit()
         b_accounttally(fromacct)
 
@@ -667,14 +667,14 @@ def i_saveupdate(ticker, transdate, shares, cost, fromacct, action, ielectionid,
         # -- [delete bank transaction]
         sqlstr = "SELECT bacctid FROM moneywatch_banktransactions WHERE btransid=%s"
         cursor.execute(sqlstr, (btransid))
-        h_logsql(cursor._executed)
+        h_logsql(cursor.statement)
         dbrow = cursor.fetchone()
         bacctid_lookup = dbrow['bacctid'] # need to parent bank acct for re-tally
 
         # not associated with a bank account anymore, delete the bank entry
         sqlstr = "DELETE FROM moneywatch_banktransactions WHERE btransid=%s"
         cursor.execute(sqlstr, (btransid))
-        h_logsql(cursor._executed)
+        h_logsql(cursor.statement)
         dbcon.commit()
         b_accounttally(bacctid_lookup)
 
@@ -700,14 +700,14 @@ def i_saveupdate(ticker, transdate, shares, cost, fromacct, action, ielectionid,
             itransid=%s WHERE btransid=%s"""
 
         cursor.execute(sqlstr, (transdate, cost, whom1, whom2, itransid, btransid))
-        h_logsql(cursor._executed)
+        h_logsql(cursor.statement)
         dbcon.commit()
 
         b_accounttally(fromacct)
 
         sqlstr = "SELECT bacctid FROM moneywatch_banktransactions WHERE btransid=%s"
         cursor.execute(sqlstr, (btransid))
-        h_logsql(cursor._executed)
+        h_logsql(cursor.statement)
         dbrow = cursor.fetchone()
         bacctid_lookup = dbrow['bacctid'] # need to parent bank acct for re-tally
 
@@ -733,13 +733,14 @@ def i_saveupdate(ticker, transdate, shares, cost, fromacct, action, ielectionid,
         btransid=%s WHERE itransid=%s"""
 
     cursor.execute(sqlstr, (transdate, action, updown, shares, costpershare, cost, update_btransid, itransid))
-    h_logsql(cursor._executed)
+    h_logsql(cursor.statement)
     dbcon.commit()
 
     if  str(ielectionid) + '-updateprice' in g_formdata: # update price based on new entry
         # update the elections price
         sqlstr = "UPDATE moneywatch_invelections SET manualoverrideprice=%s, quotedate=%s WHERE ielectionid=%s"
         cursor.execute(sqlstr, ("{:.3f}".format(float(cost) / float(shares)), h_todaydatetimeformysql(), ielectionid))
+        h_logsql(cursor.statement)
         dbcon.commit()
 
     i_electiontally(ielectionid)
@@ -760,14 +761,14 @@ def i_entry_delete():
     if dbrow['btransid'] > 0:
         sqlstr = "DELETE FROM moneywatch_banktransactions WHERE btransid=%s"
         cursor.execute(sqlstr, (dbrow['btransid']))
-        h_logsql(cursor._executed)
+        h_logsql(cursor.statement)
         dbcon.commit()
         u_banktotals()
 
     # delete inv transaction
     sqlstr = "DELETE FROM moneywatch_invtransactions WHERE itransid=%s"
     cursor.execute(sqlstr, (dbrow['itransid']))
-    h_logsql(cursor._executed)
+    h_logsql(cursor.statement)
     dbcon.commit()
     i_electiontally(dbrow['itransid'])
 
@@ -1253,7 +1254,7 @@ def b_saveadd(btransid, bacctid, transferbtransid, transferbacctid, transdate, t
                             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, 0, %s, %s, 0)"""
 
     cursor.execute(sqlstr, (bacctid, transdate, ttype, updown, amt, whom1, whom2, numnote, transferbtransid, bacctid_transferselected))
-    h_logsql(cursor._executed)
+    h_logsql(cursor.statement)
     dbcon.commit()
     btransid_learn1 = cursor.lastrowid
     b_accounttally(bacctid)
@@ -1263,7 +1264,7 @@ def b_saveadd(btransid, bacctid, transferbtransid, transferbacctid, transdate, t
                             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, 0, %s, %s, 0)"""
 
         cursor.execute(sqlstr, (bacctid_transferselected, transdate, transferaction , updownother, amt, whom1trans, whom2, numnote, btransid_learn1, bacctid))
-        h_logsql(cursor._executed)
+        h_logsql(cursor.statement)
         dbcon.commit()
         b_accounttally(bacctid_transferselected)
         btransid_learn2 = cursor.lastrowid
@@ -1273,7 +1274,7 @@ def b_saveadd(btransid, bacctid, transferbtransid, transferbacctid, transdate, t
                     transferbtransid=%s
                     WHERE btransid=%s"""
         cursor.execute(sqlstr, (btransid_learn2, btransid_learn1))
-        h_logsql(cursor._executed)
+        h_logsql(cursor.statement)
         dbcon.commit()
 
     dbcon.close()
@@ -1310,7 +1311,7 @@ def b_saveupdate(btransid, bacctid, transferbtransid, transferbacctid, transdate
             # delete bank transaction
             sqlstr = "DELETE FROM moneywatch_banktransactions WHERE bacctid=%s"
             cursor.execute(sqlstr, (transferbtransid))
-            h_logsql(cursor._executed)
+            h_logsql(cursor.statement)
             dbcon.commit()
             b_accounttally(transferbacctid)
     else:
@@ -1331,7 +1332,7 @@ def b_saveupdate(btransid, bacctid, transferbtransid, transferbacctid, transdate
                 transferbacctid=%s
                 WHERE btransid=%s"""
             cursor.execute(sqlstr, (bacctid_transferselected, transdate, transferaction, updownother, amt, whom1trans, whom2, numnote, btransid, bacctid, transferbtransid))
-            h_logsql(cursor._executed)
+            h_logsql(cursor.statement)
             dbcon.commit()
             b_accounttally(bacctid_transferselected)
 
@@ -1340,7 +1341,7 @@ def b_saveupdate(btransid, bacctid, transferbtransid, transferbacctid, transdate
             sqlstr = """INSERT INTO moneywatch_banktransactions (bacctid, transdate, type, updown, amt, whom1, whom2, numnote, splityn, transferbtransid, transferbacctid, itransid) \
                         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, 0, %s, %s, 0)"""
             cursor.execute(sqlstr, (bacctid_transferselected, transdate, transferaction, updownother, amt, whom1trans, whom2, numnote, btransid, bacctid))
-            h_logsql(cursor._executed)
+            h_logsql(cursor.statement)
             dbcon.commit()
             transferbtransid = cursor.lastrowid # use new id
             transferbacctid = bacctid_transferselected
@@ -1359,7 +1360,7 @@ def b_saveupdate(btransid, bacctid, transferbtransid, transferbacctid, transdate
         transferbacctid=%s
         WHERE btransid=%s"""
     cursor.execute(sqlstr, (transdate, ttype, updown, amt, whom1, whom2, numnote, transferbtransid, transferbacctid, btransid))
-    h_logsql(cursor._executed)
+    h_logsql(cursor.statement)
     dbcon.commit()
     b_accounttally(bacctid)
 
@@ -1375,7 +1376,7 @@ def b_entry_delete():
     # delete bank transaction
     sqlstr = "DELETE FROM moneywatch_banktransactions WHERE btransid=%s"
     cursor.execute(sqlstr, (dbrow['btransid']))
-    h_logsql(cursor._executed)
+    h_logsql(cursor.statement)
     dbcon.commit()
     b_accounttally(dbrow['bacctid'])
 
@@ -1383,14 +1384,14 @@ def b_entry_delete():
         # delete any splits
         sqlstr = "DELETE FROM moneywatch_banktransactions_splits WHERE btransid=%s"
         cursor.execute(sqlstr, (dbrow['btransid']))
-        h_logsql(cursor._executed)
+        h_logsql(cursor.statement)
         dbcon.commit()
 
     if dbrow['transferbtransid'] > 0:
         # delete any transfers
         sqlstr = "DELETE FROM moneywatch_banktransactions WHERE btransid=%s"
         cursor.execute(sqlstr, (dbrow['transferbtransid']))
-        h_logsql(cursor._executed)
+        h_logsql(cursor.statement)
         dbcon.commit()
         b_accounttally(dbrow['transferbacctid'])
 
@@ -1452,7 +1453,7 @@ def b_bulkinterest_save():
             sqlstr = """INSERT INTO moneywatch_banktransactions (bacctid, transdate, type, updown, amt, whom1, whom2, numnote, splityn, transferbtransid, transferbacctid, itransid) \
                         VALUES (%s, %s, 'd', '+', %s, 'Interest', '', 'INT', 0, 0, 0, 0)"""
             cursor.execute(sqlstr, (dbrow['bacctid'], in_date, each_amt))
-            h_logsql(cursor._executed)
+            h_logsql(cursor.statement)
             dbcon.commit()
             b_accounttally(dbrow['bacctid'])
 
@@ -1519,7 +1520,7 @@ def b_bulkbills_save():
             sqlstr = """INSERT INTO moneywatch_banktransactions (bacctid, transdate, type, updown, amt, whom1, whom2, numnote, splityn, transferbtransid, transferbacctid, itransid) \
                         VALUES (%s, %s, 'w', '-', %s, %s, 'Bill', 'EBILLPAY', 0, 0, 0, 0)"""
             cursor.execute(sqlstr, (each_fromacct, each_date, each_amt, dbrow['payeename']))
-            h_logsql(cursor._executed)
+            h_logsql(cursor.statement)
             dbcon.commit()
             b_accounttally(each_fromacct)
 
@@ -1596,7 +1597,7 @@ def u_fetchquotes():
 
         sqlstr = "UPDATE moneywatch_invelections SET quoteprice=%s, quotechange=%s, quotedate=%s, yield=%s, divdatenext=%s, divdateprev=%s WHERE ticker=%s"
         cursor.execute(sqlstr, (row[2], row[4], h_todaydatetimeformysql(), row[7], row[8], row[9], row[0]))
-        # h_logsql(cursor._executed)
+        # h_logsql(cursor.statement)
         dbcon.commit()
     dbcon.close()
     i_electiontallyall()
