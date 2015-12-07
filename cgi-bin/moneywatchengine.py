@@ -7,6 +7,7 @@
 # MoneyWatch - https://github.com/jamesottinger/moneywatch
 #===============================================================================
 import cgi, cgitb, os, datetime, locale, csv, time, json, requests
+from flask import request
 import moneywatchconfig
 import mysql.connector  # python3-mysql.connector
 
@@ -26,9 +27,9 @@ cgitb.enable(
 
 def i_electiontally(in_ielectionid):
     sqlstr = "SELECT * FROM moneywatch_invtransactions WHERE ielectionid=%s ORDER BY transdate,action"
-    cursor.execute(sqlstr, (in_ielectionid))
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
     cursor = dbcon.cursor(dictionary=True)
+    cursor.execute(sqlstr, (in_ielectionid,))
     dbrows = cursor.fetchall()
     rtotal = 0
     costbasis = 0
@@ -255,7 +256,7 @@ def i_electionget():
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
     cursor = dbcon.cursor(dictionary=True)
     sqlstr = "SELECT * FROM moneywatch_invtransactions WHERE ielectionid=%s ORDER BY transdate,action"
-    cursor.execute(sqlstr, (g_formdata.getvalue('ielectionid')))
+    cursor.execute(sqlstr, (request.args.get('ielectionid'),))
     dbrows = cursor.fetchall()
     #ielectionid, transdate, ticker, updown, action, sharesamt, shareprice, transprice, totalshould
 
@@ -408,7 +409,7 @@ def i_entry_prepareadd():
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
     cursor = dbcon.cursor(dictionary=True)
     sqlstr = "SELECT * FROM moneywatch_invelections WHERE ielectionid=%s"
-    cursor.execute(sqlstr, (g_formdata.getvalue('ielectionid')))
+    cursor.execute(sqlstr, (request.args.get('ielectionid'),))
     dbrows = cursor.fetchall()
     dbcon.close()
 
@@ -430,8 +431,8 @@ def i_entry_prepareedit():
     cursor = dbcon.cursor(dictionary=True)
     sqlstr = """SELECT it.*, ie.ielectionname, ie.fetchquotes FROM moneywatch_invtransactions it \
                 INNER JOIN moneywatch_invelections ie ON it.ielectionid=ie.ielectionid WHERE it.itransid=%s"""
-    cursor.execute(sqlstr, (g_formdata.getvalue('itransid')))
     dbrows = cursor.fetchall()
+    cursor.execute(sqlstr, (request.args.get('itransid'),))
     dbcon.close()
 
     for dbrow in dbrows:
@@ -666,14 +667,14 @@ def i_saveupdate(ticker, transdate, shares, cost, fromacct, action, ielectionid,
 
         # -- [delete bank transaction]
         sqlstr = "SELECT bacctid FROM moneywatch_banktransactions WHERE btransid=%s"
-        cursor.execute(sqlstr, (btransid))
+        cursor.execute(sqlstr, (btransid,))
         h_logsql(cursor.statement)
         dbrow = cursor.fetchone()
         bacctid_lookup = dbrow['bacctid'] # need to parent bank acct for re-tally
 
         # not associated with a bank account anymore, delete the bank entry
         sqlstr = "DELETE FROM moneywatch_banktransactions WHERE btransid=%s"
-        cursor.execute(sqlstr, (btransid))
+        cursor.execute(sqlstr, (btransid,))
         h_logsql(cursor.statement)
         dbcon.commit()
         b_accounttally(bacctid_lookup)
@@ -753,21 +754,21 @@ def i_entry_delete():
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
     cursor = dbcon.cursor(dictionary=True)
     sqlstr = "SELECT * FROM moneywatch_invtransactions WHERE itransid=%s"
-    cursor.execute(sqlstr, (g_formdata.getvalue('itransid')))
+    cursor.execute(sqlstr, (request.args.get('itransid'),))
     dbrow = cursor.fetchone()
 
 
     # delete a bank transaction?
     if dbrow['btransid'] > 0:
         sqlstr = "DELETE FROM moneywatch_banktransactions WHERE btransid=%s"
-        cursor.execute(sqlstr, (dbrow['btransid']))
+        cursor.execute(sqlstr, (dbrow['btransid'],))
         h_logsql(cursor.statement)
         dbcon.commit()
         u_banktotals()
 
     # delete inv transaction
     sqlstr = "DELETE FROM moneywatch_invtransactions WHERE itransid=%s"
-    cursor.execute(sqlstr, (dbrow['itransid']))
+    cursor.execute(sqlstr, (dbrow['itransid'],))
     h_logsql(cursor.statement)
     dbcon.commit()
     i_electiontally(dbrow['itransid'])
@@ -780,7 +781,7 @@ def i_entry_edit():
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
     cursor = dbcon.cursor(dictionary=True)
     sqlstr = "SELECT * FROM moneywatch_invelections WHERE ticker IS NOT NULL AND active=1 AND ielectionid=%s ORDER BY iacctname,ielectionname"
-    cursor.execute(sqlstr, (g_formdata.getvalue('ielectionid')))
+    cursor.execute(sqlstr, (request.args.get('ielectionid',)))
     dbrows = cursor.fetchall()
 
     markup = ''
@@ -848,7 +849,7 @@ def b_accounttally(in_bacctid):
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
     cursor = dbcon.cursor(dictionary=True)
     sqlstr = "SELECT * FROM moneywatch_banktransactions WHERE bacctid=%s ORDER BY transdate,amt"
-    cursor.execute(sqlstr, (in_bacctid))
+    cursor.execute(sqlstr, (in_bacctid,))
     dbrows = cursor.fetchall()
     totalall = 0
     totaluptotoday = 0
@@ -893,7 +894,7 @@ def b_saybacctname(in_bacctid):
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
     cursor = dbcon.cursor(dictionary=True)
     sqlstr = "SELECT bacctname FROM moneywatch_bankaccounts WHERE bacctid=%s"
-    cursor.execute(sqlstr, (in_bacctid))
+    cursor.execute(sqlstr, (in_bacctid,))
     dbrow = cursor.fetchone()
     dbcon.close()
     return dbrow['bacctname']
@@ -903,7 +904,7 @@ def b_bacctidfrombtransid(in_btransid):
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
     cursor = dbcon.cursor(dictionary=True)
     sqlstr = "SELECT bacctid FROM moneywatch_banktransactions WHERE btransid=%s"
-    cursor.execute(sqlstr, (in_btransid))
+    cursor.execute(sqlstr, (in_btransid,))
     dbrow = cursor.fetchone()
     dbcon.close()
     return dbrow['bacctid']
@@ -970,7 +971,7 @@ def b_accountget():
     cursor = dbcon.cursor(dictionary=True)
 
     sqlstr = "SELECT * FROM moneywatch_banktransactions WHERE bacctid=%s ORDER BY transdate,numnote"
-    cursor.execute(sqlstr, (g_formdata.getvalue('bacctid')))
+    cursor.execute(sqlstr, (request.args.get('bacctid'),))
     dbrows = cursor.fetchall()
 
     for dbrow in dbrows:
@@ -1039,7 +1040,7 @@ def b_entry_prepareadd():
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
     cursor = dbcon.cursor(dictionary=True)
     sqlstr = "SELECT * FROM moneywatch_bankaccounts WHERE bacctid=%s"
-    cursor.execute(sqlstr, (g_formdata.getvalue('bacctid')))
+    cursor.execute(sqlstr, (request.args.get('bacctid'),))
     dbrow = cursor.fetchone()
     dbcon.close()
     return b_edit_template(
@@ -1055,7 +1056,7 @@ def b_entry_prepareedit():
     cursor = dbcon.cursor(dictionary=True)
     sqlstr = """SELECT bt.*, ba.bacctname FROM moneywatch_banktransactions bt \
                 INNER JOIN moneywatch_bankaccounts ba ON bt.bacctid=ba.bacctid WHERE bt.btransid=%s"""
-    cursor.execute(sqlstr, (g_formdata.getvalue('btransid')))
+    cursor.execute(sqlstr, (request.args.get('btransid'),))
     dbrow = cursor.fetchone()
     dbcon.close()
     return b_edit_template(
@@ -1370,12 +1371,12 @@ def b_entry_delete():
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
     cursor = dbcon.cursor(dictionary=True)
     sqlstr = "SELECT * FROM moneywatch_banktransactions WHERE btransid=%s"
-    cursor.execute(sqlstr, (g_formdata.getvalue('btransid')))
+    cursor.execute(sqlstr, (request.args.get('btransid'),))
     dbrow = cursor.fetchone()
 
     # delete bank transaction
     sqlstr = "DELETE FROM moneywatch_banktransactions WHERE btransid=%s"
-    cursor.execute(sqlstr, (dbrow['btransid']))
+    cursor.execute(sqlstr, (dbrow['btransid'],))
     h_logsql(cursor.statement)
     dbcon.commit()
     b_accounttally(dbrow['bacctid'])
@@ -1383,14 +1384,14 @@ def b_entry_delete():
     if dbrow['splityn'] > 0:
         # delete any splits
         sqlstr = "DELETE FROM moneywatch_banktransactions_splits WHERE btransid=%s"
-        cursor.execute(sqlstr, (dbrow['btransid']))
+        cursor.execute(sqlstr, (dbrow['btransid'],))
         h_logsql(cursor.statement)
         dbcon.commit()
 
     if dbrow['transferbtransid'] > 0:
         # delete any transfers
         sqlstr = "DELETE FROM moneywatch_banktransactions WHERE btransid=%s"
-        cursor.execute(sqlstr, (dbrow['transferbtransid']))
+        cursor.execute(sqlstr, (dbrow['transferbtransid'],))
         h_logsql(cursor.statement)
         dbcon.commit()
         b_accounttally(dbrow['transferbacctid'])
@@ -1531,7 +1532,7 @@ def b_autocomplete(in_bacctid):
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
     cursor = dbcon.cursor(dictionary=True)
     sqlstr = "SELECT DISTINCT whom1 FROM moneywatch_banktransactions WHERE bacctid=%s AND whom1 NOT LIKE 'Buy : %%' ORDER BY whom1"
-    cursor.execute(sqlstr, (in_bacctid))
+    cursor.execute(sqlstr, (in_bacctid,))
     dbrows = cursor.fetchall()
     whomlist = []
 
@@ -1700,7 +1701,7 @@ def i_graph():
     cursor = dbcon.cursor(dictionary=True)
     sqlstr = """SELECT it.*, ie.ielectionname FROM moneywatch_invtransactions it \
                 INNER JOIN moneywatch_invelections ie ON it.ielectionid=ie.ielectionid WHERE it.ielectionid=%s ORDER BY it.transdate,it.action"""
-    cursor.execute(sqlstr, (g_formdata.getvalue('ielectionid')))
+    cursor.execute(sqlstr, (request.args.get('ielectionid'),))
     dbrows = cursor.fetchall()
     #ielectionid, transdate, ticker, updown, action, sharesamt, shareprice, transprice, totalshould
 
