@@ -1497,7 +1497,7 @@ def b_bulkbills_edit():
 
     dbcon.close()
 
-    markup += '''</table><div style="text-align:right; padding-top: 20px; padding-right: 25px;"><input type="hidden" name="job" value="B.BULKBILLS.SAVE"><input type="button" name="doit" VALUE="Save" onClick="MW.comm.sendCommand('B.BULKBILLS.SAVE');"></div></form><script>'''
+    markup += '''</table><div style="text-align:right; padding-top: 20px; padding-right: 25px;"><input type="button" name="doit" VALUE="Save" onClick="MW.comm.sendCommand('B.BULKBILLS.SAVE');"></div></form><script>'''
     for js in javascriptcalls:
         markup += js
 
@@ -1513,11 +1513,11 @@ def b_bulkbills_save():
     dbrows = cursor.fetchall()
 
     for dbrow in dbrows:
-        each_fromacct = g_formdata.getvalue(str(dbrow['payeeid']) + '-fromaccount')
-        each_date = g_formdata.getvalue('bbulkbillsedit-' + str(dbrow['payeeid']) + '-date')
-        each_amt = g_formdata.getvalue(str(dbrow['payeeid']) + '-amt')
+        each_fromacct = request.form.get(str(dbrow['payeeid']) + '-fromaccount')
+        each_date = request.form.get('bbulkbillsedit-' + str(dbrow['payeeid']) + '-date')
+        each_amt = request.form.get(str(dbrow['payeeid']) + '-amt')
 
-        if each_amt is not None and each_date is not None:
+        if each_amt != '' and each_date != '':
             sqlstr = """INSERT INTO moneywatch_banktransactions (bacctid, transdate, type, updown, amt, whom1, whom2, numnote, splityn, transferbtransid, transferbacctid, itransid) \
                         VALUES (%s, %s, 'w', '-', %s, %s, 'Bill', 'EBILLPAY', 0, 0, 0, 0)"""
             cursor.execute(sqlstr, (each_fromacct, each_date, each_amt, dbrow['payeename']))

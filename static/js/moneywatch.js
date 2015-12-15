@@ -147,19 +147,22 @@ MW.comm = {
             case 'B.BULKBILLS.EDIT':
                 MW.yui.panelUniversal.set('width', 750);
                 MW.yui.panelUniversal.set('headerContent', "Bank - Bulk Bills" + MW.yui.YUIcloseMarkup);
-                $.post(MW.moneyWatchURL,
-                    {job: in_job, pu: MW.util.poisonURL()},
-                    function(data) {
+                $.ajax({
+                    url: urlpost,
+                    data: {},
+                    success: function(data) {
                         $('#paneluniversal-inner').html(data);
                         MW.yui.panelUniversal.show();
                     }
-                );
+                });
                 break;
             case 'B.BULKBILLS.SAVE':
                 formdata = $('#bbulkbillsedit').serialize();
-                $.post(MW.moneyWatchURL,
-                    formdata,
-                    function(data) {
+                $.ajax({
+                    type: 'POST',
+                    url: urlpost,
+                    data: formdata,
+                    success: function(data) {
                         data = data.replace(/\n/gm, '');
                         if (data == 'ok') {
                             MW.yui.panelUniversal.hide();
@@ -169,7 +172,7 @@ MW.comm = {
                             alert(data.substr(0,500));
                         }
                     }
-                );
+                });
                 break;
             case 'B.ENTRY.EDITSAVE':
             case 'B.ENTRY.ADDSAVE':
