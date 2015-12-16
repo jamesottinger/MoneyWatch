@@ -1653,7 +1653,12 @@ def h_dateclean(in_date):
 def h_dateinfuture(in_date):
     # 2009-12-31 format in
     # boolean returned
+    if in_date == '' or in_date is None:
+        return False
+
     boom = str(in_date).split("-") # [0] = year, [1] = month, [2] = day
+    if len(boom) != 3:
+        return False
     numdate = int(boom[0] + boom[1] + boom[2])
 
     # import time
