@@ -1698,6 +1698,11 @@ def h_logsql(in_sqlstr):
     debugout.write('Entered: ' + datetime.datetime.now().strftime("%Y%m%d-%H%M%S") + "\n" + in_sqlstr + "\n")
     debugout.close()
 
+def h_loginfo(in_infostr):
+    debugout = open(moneywatchconfig.dirlogs + 'infolog.txt', 'a')
+    debugout.write('Entered: ' + datetime.datetime.now().strftime("%Y%m%d-%H%M%S") + "\n" + in_infostr + "\n")
+    debugout.close()
+
 
 #================================================================================================================
 # GRAPHING
