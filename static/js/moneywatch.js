@@ -253,12 +253,13 @@ MW.comm = {
                 break;
             case 'U.WEATHER.GET':
                 $('#weather-forcast').html('');
-                $.post(MW.moneyWatchURL,
-                    {job: in_job, pu: MW.util.poisonURL()},
-                    function(data) {
+                $.ajax({
+                    url: urlpost,
+                    data: {},
+                    success: function(data) {
                         $('#weather-forcast').html(data);
                     }
-                );
+                });
                 break;
             default:
         }
