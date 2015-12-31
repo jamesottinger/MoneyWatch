@@ -314,13 +314,14 @@ MW.comm = {
     getInvGraph: function (in_ielectionid) {
         MW.yui.panelUniversal.set('width', 950);
         MW.yui.panelUniversal.set('headerContent', "Investment - Graph" + MW.yui.YUIcloseMarkup);
-        $.post(MW.moneyWatchURL,
-            {job: 'I.GRAPH.GET', 'ielectionid': in_ielectionid, pu: MW.util.poisonURL()},
-            function(data) {
+        $.ajax({
+            url: MW.moneyWatchURL + '/action/I.GRAPH.GET',
+            data: {'ielectionid': in_ielectionid},
+            success: function(data) {
                 $('#paneluniversal-inner').html(data);
                 MW.yui.panelUniversal.show();
             }
-        );
+        });
     },
 
     sendInvDelete: function (in_ielectionid, in_itransid) {

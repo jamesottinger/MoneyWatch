@@ -545,7 +545,7 @@ def i_edit_liveinvchart():
     return '''
            <!-- widget came from http://www.macroaxis.com/invest/widgets/native/intradaySymbolFeed?ip=true&s=VFIAX -->
                 <iframe bgcolor='#ffffff' id='intraday_symbol_feed' name='intraday_symbol_feed' marginheight='0' marginwidth='0' SCROLLING='NO' height='300px' width='300px' frameborder='0' src='http://widgets.macroaxis.com/widgets/intradaySymbolFeed.jsp?gia=t&tid=279&t=24&s=%s&_=1381101748535'></iframe>
-    ''' % (g_formdata.getvalue('ticker'))
+    ''' % (request.args.get('ticker'))
 
 def i_prepare_addupdate():
 
