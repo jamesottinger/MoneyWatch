@@ -297,9 +297,10 @@ MW.comm = {
     },
 
     getInvElectionEdit: function (in_ielectionid, in_itransid) {
-        $.post(MW.moneyWatchURL,
-            {job: 'I.ENTRY.EDIT', 'ielectionid': in_ielectionid, 'itransid': in_itransid, pu: MW.util.poisonURL()},
-            function(data) {
+        $.ajax({
+            url: MW.moneyWatchURL + '/action/I.ENTRY.EDIT',
+            data: {'ielectionid': in_ielectionid, 'itransid': in_itransid},
+            success: function(data) {
                 $('#transactionsrightedit').html(data);
                 if (MW.activeRowId !== '') {
                     $('#' + MW.activeRowId).removeClass('activeinvrow');
@@ -308,7 +309,7 @@ MW.comm = {
                 $('#' + MW.activeRowId).addClass('activeinvrow');
                 $('#transactionsrightedit').addClass('activeinveditmenu');
             }
-        );
+        });
     },
 
     getInvGraph: function (in_ielectionid) {
