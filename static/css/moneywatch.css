@@ -27,7 +27,7 @@ a:active  {color:#6a6aa2;}  /* selected link   */
     margin: 0 auto;
 }
 #containercenter{
-    width: 1000px;
+    width: 1200px;
     margin: 0 auto;
 }
 #leftblock{
@@ -449,6 +449,9 @@ a:active  {color:#6a6aa2;}  /* selected link   */
 .future {
     background-color: #E6E6FA;
     border-bottom: 1px dashed #CCCCCC;
+}
+#main-nav {
+    min-width: 1200px;
 }
 .highlightaccount td {
     /* background: #E0E0E0; */
