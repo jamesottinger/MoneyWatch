@@ -388,13 +388,13 @@ def i_bulkadd_save():
     dbrows = cursor.fetchall()
 
     for dbrow in dbrows:
-        each_shares = g_formdata.getvalue(str(dbrow['ielectionid']) + '-shares')
-        each_cost = g_formdata.getvalue(str(dbrow['ielectionid']) + '-cost') # cost of full sale
-        each_date = g_formdata.getvalue(str(dbrow['ielectionid']) + '-date')
-        if each_shares is not None and each_cost is not None and each_date is not None:
-            each_ielectionid = int(g_formdata.getvalue(str(dbrow['ielectionid']) + '-ielectionid'))
-            each_fromid = int(g_formdata.getvalue(str(dbrow['ielectionid']) + '-fromaccount'))
-            each_action = g_formdata.getvalue(str(dbrow['ielectionid']) + '-action')
+        each_shares = request.form.get(str(dbrow['ielectionid']) + '-shares')
+        each_cost = request.form.get(str(dbrow['ielectionid']) + '-cost') # cost of full sale
+        each_date = request.form.get(str(dbrow['ielectionid']) + '-date')
+        if each_shares != '' and each_cost != '' and each_date != '':
+            each_ielectionid = int(request.form.get(str(dbrow['ielectionid']) + '-ielectionid'))
+            each_fromid = int(request.form.get(str(dbrow['ielectionid']) + '-fromaccount'))
+            each_action = request.form.get(str(dbrow['ielectionid']) + '-action')
 
             i_saveadd(
                 ticker=dbrow['ticker'], transdate=each_date, shares=each_shares, cost=each_cost,

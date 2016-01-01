@@ -51,19 +51,22 @@ MW.comm = {
             case 'I.BULKADD.EDIT':
                 MW.yui.panelUniversal.set('width', 950);
                 MW.yui.panelUniversal.set('headerContent', "Investments - Bulk Add" + MW.yui.YUIcloseMarkup);
-                $.post(MW.moneyWatchURL,
-                    {job: in_job, pu: MW.util.poisonURL()},
-                    function(data) {
+                $.ajax({
+                    url: urlpost,
+                    data: {job: in_job},
+                    success: function(data) {
                         $('#paneluniversal-inner').html(data);
                         MW.yui.panelUniversal.show();
                     }
-                );
+                });
                 break;
             case 'I.BULKADD.SAVE':
                 formdata = $('#ibulkedit').serialize();
-                $.post(MW.moneyWatchURL,
-                    formdata,
-                    function(data) {
+                $.ajax({
+                    type: 'POST',
+                    url: urlpost,
+                    data: formdata,
+                    success: function(data) {
                         data = data.replace(/\n/gm, '');
                         if (data == 'ok') {
                             MW.yui.panelUniversal.hide();
@@ -71,7 +74,7 @@ MW.comm = {
                             MW.comm.sendCommand('B.SUMMARY.GET');
                         }
                     }
-                );
+                });
                 break;
             case 'I.ENTRY.EDITSAVE':
             case 'I.ENTRY.ADDSAVE':
