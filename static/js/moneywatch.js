@@ -247,12 +247,13 @@ MW.comm = {
                 );
                 break;
             case 'U.LINKS.GET':
-                $.post(MW.moneyWatchURL,
-                    {job: in_job, pu: MW.util.poisonURL()},
-                    function(data) {
+                $.ajax({
+                    url: urlpost,
+                    data: {},
+                    success: function(data) {
                         $('#ui-links').html(data);
                     }
-                );
+                });
                 break;
             case 'U.WEATHER.GET':
                 $('#weather-forcast').html('');
