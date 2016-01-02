@@ -380,25 +380,27 @@ MW.comm = {
     sendBankDelete: function (in_bacctid, in_btransid) {
         var r = confirm("Are you sure you want to delete MW transaction?");
         if (r === true) {
-            $.post(MW.moneyWatchURL,
-                {job: 'B.ENTRY.DELETE', 'btransid': in_btransid, pu: MW.util.poisonURL()},
-                function(data) {
+            $.ajax({
+                url: MW.moneyWatchURL + '/action/B.ENTRY.DELETE',
+                data: {'btransid': in_btransid},
+                success: function(data) {
                     data = data.replace(/\n/gm, '');
                     if (data == 'ok') {
                         // reload left side, reflecting the deletion
-                        $.post(MW.moneyWatchURL,
-                            {job: 'B.ACCOUNT.GET', 'bacctid': in_bacctid, pu: MW.util.poisonURL()},
-                            function(data) {
+                        $.ajax({
+                            url: MW.moneyWatchURL + '/action/B.ACCOUNT.GET',
+                            data: {'bacctid': in_bacctid},
+                            success: function(data) {
                                 $('#transactionslist').html(data);
                             }
-                        );
+                        });
                         // reload underneath
                         MW.comm.sendCommand('B.SUMMARY.GET');
                     } else {
                         alert(data.substr(0,500));
                     }
                 }
-            );
+            });
             return true;
         } else {
             return false;
