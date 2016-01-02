@@ -428,19 +428,21 @@ MW.comm = {
         $('#transactionsrightedit').removeClass('activeinveditmenu');
         // reload the right side
         if (in_type == 'bank') {
-            $.post(MW.moneyWatchURL,
-                {job: 'B.ENTRY.ADD', 'bacctid': in_xacctid, pu: MW.util.poisonURL()},
-                function(data) {
+            $.ajax({
+                url: MW.moneyWatchURL + '/action/B.ENTRY.ADD',
+                data: {'bacctid': in_xacctid},
+                success: function(data) {
                     $('#transactionsrightedit').html(data);
                 }
-            );
+            });
         } else if (in_type == 'investment') {
-            $.post(MW.moneyWatchURL,
-                {job: 'I.ENTRY.ADD', 'ielectionid': in_xacctid, pu: MW.util.poisonURL()},
-                function(data) {
+            $.ajax({
+                url: MW.moneyWatchURL + '/action/I.ENTRY.ADD',
+                data: {'ielectionid': in_xacctid},
+                success: function(data) {
                     $('#transactionsrightedit').html(data);
                 }
-            );
+            });
         }
 
     }
