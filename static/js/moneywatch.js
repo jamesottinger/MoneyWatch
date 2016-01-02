@@ -181,32 +181,36 @@ MW.comm = {
             case 'B.ENTRY.ADDSAVE':
                 var bacctid = $('#beditsingle-bacctid').val();
                 formdata = $('#beditsingle').serialize();
-                $.post(MW.moneyWatchURL,
-                    formdata,
-                    function(data) {
+                $.ajax({
+                    type: 'POST',
+                    url: urlpost,
+                    data: formdata,
+                    success: function(data) {
                         data = data.replace(/\n/gm, '');
                         if (data == 'ok') {
                             $('#' + MW.activeRowId).removeClass('activebankrow');
-                            $.post(MW.moneyWatchURL,
-                                {job: 'B.ACCOUNT.GET', 'bacctid': bacctid, pu: MW.util.poisonURL()},
-                                function(data) {
+                            $.ajax({
+                                url: MW.moneyWatchURL + '/action/B.ACCOUNT.GET',
+                                data: {'bacctid': bacctid},
+                                success: function(data) {
                                     $('#transactionslist').html(data);
                                     $("#transactionslist").scrollTop($("#transactionslist")[0].scrollHeight);
                                 }
-                            );
-                            $.post(MW.moneyWatchURL,
-                                {job: 'B.ENTRY.ADD', 'bacctid': bacctid, pu: MW.util.poisonURL()},
-                                function(data) {
+                            });
+                            $.ajax({
+                                url: MW.moneyWatchURL + '/action/B.ENTRY.ADD',
+                                data: {'bacctid': bacctid},
+                                success: function(data) {
                                     $('#transactionsrightedit').html(data);
                                 }
-                            );
+                            });
                             // reload underneath
                             MW.comm.sendCommand('B.SUMMARY.GET');
                         } else {
                             alert(data.substr(0,500));
                         }
                     }
-                );
+                });
                 break;
             case 'U.UPDATEQUOTES':
                 $.ajax({
