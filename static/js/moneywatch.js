@@ -336,25 +336,27 @@ MW.comm = {
     sendInvDelete: function (in_ielectionid, in_itransid) {
         var r = confirm("Are you sure you want to delete MW transaction?");
         if (r === true) {
-            $.post(MW.moneyWatchURL,
-                {job: 'I.ENTRY.DELETE', 'itransid': in_itransid, pu: MW.util.poisonURL()},
-                function(data) {
+            $.ajax({
+                url: MW.moneyWatchURL + '/action/I.ENTRY.DELETE',
+                data: {'itransid': in_itransid},
+                success: function(data) {
                     data = data.replace(/\n/gm, '');
                     if (data == 'ok') {
                         // reload left side, reflecting the deletion
-                        $.post(MW.moneyWatchURL,
-                            {job: 'I.ELECTION.GET', 'ielectionid': in_ielectionid, pu: MW.util.poisonURL()},
-                            function(data) {
+                        $.ajax({
+                            url: MW.moneyWatchURL + '/action/I.ELECTION.GET',
+                            data: {'ielectionid': in_ielectionid},
+                            success: function(data) {
                                 $('#transactionslist').html(data);
                             }
-                        );
+                        });
                         // reload underneath
                         MW.comm.sendCommand('I.SUMMARY.GET');
                     } else {
                         alert(data.substr(0,500));
                     }
                 }
-            );
+            });
         } else {
             return false;
         }
