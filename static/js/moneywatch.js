@@ -45,7 +45,6 @@ MW.comm = {
                         $('#rightcontent1').html(data);
                         MW.calcNetWorth();
                     }
-                );
                 });
                 break;
             case 'I.BULKADD.EDIT':
