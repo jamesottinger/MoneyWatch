@@ -123,23 +123,29 @@ def i_summary():
                         <td>Name</td>
                         <td>Total Qty</td>
                         <td>Last Price</td>
-                        <td>Cost Basis</td>
+                        <td>IN:Me</td>
+                        <td>IN:Dividends</td>
+                        <td>IN:Employer</td>
+                        <td>Total Cost Basis</td>
                         <td>Market Value</td>
-                        <td>Income</td>
                         <td>Apprec.</td>
                         <td>Gain</td>
                         <td>Links/Schedule</td>
                     </tr>
     ''' % (str(dbrows[0]['quotedate'].strftime("%A  %B %d, %Y %r")))
+    all_inme = 0
+    all_individends = 0
+    all_inemployer = 0
     all_costbasis = 0
     all_market = 0
     all_appres = 0
-    all_income = 0
     all_gain = 0
     parent = ''
+    election_inme = 0
+    election_individends = 0
+    election_inemployer = 0
     election_costbasis = 0
     election_market = 0
-    election_income = 0
     election_appres = 0
     election_gain = 0
     election_showquote = 0
@@ -151,20 +157,24 @@ def i_summary():
                 markup += '''\
                                 <tr>
                                     <td class="invtabletrgraytop" colspan="4">&nbsp;</td>
-                                    <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;"><!-- cost basis -->%s</td>
+                                    <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;"><!-- in:me -->%s</td>
+                                    <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;"><!-- in:dividends -->%s</td>
+                                    <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;"><!-- in:employer -->%s</td>
+                                    <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;"><!-- total cost basis -->%s</td>
                                     <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;"><!-- market value --><b>%s</b></td>
-                                    <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;"><!-- income -->%s</td>
-                                    <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;"><!-- apprec -->%s</td>
+                                    <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;"><!-- appreciation -->%s</td>
                                     <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;"><!-- gain -->%s</td>
                                     <td class="invtabletrgraytop">&nbsp;</td>
                                 </tr>
-                    ''' % (h_showmoney(election_costbasis), h_showmoney(election_market), h_showmoney(election_income), h_showmoney(election_appres), h_showmoney(election_gain))
+                    ''' % (h_showmoney(election_inme), h_showmoney(election_individends), h_showmoney(election_inemployer), h_showmoney(election_costbasis), h_showmoney(election_market), h_showmoney(election_appres), h_showmoney(election_gain))
+                election_inme = 0
+                election_individends = 0
+                election_inemployer = 0
                 election_costbasis = 0
                 election_market = 0
-                election_income = 0
                 election_appres = 0
                 election_gain = 0
-            markup += '<tr class="invtablehead"><td colspan="10"><b>' + dbrow['iacctname'] + '</b></td></tr>'
+            markup += '<tr class="invtablehead"><td colspan="12"><b>' + dbrow['iacctname'] + '</b></td></tr>'
             parent = dbrow['iacctname']
 
         if dbrow['manualoverrideprice'] is not None:
@@ -172,24 +182,34 @@ def i_summary():
         else:
            election_useprice = dbrow['quoteprice']
 
+        each_inme = dbrow['costbasisme']
+        each_individends = dbrow['costbasisbydividend']
+        each_inemployer = dbrow['costbasisfromemployer']
+
         each_market = dbrow['shares'] * election_useprice
         each_appres = (dbrow['shares'] * election_useprice) - dbrow['costbasis']
+        each_gain = each_appres + each_individends + each_inemployer
+
         election_showquote = h_showmoney(election_useprice)
-        each_gain = (((dbrow['shares'] * election_useprice) - dbrow['costbasis']) + (dbrow['sharesbydividend'] * election_useprice))
-        each_income = dbrow['sharesbydividend'] * election_useprice
 
         each_apprecclass = 'numpos'
         if each_appres < 0:
             each_apprecclass = 'numneg'
+
+        election_inme += each_inme
+        election_individends += each_individends
+        election_inemployer += each_inemployer
         election_costbasis += dbrow['costbasis']
         election_market += each_market
         election_appres += each_appres
-        election_income += each_income
         election_gain += each_gain
+
+        all_inme += each_inme
+        all_individends += each_individends
+        all_inemployer += each_inemployer
         all_costbasis += dbrow['costbasis']
         all_market += each_market
         all_appres += each_appres
-        all_income += each_income
         all_gain += each_gain
 
         markup += '''\
@@ -198,49 +218,56 @@ def i_summary():
                         <td><a href="#" onClick="MW.comm.getInvElection('%s');">%s</a></td>
                         <td style="text-align: right;">%s</td>
                         <td style="text-align: right;">%s</td>
+                        <td style="text-align: right;"><!-- in:me -->%s</td>
+                        <td style="text-align: right;"><!-- in:dividends -->%s</td>
+                        <td style="text-align: right;"><!-- in:employer -->%s</td>
                         <td style="text-align: right;">%s</td>
                         <td style="text-align: right;"><!-- market value --><b>%s</b></td>
-                        <td style="text-align: right;"><!-- income -->%s</td>
-                        <td style="text-align: right;" class="%s"><!-- apprec -->%s</td>
+                        <td style="text-align: right;" class="%s"><!-- appreciation -->%s</td>
                         <td style="text-align: right;"><!-- gain -->%s</td>
                         <td><a href="http://www.google.com/finance?q=%s" target="_blank">G</a> <a href="http://finance.yahoo.com/q?s=%s" target="_blank">Y</a> <a href="http://quotes.morningstar.com/fund/%s/f?t=%s" target="_blank">MS</a> [%s]</td>
                     </tr>
         ''' % (
             dbrow['ielectionid'], dbrow['ticker'], dbrow['ielectionid'], dbrow['ielectionname'],
-            "{:.3f}".format(dbrow['shares']), election_showquote, h_showmoney(dbrow['costbasis']),
-            h_showmoney(each_market), h_showmoney(each_income), each_apprecclass, h_showmoney(each_appres),
-            h_showmoney(each_gain), dbrow['ticker'], dbrow['ticker'], dbrow['ticker'], dbrow['ticker'], dbrow['divschedule']
+            "{:.3f}".format(dbrow['shares']), election_showquote, h_showmoney(each_inme),
+            h_showmoney(each_individends), h_showmoney(each_inemployer), h_showmoney(dbrow['costbasis']),
+            h_showmoney(each_market), each_apprecclass, h_showmoney(each_appres), h_showmoney(each_gain),
+            dbrow['ticker'], dbrow['ticker'], dbrow['ticker'], dbrow['ticker'], dbrow['divschedule']
         )
 
     markup += '''\
                     <tr>
                         <td class="invtabletrgraytop" colspan="4">&nbsp;</td>
-                        <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;"><!-- cost basis -->%s</td>
+                        <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;"><!-- in:me -->%s</td>
+                        <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;"><!-- in:dividends -->%s</td>
+                        <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;"><!-- in:employer -->%s</td>
+                        <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;"><!-- total cost basis -->%s</td>
                         <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;"><!-- market value --><b>%s</b></td>
-                        <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;"><!-- income -->%s</td>
-                        <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;"><!-- apprec -->%s</td>
+                        <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;"><!-- appreciation -->%s</td>
                         <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;"><!-- gain -->%s</td>
                         <td class="invtabletrgraytop">&nbsp;</td>
                     </tr>
         ''' % (
-            h_showmoney(election_costbasis), h_showmoney(election_market), h_showmoney(election_income),
-            h_showmoney(election_appres), h_showmoney(election_gain)
+            h_showmoney(election_inme), h_showmoney(election_individends), h_showmoney(election_inemployer), h_showmoney(election_costbasis),
+            h_showmoney(election_market), h_showmoney(election_appres), h_showmoney(election_gain)
         )
 
 
     markup += '''\
                     <tr>
                         <td colspan="4">&nbsp;</td>
-                        <td class="invtotalsbottom"><!-- cost basis -->%s</td>
+                        <td class="invtotalsbottom"><!-- in:me -->%s</td>
+                        <td class="invtotalsbottom"><!-- in:dividends -->%s</td>
+                        <td class="invtotalsbottom"><!-- in:employer -->%s</td>
+                        <td class="invtotalsbottom"><!-- total cost basis -->%s</td>
                         <td class="invtotalsbottom"><!-- market value --><b>%s</b> <input type="hidden" id="networth-investments" name="networth-investments" value="%s"></td>
-                        <td class="invtotalsbottom"><!-- income -->%s</td>
-                        <td class="invtotalsbottom"><!-- apprec -->%s</td>
+                        <td class="invtotalsbottom"><!-- appreciation -->%s</td>
                         <td class="invtotalsbottom"><!-- gain -->%s</td>
                         <td>&nbsp;</td>
                     </tr>
         ''' % (
-            h_showmoney(all_costbasis), h_showmoney(all_market), all_market, h_showmoney(all_income),
-            h_showmoney(all_appres), h_showmoney(all_gain)
+            h_showmoney(all_inme), h_showmoney(all_individends), h_showmoney(all_inemployer),  h_showmoney(all_costbasis),
+            h_showmoney(all_market), all_market, h_showmoney(all_appres), h_showmoney(all_gain)
         )
 
 
