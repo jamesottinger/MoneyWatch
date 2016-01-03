@@ -231,9 +231,10 @@ MW.comm = {
                 });
                 break;
             case 'U.UPDATEBANKTOTALS':
-                $.post(MW.moneyWatchURL,
-                    {job: in_job, pu: MW.util.poisonURL()},
-                    function(data) {
+                $.ajax({
+                    url: urlpost,
+                    data: {},
+                    success: function(data) {
                         data = data.replace(/\n/gm, '');
                         if (data == 'ok') {
                             MW.comm.sendCommand('B.SUMMARY.GET');
@@ -241,7 +242,7 @@ MW.comm = {
                             alert(data.substr(0,500));
                         }
                     }
-                );
+                });
                 break;
             case 'U.IMPORTFILE.EDIT':
                 MW.yui.panelUniversal.set('width', 420);
