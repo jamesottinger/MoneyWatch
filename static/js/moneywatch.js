@@ -80,32 +80,36 @@ MW.comm = {
             case 'I.ENTRY.ADDSAVE':
                 formdata = $('#ieditsingle').serialize();
                 var ielectionid = $('#ieditsingle-ielectionid').val();
-                $.post(MW.moneyWatchURL,
-                    formdata,
-                    function(data) {
+                $.ajax({
+                    type: 'POST',
+                    url: urlpost,
+                    data: formdata,
+                    success: function(data) {
                         data = data.replace(/\n/gm, '');
                         if (data == 'ok') {
                             $('#' + MW.activeRowId).removeClass('activeinvrow');
-                            $.post(MW.moneyWatchURL,
-                                {job: 'I.ELECTION.GET', 'ielectionid': ielectionid, pu: MW.util.poisonURL()},
-                                function(data) {
+                            $.ajax({
+                                url: MW.moneyWatchURL + '/action/I.ELECTION.GET',
+                                data: {'ielectionid': ielectionid},
+                                success: function(data) {
                                     $('#transactionslist').html(data);
                                     $("#transactionslist").scrollTop($("#transactionslist")[0].scrollHeight);
                                 }
-                            );
-                            $.post(MW.moneyWatchURL,
-                                {job: 'I.ENTRY.ADD', 'ielectionid': ielectionid, pu: MW.util.poisonURL()},
-                                function(data) {
+                            });
+                            $.ajax({
+                                url: MW.moneyWatchURL + '/action/I.ENTRY.ADD',
+                                data: {'ielectionid': ielectionid},
+                                success: function(data) {
                                     $('#transactionsrightedit').html(data);
                                 }
-                            );
+                            });
                             // reload underneath
                             MW.comm.sendCommand('I.SUMMARY.GET');
                         } else {
                             alert(data.substr(0,500));
                         }
                     }
-                );
+                });
                 break;
             case 'B.SUMMARY.GET':
                 $.ajax({
