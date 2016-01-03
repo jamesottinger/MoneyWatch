@@ -367,9 +367,10 @@ MW.comm = {
     },
 
     getBankEdit: function (in_btransid) {
-        $.post(MW.moneyWatchURL,
-            {job: 'B.ENTRY.EDIT', 'btransid': in_btransid, pu: MW.util.poisonURL()},
-            function(data) {
+        $.ajax({
+            url: MW.moneyWatchURL + '/action/B.ENTRY.EDIT',
+            data: {'btransid': in_btransid},
+            success: function(data) {
                 $('#transactionsrightedit').html(data);
                 if (MW.activeRowId !== '') {
                     $('#' + MW.activeRowId).removeClass('activeinvrow');
@@ -378,7 +379,7 @@ MW.comm = {
                 $('#' + MW.activeRowId).addClass('activeinvrow');
                 $('#transactionsrightedit').addClass('activeinveditmenu');
             }
-        );
+        });
     },
 
     sendBankDelete: function (in_bacctid, in_btransid) {
