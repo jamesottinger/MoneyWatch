@@ -246,13 +246,14 @@ MW.comm = {
             case 'U.IMPORTFILE.EDIT':
                 MW.yui.panelUniversal.set('width', 420);
                 MW.yui.panelUniversal.set('headerContent', "Import Menu" + MW.yui.YUIcloseMarkup);
-                $.post(MW.moneyWatchURL,
-                    {job: in_job, pu: MW.util.poisonURL()},
-                    function(data) {
+                $.ajax({
+                    url: urlpost,
+                    data: {},
+                    success: function(data) {
                         $('#paneluniversal-inner').html(data);
                         MW.yui.panelUniversal.show();
                     }
-                );
+                });
                 break;
             case 'U.LINKS.GET':
                 $.ajax({
