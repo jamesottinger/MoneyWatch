@@ -278,9 +278,10 @@ MW.comm = {
     },
 
     getInvElection: function (in_ielectionid) {
-        $.post(MW.moneyWatchURL,
-            {job: 'I.ELECTION.GET', 'ielectionid': in_ielectionid, pu: MW.util.poisonURL()},
-            function(data) {
+        $.ajax({
+            url: MW.moneyWatchURL + '/action/I.ELECTION.GET',
+            data: {'ielectionid': in_ielectionid},
+            success: function(data) {
                 $('#transactionslist').html(data);
                 // clear any previous highlights
                 $('#' + MW.activeRowId).removeClass('activeinvrow');
@@ -292,19 +293,21 @@ MW.comm = {
                 // $('#transactionslist').stop().animate({ scrollTop: $('#scrollmeinv').offset().top },120);
                 $("#transactionslist").scrollTop($("#transactionslist")[0].scrollHeight);
             }
-        );
-        $.post(MW.moneyWatchURL,
-            {job: 'I.ENTRY.ADD', 'ielectionid': in_ielectionid, pu: MW.util.poisonURL()},
-            function(data) {
+        });
+        $.ajax({
+            url: MW.moneyWatchURL + '/action/I.ENTRY.ADD',
+            data: {'ielectionid': in_ielectionid},
+            success: function(data) {
                 $('#transactionsrightedit').html(data);
             }
-        );
-        $.post(MW.moneyWatchURL,
-            {job: 'I.ENTRY.CHART', 'ielectionid': in_ielectionid, pu: MW.util.poisonURL()},
-            function(data) {
+        });
+        $.ajax({
+            url: MW.moneyWatchURL + '/action/I.ENTRY.CHART',
+            data: {'ielectionid': in_ielectionid},
+            success: function(data) {
                 $('#transactionsrightchart').html(data);
             }
-        );
+        });
         //$('#paneluniversal-inner').html('');
     },
 
