@@ -413,9 +413,10 @@ MW.comm = {
     },
 
     getBankAccount: function (in_bacctid) {
-        $.post(MW.moneyWatchURL,
-            {job: 'B.ACCOUNT.GET', 'bacctid': in_bacctid, pu: MW.util.poisonURL()},
-            function(data) {
+        $.ajax({
+            url: MW.moneyWatchURL + '/action/B.ACCOUNT.GET',
+            data: {'bacctid': in_bacctid},
+            success: function(data) {
                 $('#transactionslist').html(data);
                 // clear any previous highlights
                 $('#' + MW.activeRowId).removeClass('activeinvrow');
@@ -425,13 +426,14 @@ MW.comm = {
                 MW.yui.panelTransactions.show();
                 $("#transactionslist").scrollTop($("#transactionslist")[0].scrollHeight);
             }
-        );
-        $.post(MW.moneyWatchURL,
-            {job: 'B.ENTRY.ADD', 'bacctid': in_bacctid, pu: MW.util.poisonURL()},
-            function(data) {
+        });
+        $.ajax({
+            url: MW.moneyWatchURL + '/action/B.ENTRY.ADD',
+            data: {'bacctid': in_bacctid},
+            success: function(data) {
                 $('#transactionsrightedit').html(data);
             }
-        );
+        });
     },
 
     cancelEdit: function (in_type, in_xacctid) {
