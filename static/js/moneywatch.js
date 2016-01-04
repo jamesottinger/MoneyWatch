@@ -5,11 +5,10 @@
 //
 // MoneyWatch - https://github.com/jamesottinger/moneywatch
 //===============================================================================
-"use strict";
 var MW = MW || {};
 
 MW = {
-    moneyWatchURL: '/x/moneywatch-relay.py',
+    moneyWatchURL: '.',
     activeRowId: '',
 
     paintScreen: function () {
