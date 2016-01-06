@@ -577,17 +577,17 @@ def i_edit_liveinvchart():
 def i_prepare_addupdate():
 
     # get form items
-    in_job      = g_formdata.getvalue('job')
-    in_ticker   = g_formdata.getvalue('ticker')
-    in_transdate = g_formdata.getvalue('tradedate')
-    in_shares   = g_formdata.getvalue('shares')
-    in_cost     = g_formdata.getvalue('cost')
-    in_action   = g_formdata.getvalue('action')
-    in_btransid = int(g_formdata.getvalue('btransid'))             # updates only (hidden field)
-    in_itransid    = int(g_formdata.getvalue('itransid'))          # updates only (hidden field)
-    in_ielectionid = int(g_formdata.getvalue('ielectionid'))
-    in_ielectionname = g_formdata.getvalue('ielectionname')
-    in_fromid   = int(g_formdata.getvalue('fromaccount'))
+    in_job      = request.form.get('job')
+    in_ticker   = request.form.get('ticker')
+    in_transdate = request.form.get('tradedate')
+    in_shares   = request.form.get('shares')
+    in_cost     = request.form.get('cost')
+    in_action   = request.form.get('action')
+    in_btransid = int(request.form.get('btransid'))             # updates only (hidden field)
+    in_itransid    = int(request.form.get('itransid'))          # updates only (hidden field)
+    in_ielectionid = int(request.form.get('ielectionid'))
+    in_ielectionname = request.form.get('ielectionname')
+    in_fromid   = int(request.form.get('fromaccount'))
 
     if in_job == 'I.ENTRY.ADDSAVE':
         i_saveadd(ticker=in_ticker, transdate=in_transdate, shares=in_shares, cost=in_cost, fromacct=in_fromid, action=in_action, ielectionid=in_ielectionid, ielectionname=in_ielectionname)
@@ -764,7 +764,7 @@ def i_saveupdate(ticker, transdate, shares, cost, fromacct, action, ielectionid,
     h_logsql(cursor.statement)
     dbcon.commit()
 
-    if  str(ielectionid) + '-updateprice' in g_formdata: # update price based on new entry
+    if  str(ielectionid) + '-updateprice' in request.form: # update price based on new entry
         # update the elections price
         sqlstr = "UPDATE moneywatch_invelections SET manualoverrideprice=%s, quotedate=%s WHERE ielectionid=%s"
         cursor.execute(sqlstr, ("{:.3f}".format(float(cost) / float(shares)), h_todaydatetimeformysql(), ielectionid))
