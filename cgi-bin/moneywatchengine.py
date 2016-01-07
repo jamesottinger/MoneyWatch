@@ -26,9 +26,9 @@ cgitb.enable(
 #================================================================================================================
 
 def i_electiontally(in_ielectionid):
-    sqlstr = "SELECT * FROM moneywatch_invtransactions WHERE ielectionid=%s ORDER BY transdate,action"
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
     cursor = dbcon.cursor(dictionary=True)
+    sqlstr = "SELECT * FROM moneywatch_invtransactions WHERE ielectionid=%s ORDER BY transdate,action"
     cursor.execute(sqlstr, (in_ielectionid,))
     dbrows = cursor.fetchall()
     rtotal = 0
@@ -458,23 +458,22 @@ def i_entry_prepareedit():
     cursor = dbcon.cursor(dictionary=True)
     sqlstr = """SELECT it.*, ie.ielectionname, ie.fetchquotes FROM moneywatch_invtransactions it \
                 INNER JOIN moneywatch_invelections ie ON it.ielectionid=ie.ielectionid WHERE it.itransid=%s"""
-    dbrows = cursor.fetchall()
     cursor.execute(sqlstr, (request.args.get('itransid'),))
+    dbrow = cursor.fetchone()
     dbcon.close()
 
-    for dbrow in dbrows:
 
-        tocheckornottocheck = ''
-        if dbrow['fetchquotes'] == 0:
-            tocheckornottocheck = 'checked'
+    tocheckornottocheck = ''
+    if dbrow['fetchquotes'] == 0:
+        tocheckornottocheck = 'checked'
 
-        return i_edit_template(
-            mode='edit', ielectionname=dbrow['ielectionname'], ticker=dbrow['ticker'],
-            itransid=str(dbrow['itransid']), ielectionid=str(dbrow['ielectionid']),
-            btransid=dbrow['btransid'], transdate=str(dbrow['transdate']), action=dbrow['action'],
-            shares="{:.3f}".format(float(dbrow['sharesamt'])), cost="{:.2f}".format(float(dbrow['transprice'])),
-            fundsorigin=dbrow['btransid'], manuallyupdateprice=tocheckornottocheck
-        )
+    return i_edit_template(
+        mode='edit', ielectionname=dbrow['ielectionname'], ticker=dbrow['ticker'],
+        itransid=str(dbrow['itransid']), ielectionid=str(dbrow['ielectionid']),
+        btransid=dbrow['btransid'], transdate=str(dbrow['transdate']), action=dbrow['action'],
+        shares="{:.3f}".format(float(dbrow['sharesamt'])), cost="{:.2f}".format(float(dbrow['transprice'])),
+        fundsorigin=dbrow['btransid'], manuallyupdateprice=tocheckornottocheck
+    )
 
 
 # created the single
