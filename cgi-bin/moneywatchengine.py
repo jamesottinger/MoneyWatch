@@ -1218,25 +1218,25 @@ def b_edit_template(mode, bacctname, btransid, bacctid, transferbtransid, transf
 
 def b_prepare_addupdate():
     # get form items
-    in_job      = g_formdata.getvalue('job')
-    in_date     = g_formdata.getvalue('transdate')
-    in_numnote  = g_formdata.getvalue('numnote')
-    in_amt      = g_formdata.getvalue('amt')
-    in_type     = g_formdata.getvalue('ttype')
-    in_whom1     = g_formdata.getvalue('whom1')
-    in_bacctname = g_formdata.getvalue('bacctname')
-    in_btransid  = int(g_formdata.getvalue('btransid'))                  # (bank transaction id) updates only (hidden field)
-    in_bacctid   = int(g_formdata.getvalue('bacctid'))
-    in_transferbtransid  = int(g_formdata.getvalue('transferbtransid'))  # updates only (hidden field)
-    in_transferbacctid   = int(g_formdata.getvalue('transferbacctid'))   # updates only (hidden field)
+    in_job      = request.form.get('job')
+    in_date     = request.form.get('transdate')
+    in_numnote  = request.form.get('numnote')
+    in_amt      = request.form.get('amt')
+    in_type     = request.form.get('ttype')
+    in_whom1     = request.form.get('whom1')
+    in_bacctname = request.form.get('bacctname')
+    in_btransid  = int(request.form.get('btransid'))                  # (bank transaction id) updates only (hidden field)
+    in_bacctid   = int(request.form.get('bacctid'))
+    in_transferbtransid  = int(request.form.get('transferbtransid'))  # updates only (hidden field)
+    in_transferbacctid   = int(request.form.get('transferbacctid'))   # updates only (hidden field)
 
-    if 'bacctid_transferselected' in g_formdata: # bacctid_transferselected can be hidden and may not be included
-        in_bacctid_transferselected = int(g_formdata.getvalue('bacctid_transferselected'))
+    if 'bacctid_transferselected' in request.form: # bacctid_transferselected can be hidden and may not be included
+        in_bacctid_transferselected = int(request.form.get('bacctid_transferselected'))
     else:
         in_bacctid_transferselected = 0
 
-    if 'whom2' in g_formdata: # was coming in as None
-        in_whom2 = g_formdata.getvalue('whom2')
+    if 'whom2' in request.form: # was coming in as None
+        in_whom2 = request.form.get('whom2')
     else:
         in_whom2 = ''
 
