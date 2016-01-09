@@ -1,0 +1,147 @@
+<!--
+#===============================================================================
+# Copyright (c) 2015, James Ottinger. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+# MoneyWatch - https://github.com/jamesottinger/moneywatch
+#===============================================================================
+-->
+<!doctype html>
+<html>
+<head>
+    <title>Money Watch</title>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/themes/smoothness/jquery-ui.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" type="text/css" href="css/moneywatch.css">
+</head>
+    <body class="yui3-skin-sam">
+
+        <nav class="navbar navbar-default" id="main-nav">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="#">MoneyWatch</a>
+                </div>
+
+                <ul class="nav navbar-nav">
+                    <li class="nav-divider-vertical"></li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Actions <span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li role="presentation" class="dropdown-header">Investments:</li>
+                            <li><a href="#" onClick="return MW.comm.sendCommand('U.UPDATEQUOTES');"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span> Get Quotes [fetch]</a></li>
+                            <li><a href="#" onClick="return MW.comm.sendCommand('I.BULKADD.EDIT');"><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> Bulk Investments</a></li>
+                            <li class="divider"></li>
+                            <li role="presentation" class="dropdown-header">Bank Accounts:</li>
+                            <li><a href="#" onClick="return MW.comm.sendCommand('U.UPDATEBANKTOTALS');"><span class="glyphicon glyphicon-usd" aria-hidden="true"></span> Total Bank Accounts [tally]</a></li>
+                            <li><a href="#" onClick="return MW.comm.sendCommand('B.BULKINTEREST.EDIT');"><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> Bulk Interest</a></li>
+                            <li><a href="#" onClick="return MW.comm.sendCommand('B.BULKBILLS.EDIT');"><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> Bulk Bills</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-divider-vertical"></li>
+                </ul>
+
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <div class="btn-group btn-group-sm"  style="padding-top:10px;padding-right:20px;" role="group" aria-label="Default button group">
+                            <button type="button" id="accttype-toggle1" class="btn btn-default active" onClick="MW.move.goTo('investments');">Investments</button>
+                            <button type="button" id="accttype-toggle2" class="btn btn-default" onClick="MW.move.goTo('bank');">Bank Accounts</button>
+                        </div>
+                    </li>
+                    <li style="background-color: #EFEFEF;">
+                        <div style="padding-top:6px;padding-left:20px;padding-right:20px;height:50px;">
+                            <table cellspacing="0" cellpadding="0" width="100%" class="investmenttotals">
+                                <tr>
+                                    <td><b>Investments: </b></td>
+                                    <td style="width:60px;text-align: right;"><span id="sum-worth-inv">loading...</span></td>
+                                </tr>
+                                <tr>
+                                    <td><b>Banks (Cash): </b></td>
+                                    <td style="width:60px;text-align: right;"><span id="sum-worth-bank">loading...</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="invtotalsbottom">&nbsp;</td>
+                                    <td class="invtotalsbottom" style="width:90px;text-align: right;"><b><span id="sum-worth-all">loading...</b></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" onClick="return MW.comm.sendCommand('U.WEATHER.GET');">Weather <span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu" id="ui-weather">
+                            <li>
+                                <div id="weather-forcast" style="height: 245px; width: 800px;"></div>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-divider-vertical"></li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">My Links <span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu" id="ui-links">
+                            <!-- dropdown menu links -->
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <div id="containercenter">
+            <div id="rightcontent1"></div>
+            <div id="rightcontent2"></div>
+        </div>
+
+        <!-- PANEL: universal -->
+        <div id="paneluniversal">
+            <div id="paneluniversal-inner"></div>
+        </div>
+
+        <!-- PANEL: transactions -->
+        <div id="paneltransactions">
+             <div id="transactionsblock">
+                <div id="transactionsleft">
+                    <div id="transactionsheaderinv">
+                        <span class="theader" style="width: 64px;">Adjust</span>
+                        <span class="theader" style="width: 100px;">Date</span>
+                        <span class="theader" style="width: 80px;">Type</span>
+                        <span class="theader" style="width: 191px;">Trade Details</span>
+                        <span class="theader" style="width: 71px;">Add</span>
+                        <span class="theader" style="width: 70px;">Sub</span>
+                        <span class="theader" style="width: 194px;">Total</span>
+                    </div>
+                    <div id="transactionsheaderbank">
+                        <span class="theader" style="width: 64px;">Adjust</span>
+                        <span class="theader" style="width: 80px;">Date</span>
+                        <span class="theader" style="width: 80px;">Type</span>
+                        <span class="theader" style="width: 260px;">Details</span>
+                        <span class="theader" style="width: 71px;">Add</span>
+                        <span class="theader" style="width: 70px;">Sub</span>
+                        <span class="theader" style="width: 146px;">Total</span>
+                    </div>
+                    <div id="transactionslist"></div>
+                </div>
+                <div id="transactionsright">
+                    <div id="transactionsrightedit"></div><br><br>
+                    <div id="transactionsrightchart"></div>
+                </div>
+                <div class="clear"></div>
+             </div>
+        </div>
+
+        <br><br>
+        <script src="http://yui.yahooapis.com/3.4.1/build/yui/yui-min.js"></script>
+        <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/jquery-ui.min.js"></script> <!-- datepicker, autocomplete -->
+        <script src="http://code.highcharts.com/highcharts.js"></script>
+        <script src="http://code.highcharts.com/modules/exporting.js"></script>
+        <script type="text/javascript" src="js/moneywatch.js"></script>
+        <script type="text/javascript">
+           $(document).ready( function(){
+               MW.paintScreen();
+           });
+        </script>
+
+    </body>
+</html>

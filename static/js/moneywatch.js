@@ -5,11 +5,10 @@
 //
 // MoneyWatch - https://github.com/jamesottinger/moneywatch
 //===============================================================================
-"use strict";
 var MW = MW || {};
 
 MW = {
-    moneyWatchURL: '/x/moneywatch-relay.py',
+    moneyWatchURL: '.',
     activeRowId: '',
 
     paintScreen: function () {
@@ -34,32 +33,38 @@ MW = {
 MW.comm = {
     sendCommand: function (in_job) {
         var formdata;
+        var urlpost = MW.moneyWatchURL + '/action/' + in_job;
+
         switch(in_job) {
             case 'I.SUMMARY.GET':
-                $.post(MW.moneyWatchURL,
-                    {job: in_job, pu: MW.util.poisonURL()},
-                    function(data) {
+                $.ajax({
+                    url: urlpost,
+                    data: {},
+                    success: function(data) {
                         $('#rightcontent1').html(data);
                         MW.calcNetWorth();
                     }
-                );
+                });
                 break;
             case 'I.BULKADD.EDIT':
                 MW.yui.panelUniversal.set('width', 950);
                 MW.yui.panelUniversal.set('headerContent', "Investments - Bulk Add" + MW.yui.YUIcloseMarkup);
-                $.post(MW.moneyWatchURL,
-                    {job: in_job, pu: MW.util.poisonURL()},
-                    function(data) {
+                $.ajax({
+                    url: urlpost,
+                    data: {job: in_job},
+                    success: function(data) {
                         $('#paneluniversal-inner').html(data);
                         MW.yui.panelUniversal.show();
                     }
-                );
+                });
                 break;
             case 'I.BULKADD.SAVE':
                 formdata = $('#ibulkedit').serialize();
-                $.post(MW.moneyWatchURL,
-                    formdata,
-                    function(data) {
+                $.ajax({
+                    type: 'POST',
+                    url: urlpost,
+                    data: formdata,
+                    success: function(data) {
                         data = data.replace(/\n/gm, '');
                         if (data == 'ok') {
                             MW.yui.panelUniversal.hide();
@@ -67,64 +72,72 @@ MW.comm = {
                             MW.comm.sendCommand('B.SUMMARY.GET');
                         }
                     }
-                );
+                });
                 break;
             case 'I.ENTRY.EDITSAVE':
             case 'I.ENTRY.ADDSAVE':
                 formdata = $('#ieditsingle').serialize();
                 var ielectionid = $('#ieditsingle-ielectionid').val();
-                $.post(MW.moneyWatchURL,
-                    formdata,
-                    function(data) {
+                $.ajax({
+                    type: 'POST',
+                    url: urlpost,
+                    data: formdata,
+                    success: function(data) {
                         data = data.replace(/\n/gm, '');
                         if (data == 'ok') {
                             $('#' + MW.activeRowId).removeClass('activeinvrow');
-                            $.post(MW.moneyWatchURL,
-                                {job: 'I.ELECTION.GET', 'ielectionid': ielectionid, pu: MW.util.poisonURL()},
-                                function(data) {
+                            $.ajax({
+                                url: MW.moneyWatchURL + '/action/I.ELECTION.GET',
+                                data: {'ielectionid': ielectionid},
+                                success: function(data) {
                                     $('#transactionslist').html(data);
                                     $("#transactionslist").scrollTop($("#transactionslist")[0].scrollHeight);
                                 }
-                            );
-                            $.post(MW.moneyWatchURL,
-                                {job: 'I.ENTRY.ADD', 'ielectionid': ielectionid, pu: MW.util.poisonURL()},
-                                function(data) {
+                            });
+                            $.ajax({
+                                url: MW.moneyWatchURL + '/action/I.ENTRY.ADD',
+                                data: {'ielectionid': ielectionid},
+                                success: function(data) {
                                     $('#transactionsrightedit').html(data);
                                 }
-                            );
+                            });
                             // reload underneath
                             MW.comm.sendCommand('I.SUMMARY.GET');
                         } else {
                             alert(data.substr(0,500));
                         }
                     }
-                );
+                });
                 break;
             case 'B.SUMMARY.GET':
-                $.post(MW.moneyWatchURL,
-                    {job: in_job, pu: MW.util.poisonURL()},
-                    function(data) {
+                $.ajax({
+                    url: urlpost,
+                    data: {},
+                    success: function(data) {
                         $('#rightcontent2').html(data);
                         MW.calcNetWorth();
                     }
-                );
+                });
                 break;
             case 'B.BULKINTEREST.EDIT':
                 MW.yui.panelUniversal.set('width', 350);
                 MW.yui.panelUniversal.set('headerContent', "Bank - Bulk Interest" + MW.yui.YUIcloseMarkup);
-                $.post(MW.moneyWatchURL,
-                    {job: in_job, pu: MW.util.poisonURL()},
-                    function(data) {
+                $.ajax({
+                    url: urlpost,
+                    data: {},
+                    success: function(data) {
                         $('#paneluniversal-inner').html(data);
                         MW.yui.panelUniversal.show();
                     }
-                );
+                });
                 break;
             case 'B.BULKINTEREST.SAVE':
                 formdata = $('#bbulkinterestedit').serialize();
-                $.post(MW.moneyWatchURL,
-                    formdata,
-                    function(data) {
+                $.ajax({
+                    type: 'POST',
+                    url: urlpost,
+                    data: formdata,
+                    success: function(data) {
                         data = data.replace(/\n/gm, '');
                         if (data == 'ok') {
                             MW.yui.panelUniversal.hide();
@@ -134,24 +147,27 @@ MW.comm = {
                             alert(data.substr(0,500));
                         }
                     }
-                );
+                });
                 break;
             case 'B.BULKBILLS.EDIT':
                 MW.yui.panelUniversal.set('width', 750);
                 MW.yui.panelUniversal.set('headerContent', "Bank - Bulk Bills" + MW.yui.YUIcloseMarkup);
-                $.post(MW.moneyWatchURL,
-                    {job: in_job, pu: MW.util.poisonURL()},
-                    function(data) {
+                $.ajax({
+                    url: urlpost,
+                    data: {},
+                    success: function(data) {
                         $('#paneluniversal-inner').html(data);
                         MW.yui.panelUniversal.show();
                     }
-                );
+                });
                 break;
             case 'B.BULKBILLS.SAVE':
                 formdata = $('#bbulkbillsedit').serialize();
-                $.post(MW.moneyWatchURL,
-                    formdata,
-                    function(data) {
+                $.ajax({
+                    type: 'POST',
+                    url: urlpost,
+                    data: formdata,
+                    success: function(data) {
                         data = data.replace(/\n/gm, '');
                         if (data == 'ok') {
                             MW.yui.panelUniversal.hide();
@@ -161,43 +177,48 @@ MW.comm = {
                             alert(data.substr(0,500));
                         }
                     }
-                );
+                });
                 break;
             case 'B.ENTRY.EDITSAVE':
             case 'B.ENTRY.ADDSAVE':
                 var bacctid = $('#beditsingle-bacctid').val();
                 formdata = $('#beditsingle').serialize();
-                $.post(MW.moneyWatchURL,
-                    formdata,
-                    function(data) {
+                $.ajax({
+                    type: 'POST',
+                    url: urlpost,
+                    data: formdata,
+                    success: function(data) {
                         data = data.replace(/\n/gm, '');
                         if (data == 'ok') {
                             $('#' + MW.activeRowId).removeClass('activebankrow');
-                            $.post(MW.moneyWatchURL,
-                                {job: 'B.ACCOUNT.GET', 'bacctid': bacctid, pu: MW.util.poisonURL()},
-                                function(data) {
+                            $.ajax({
+                                url: MW.moneyWatchURL + '/action/B.ACCOUNT.GET',
+                                data: {'bacctid': bacctid},
+                                success: function(data) {
                                     $('#transactionslist').html(data);
                                     $("#transactionslist").scrollTop($("#transactionslist")[0].scrollHeight);
                                 }
-                            );
-                            $.post(MW.moneyWatchURL,
-                                {job: 'B.ENTRY.ADD', 'bacctid': bacctid, pu: MW.util.poisonURL()},
-                                function(data) {
+                            });
+                            $.ajax({
+                                url: MW.moneyWatchURL + '/action/B.ENTRY.ADD',
+                                data: {'bacctid': bacctid},
+                                success: function(data) {
                                     $('#transactionsrightedit').html(data);
                                 }
-                            );
+                            });
                             // reload underneath
                             MW.comm.sendCommand('B.SUMMARY.GET');
                         } else {
                             alert(data.substr(0,500));
                         }
                     }
-                );
+                });
                 break;
             case 'U.UPDATEQUOTES':
-                $.post(MW.moneyWatchURL,
-                    {job: in_job, pu: MW.util.poisonURL()},
-                    function(data) {
+                $.ajax({
+                    url: urlpost,
+                    data: {},
+                    success: function(data) {
                         data = data.replace(/\n/gm, '');
                         if (data == 'ok') {
                             MW.comm.sendCommand('I.SUMMARY.GET');
@@ -205,12 +226,13 @@ MW.comm = {
                             alert(data.substr(0,500));
                         }
                     }
-                );
+                });
                 break;
             case 'U.UPDATEBANKTOTALS':
-                $.post(MW.moneyWatchURL,
-                    {job: in_job, pu: MW.util.poisonURL()},
-                    function(data) {
+                $.ajax({
+                    url: urlpost,
+                    data: {},
+                    success: function(data) {
                         data = data.replace(/\n/gm, '');
                         if (data == 'ok') {
                             MW.comm.sendCommand('B.SUMMARY.GET');
@@ -218,44 +240,48 @@ MW.comm = {
                             alert(data.substr(0,500));
                         }
                     }
-                );
+                });
                 break;
             case 'U.IMPORTFILE.EDIT':
                 MW.yui.panelUniversal.set('width', 420);
                 MW.yui.panelUniversal.set('headerContent', "Import Menu" + MW.yui.YUIcloseMarkup);
-                $.post(MW.moneyWatchURL,
-                    {job: in_job, pu: MW.util.poisonURL()},
-                    function(data) {
+                $.ajax({
+                    url: urlpost,
+                    data: {},
+                    success: function(data) {
                         $('#paneluniversal-inner').html(data);
                         MW.yui.panelUniversal.show();
                     }
-                );
+                });
                 break;
             case 'U.LINKS.GET':
-                $.post(MW.moneyWatchURL,
-                    {job: in_job, pu: MW.util.poisonURL()},
-                    function(data) {
+                $.ajax({
+                    url: urlpost,
+                    data: {},
+                    success: function(data) {
                         $('#ui-links').html(data);
                     }
-                );
+                });
                 break;
             case 'U.WEATHER.GET':
                 $('#weather-forcast').html('');
-                $.post(MW.moneyWatchURL,
-                    {job: in_job, pu: MW.util.poisonURL()},
-                    function(data) {
+                $.ajax({
+                    url: urlpost,
+                    data: {},
+                    success: function(data) {
                         $('#weather-forcast').html(data);
                     }
-                );
+                });
                 break;
             default:
         }
     },
 
     getInvElection: function (in_ielectionid) {
-        $.post(MW.moneyWatchURL,
-            {job: 'I.ELECTION.GET', 'ielectionid': in_ielectionid, pu: MW.util.poisonURL()},
-            function(data) {
+        $.ajax({
+            url: MW.moneyWatchURL + '/action/I.ELECTION.GET',
+            data: {'ielectionid': in_ielectionid},
+            success: function(data) {
                 $('#transactionslist').html(data);
                 // clear any previous highlights
                 $('#' + MW.activeRowId).removeClass('activeinvrow');
@@ -267,26 +293,29 @@ MW.comm = {
                 // $('#transactionslist').stop().animate({ scrollTop: $('#scrollmeinv').offset().top },120);
                 $("#transactionslist").scrollTop($("#transactionslist")[0].scrollHeight);
             }
-        );
-        $.post(MW.moneyWatchURL,
-            {job: 'I.ENTRY.ADD', 'ielectionid': in_ielectionid, pu: MW.util.poisonURL()},
-            function(data) {
+        });
+        $.ajax({
+            url: MW.moneyWatchURL + '/action/I.ENTRY.ADD',
+            data: {'ielectionid': in_ielectionid},
+            success: function(data) {
                 $('#transactionsrightedit').html(data);
             }
-        );
-        $.post(MW.moneyWatchURL,
-            {job: 'I.ENTRY.CHART', 'ielectionid': in_ielectionid, pu: MW.util.poisonURL()},
-            function(data) {
+        });
+        $.ajax({
+            url: MW.moneyWatchURL + '/action/I.ENTRY.CHART',
+            data: {'ielectionid': in_ielectionid},
+            success: function(data) {
                 $('#transactionsrightchart').html(data);
             }
-        );
+        });
         //$('#paneluniversal-inner').html('');
     },
 
     getInvElectionEdit: function (in_ielectionid, in_itransid) {
-        $.post(MW.moneyWatchURL,
-            {job: 'I.ENTRY.EDIT', 'ielectionid': in_ielectionid, 'itransid': in_itransid, pu: MW.util.poisonURL()},
-            function(data) {
+        $.ajax({
+            url: MW.moneyWatchURL + '/action/I.ENTRY.EDIT',
+            data: {'ielectionid': in_ielectionid, 'itransid': in_itransid},
+            success: function(data) {
                 $('#transactionsrightedit').html(data);
                 if (MW.activeRowId !== '') {
                     $('#' + MW.activeRowId).removeClass('activeinvrow');
@@ -295,52 +324,56 @@ MW.comm = {
                 $('#' + MW.activeRowId).addClass('activeinvrow');
                 $('#transactionsrightedit').addClass('activeinveditmenu');
             }
-        );
+        });
     },
 
     getInvGraph: function (in_ielectionid) {
         MW.yui.panelUniversal.set('width', 950);
         MW.yui.panelUniversal.set('headerContent', "Investment - Graph" + MW.yui.YUIcloseMarkup);
-        $.post(MW.moneyWatchURL,
-            {job: 'I.GRAPH.GET', 'ielectionid': in_ielectionid, pu: MW.util.poisonURL()},
-            function(data) {
+        $.ajax({
+            url: MW.moneyWatchURL + '/action/I.GRAPH.GET',
+            data: {'ielectionid': in_ielectionid},
+            success: function(data) {
                 $('#paneluniversal-inner').html(data);
                 MW.yui.panelUniversal.show();
             }
-        );
+        });
     },
 
     sendInvDelete: function (in_ielectionid, in_itransid) {
         var r = confirm("Are you sure you want to delete MW transaction?");
         if (r === true) {
-            $.post(MW.moneyWatchURL,
-                {job: 'I.ENTRY.DELETE', 'itransid': in_itransid, pu: MW.util.poisonURL()},
-                function(data) {
+            $.ajax({
+                url: MW.moneyWatchURL + '/action/I.ENTRY.DELETE',
+                data: {'itransid': in_itransid},
+                success: function(data) {
                     data = data.replace(/\n/gm, '');
                     if (data == 'ok') {
                         // reload left side, reflecting the deletion
-                        $.post(MW.moneyWatchURL,
-                            {job: 'I.ELECTION.GET', 'ielectionid': in_ielectionid, pu: MW.util.poisonURL()},
-                            function(data) {
+                        $.ajax({
+                            url: MW.moneyWatchURL + '/action/I.ELECTION.GET',
+                            data: {'ielectionid': in_ielectionid},
+                            success: function(data) {
                                 $('#transactionslist').html(data);
                             }
-                        );
+                        });
                         // reload underneath
                         MW.comm.sendCommand('I.SUMMARY.GET');
                     } else {
                         alert(data.substr(0,500));
                     }
                 }
-            );
+            });
         } else {
             return false;
         }
     },
 
     getBankEdit: function (in_btransid) {
-        $.post(MW.moneyWatchURL,
-            {job: 'B.ENTRY.EDIT', 'btransid': in_btransid, pu: MW.util.poisonURL()},
-            function(data) {
+        $.ajax({
+            url: MW.moneyWatchURL + '/action/B.ENTRY.EDIT',
+            data: {'btransid': in_btransid},
+            success: function(data) {
                 $('#transactionsrightedit').html(data);
                 if (MW.activeRowId !== '') {
                     $('#' + MW.activeRowId).removeClass('activeinvrow');
@@ -349,31 +382,33 @@ MW.comm = {
                 $('#' + MW.activeRowId).addClass('activeinvrow');
                 $('#transactionsrightedit').addClass('activeinveditmenu');
             }
-        );
+        });
     },
 
     sendBankDelete: function (in_bacctid, in_btransid) {
         var r = confirm("Are you sure you want to delete MW transaction?");
         if (r === true) {
-            $.post(MW.moneyWatchURL,
-                {job: 'B.ENTRY.DELETE', 'btransid': in_btransid, pu: MW.util.poisonURL()},
-                function(data) {
+            $.ajax({
+                url: MW.moneyWatchURL + '/action/B.ENTRY.DELETE',
+                data: {'btransid': in_btransid},
+                success: function(data) {
                     data = data.replace(/\n/gm, '');
                     if (data == 'ok') {
                         // reload left side, reflecting the deletion
-                        $.post(MW.moneyWatchURL,
-                            {job: 'B.ACCOUNT.GET', 'bacctid': in_bacctid, pu: MW.util.poisonURL()},
-                            function(data) {
+                        $.ajax({
+                            url: MW.moneyWatchURL + '/action/B.ACCOUNT.GET',
+                            data: {'bacctid': in_bacctid},
+                            success: function(data) {
                                 $('#transactionslist').html(data);
                             }
-                        );
+                        });
                         // reload underneath
                         MW.comm.sendCommand('B.SUMMARY.GET');
                     } else {
                         alert(data.substr(0,500));
                     }
                 }
-            );
+            });
             return true;
         } else {
             return false;
@@ -381,9 +416,10 @@ MW.comm = {
     },
 
     getBankAccount: function (in_bacctid) {
-        $.post(MW.moneyWatchURL,
-            {job: 'B.ACCOUNT.GET', 'bacctid': in_bacctid, pu: MW.util.poisonURL()},
-            function(data) {
+        $.ajax({
+            url: MW.moneyWatchURL + '/action/B.ACCOUNT.GET',
+            data: {'bacctid': in_bacctid},
+            success: function(data) {
                 $('#transactionslist').html(data);
                 // clear any previous highlights
                 $('#' + MW.activeRowId).removeClass('activeinvrow');
@@ -393,13 +429,14 @@ MW.comm = {
                 MW.yui.panelTransactions.show();
                 $("#transactionslist").scrollTop($("#transactionslist")[0].scrollHeight);
             }
-        );
-        $.post(MW.moneyWatchURL,
-            {job: 'B.ENTRY.ADD', 'bacctid': in_bacctid, pu: MW.util.poisonURL()},
-            function(data) {
+        });
+        $.ajax({
+            url: MW.moneyWatchURL + '/action/B.ENTRY.ADD',
+            data: {'bacctid': in_bacctid},
+            success: function(data) {
                 $('#transactionsrightedit').html(data);
             }
-        );
+        });
     },
 
     cancelEdit: function (in_type, in_xacctid) {
@@ -409,19 +446,21 @@ MW.comm = {
         $('#transactionsrightedit').removeClass('activeinveditmenu');
         // reload the right side
         if (in_type == 'bank') {
-            $.post(MW.moneyWatchURL,
-                {job: 'B.ENTRY.ADD', 'bacctid': in_xacctid, pu: MW.util.poisonURL()},
-                function(data) {
+            $.ajax({
+                url: MW.moneyWatchURL + '/action/B.ENTRY.ADD',
+                data: {'bacctid': in_xacctid},
+                success: function(data) {
                     $('#transactionsrightedit').html(data);
                 }
-            );
+            });
         } else if (in_type == 'investment') {
-            $.post(MW.moneyWatchURL,
-                {job: 'I.ENTRY.ADD', 'ielectionid': in_xacctid, pu: MW.util.poisonURL()},
-                function(data) {
+            $.ajax({
+                url: MW.moneyWatchURL + '/action/I.ENTRY.ADD',
+                data: {'ielectionid': in_xacctid},
+                success: function(data) {
                     $('#transactionsrightedit').html(data);
                 }
-            );
+            });
         }
 
     }
