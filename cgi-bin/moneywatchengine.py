@@ -1100,9 +1100,11 @@ def b_edit_template(mode, bacctname, btransid, bacctid, transferbtransid, transf
     if mode == 'edit':
         sendcmd = 'B.ENTRY.EDITSAVE'
         buttonsay = 'Save Edit'
+        buttonduplicate = '''<input type="button" name="doitnew" VALUE="Save Edit As New" onClick="beditsingle_validate('B.ENTRY.ADDSAVE');">'''
     else:
         sendcmd = 'B.ENTRY.ADDSAVE'
         buttonsay = 'Add New'
+        buttonduplicate = ''
 
     transshow = 'none'
     transsay = 'From'
@@ -1155,13 +1157,13 @@ def b_edit_template(mode, bacctname, btransid, bacctid, transferbtransid, transf
                         -->
                     </table>
                     <div style="text-align:right; padding-top: 20px; padding-right: 25px;">
-                        <input type="hidden" name="job" value="%s">
                         <input type="hidden" name="bacctname" value="%s">
                         <input type="hidden" name="btransid" value="%s">
                         <input type="hidden" name="bacctid" id="beditsingle-bacctid" value="%s">
                         <input type="hidden" name="transferbtransid" value="%s">
                         <input type="hidden" name="transferbacctid" value="%s">
                         <input type="button" value="Cancel" onClick="MW.comm.cancelEdit('bank', '%s');">
+                        %s
                         <input type="button" name="doit" VALUE="%s" onClick="beditsingle_validate('%s');">
                     </div>
                 </form><br>
@@ -1209,16 +1211,15 @@ def b_edit_template(mode, bacctname, btransid, bacctid, transferbtransid, transf
                 </script>
         ''' % (
             bacctname, typeselect, transdate, numnote, amt, transshow, transsay,
-            b_makeselects(transferbacctid,''), whom1, whom2, sendcmd, bacctname, btransid,
-            bacctid, transferbtransid, transferbacctid, bacctid, buttonsay, sendcmd, b_autocomplete(bacctid)
+            b_makeselects(transferbacctid,''), whom1, whom2, bacctname, btransid,
+            bacctid, transferbtransid, transferbacctid, bacctid, buttonduplicate, buttonsay, sendcmd, b_autocomplete(bacctid)
         )
 
     return markup
 
 
-def b_prepare_addupdate():
+def b_prepare_addupdate(in_job):
     # get form items
-    in_job      = request.form.get('job')
     in_date     = request.form.get('transdate')
     in_numnote  = request.form.get('numnote')
     in_amt      = request.form.get('amt')

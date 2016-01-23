@@ -50,7 +50,7 @@ def actionhandler(job):
     elif job == 'B.ENTRY.EDIT':
         return moneywatchengine.b_entry_prepareedit()
     elif job == 'B.ENTRY.ADDSAVE' or job == 'B.ENTRY.EDITSAVE':
-        moneywatchengine.b_prepare_addupdate()
+        moneywatchengine.b_prepare_addupdate(job)
         return "ok"
     elif job == 'B.ENTRY.DELETE':
         moneywatchengine.b_entry_delete()
