@@ -204,6 +204,8 @@ MW.comm = {
                                 data: {'bacctid': bacctid},
                                 success: function(data) {
                                     $('#transactionsrightedit').html(data);
+                                    // unhighlight the right control box
+                                    $('#transactionsrightedit').removeClass('activeinveditmenu');
                                 }
                             });
                             // reload underneath
