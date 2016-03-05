@@ -733,7 +733,7 @@ def i_saveupdate(ticker, transdate, shares, cost, fromacct, action, ielectionid,
         b_accounttally(fromacct)
 
         sqlstr = "SELECT bacctid FROM moneywatch_banktransactions WHERE btransid=%s"
-        cursor.execute(sqlstr, (btransid))
+        cursor.execute(sqlstr, (btransid,))
         h_logsql(cursor.statement)
         dbrow = cursor.fetchone()
         bacctid_lookup = dbrow['bacctid'] # need to parent bank acct for re-tally
