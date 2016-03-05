@@ -99,6 +99,8 @@ MW.comm = {
                                 data: {'ielectionid': ielectionid},
                                 success: function(data) {
                                     $('#transactionsrightedit').html(data);
+                                    // unhighlight the right control box
+                                    $('#transactionsrightedit').removeClass('activeinveditmenu')
                                 }
                             });
                             // reload underneath
