@@ -8,3 +8,4 @@ _tools/
 *.swp
 *.pyc
 __FUTUREPLANS.md
+.idea/
