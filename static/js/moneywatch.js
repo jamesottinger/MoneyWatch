@@ -100,7 +100,7 @@ MW.comm = {
                                 success: function(data) {
                                     $('#transactionsrightedit').html(data);
                                     // unhighlight the right control box
-                                    $('#transactionsrightedit').removeClass('activeinveditmenu')
+                                    $('#transactionsrightedit').removeClass('activeinveditmenu');
                                 }
                             });
                             // reload underneath
