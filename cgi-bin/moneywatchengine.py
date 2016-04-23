@@ -863,13 +863,10 @@ def i_entry_edit():
     return markup + '</script>'
 
 
-
-
-
-
-#================================================================================================================
+# ================================================================================================================
 # BANK
-#================================================================================================================
+# ================================================================================================================
+
 
 def b_accounttally(in_bacctid):
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
@@ -883,15 +880,17 @@ def b_accounttally(in_bacctid):
     for dbrow in dbrows:
         if dbrow['updown'] == '+':
             totalall += float(dbrow['amt'])
-            if h_dateinfuture(dbrow['transdate']) == False:
+            if h_dateinfuture(dbrow['transdate']):
                 totaluptotoday += float(dbrow['amt'])
         else:
             totalall -= float(dbrow['amt'])
-            if h_dateinfuture(dbrow['transdate']) == False:
+            if h_dateinfuture(dbrow['transdate']):
                 totaluptotoday -= float(dbrow['amt'])
 
-    sqlstr = """UPDATE moneywatch_bankaccounts SET totalall=%s, totaluptotoday=%s, todaywas='%s', tallytime='%s' WHERE bacctid=%s""" % (
-        "{:.2f}".format(float(totalall)), "{:.2f}".format(float(totaluptotoday)), h_todaydateformysql(), h_todaydatetimeformysql(), str(in_bacctid)
+    sqlstr = """UPDATE moneywatch_bankaccounts SET totalall=%s, totaluptotoday=%s,
+             todaywas='%s', tallytime='%s' WHERE bacctid=%s""" % (
+             "{:.2f}".format(float(totalall)), "{:.2f}".format(float(totaluptotoday)),
+             h_todaydateformysql(), h_todaydatetimeformysql(), str(in_bacctid)
     )
     cursor.execute(sqlstr)
     dbcon.commit()
