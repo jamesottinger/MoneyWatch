@@ -1570,29 +1570,30 @@ def b_autocomplete(in_bacctid):
     return ', '.join(whomlist)
 
 
-
-#================================================================================================================
+# ================================================================================================================
 # UTILITIES
-#================================================================================================================
+# ================================================================================================================
 
 
-# U.UPDATEQUOTES
-def u_fetchquotes():
-#http://finance.yahoo.com/d/quotes.csv?s=LLL+VFINX&f=snl1d1cjkyr1q
-#"LLL","L-3 Communication",66.24,"12/2/2011","+0.23"
-#"VFINX","VANGUARD INDEX TR",115.07,"12/1/2011","-0.21"
-#stockstring = 'VBINX+LLL'
-#   0 = Ticker
-#   1 = Name
-#   2 = Price
-#   3 = Date of Price
-#   4 = Change
-#   5 = 52 week low
-#   6 = (k) 52 week high
-#   7 = (y) yield
-#   8 = (r1) dividend date (next)
-#   9 = (q) dividend date (prev)
-
+def u_fetch_quotes():
+    """
+    U.UPDATEQUOTES - Pull stock quotes from Yahoo Finance
+    http://finance.yahoo.com/d/quotes.csv?s=LLL+VFINX&f=snl1d1cjkyr1q
+    "LLL","L-3 Communication",66.24,"12/2/2011","+0.23"
+    "VFINX","VANGUARD INDEX TR",115.07,"12/1/2011","-0.21"
+    stockstring = 'VBINX+LLL'
+    0  = Ticker
+    1  = Name
+    2  = Price
+    3  = Date of Price
+    4  = Change
+    5  = 52 week low
+    6  = (k) 52 week high
+    7  = (y) yield
+    8  = (r1) dividend date (next)
+    9  = (q) dividend date (prev)
+    10 = (p) previous close
+    """
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
     cursor = dbcon.cursor(dictionary=True)
     sqlstr = "SELECT DISTINCT ticker FROM moneywatch_invelections WHERE active=1 and fetchquotes=1"
@@ -1601,15 +1602,16 @@ def u_fetchquotes():
     dbrows = cursor.fetchall()
     stockstring = ""
     for dbrow in dbrows:
-      if dbrow == dbrows[0]:
-        stockstring = dbrow['ticker']
-      else:
-        stockstring += '+' + dbrow['ticker']
+        if dbrow == dbrows[0]:
+            stockstring = dbrow['ticker']
+        else:
+            stockstring += '+' + dbrow['ticker']
 
     # fetch from Yahoo
-    response = requests.get('http://finance.yahoo.com/d/quotes.csv?s=' + stockstring + '&f=snl1d1cjkyr1q&e=.csv')
+    response = requests.get('http://finance.yahoo.com/d/quotes.csv?s=' + stockstring + '&f=snl1d1cjkyr1qp&e=.csv')
     if response.status_code != 200:
-        h_logsql('There was an error fetching quotes: http://finance.yahoo.com/d/quotes.csv?s=' + stockstring + '&f=snl1d1cjkyr1q&e=.csv')
+        h_logsql('There was an error fetching quotes: http://finance.yahoo.com/d/quotes.csv?s=' +
+                 stockstring + '&f=snl1d1cjkyr1q&e=.csv')
         return
 
     csvdatalines = response.text.rstrip().split('\n')
@@ -1622,9 +1624,11 @@ def u_fetchquotes():
         row[7] = str(row[7].replace('"', ''))
         row[8] = str(row[8].replace('"', ''))
         row[9] = str(row[9].replace('"', ''))
+        row[10] = str(row[10].replace('"', ''))
 
-        sqlstr = "UPDATE moneywatch_invelections SET quoteprice=%s, quotechange=%s, quotedate=%s, yield=%s, divdatenext=%s, divdateprev=%s WHERE ticker=%s"
-        cursor.execute(sqlstr, (row[2], row[4], h_todaydatetimeformysql(), row[7], row[8], row[9], row[0]))
+        sqlstr = "UPDATE moneywatch_invelections SET quoteprice=%s,lastcloseprice=%s, quotechange=%s, quotedate=%s,\
+                yield=%s, divdatenext=%s, divdateprev=%s WHERE ticker=%s"
+        cursor.execute(sqlstr, (row[2], row[10], row[4], h_todaydatetimeformysql(), row[7], row[8], row[9], row[0]))
         # h_logsql(cursor.statement)
         dbcon.commit()
     dbcon.close()
