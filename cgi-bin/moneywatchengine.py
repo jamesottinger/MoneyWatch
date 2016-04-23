@@ -1611,7 +1611,7 @@ def u_fetch_quotes():
     response = requests.get('http://finance.yahoo.com/d/quotes.csv?s=' + stockstring + '&f=snl1d1cjkyr1qp&e=.csv')
     if response.status_code != 200:
         h_logsql('There was an error fetching quotes: http://finance.yahoo.com/d/quotes.csv?s=' +
-                 stockstring + '&f=snl1d1cjkyr1q&e=.csv')
+                 stockstring + '&f=snl1d1cjkyr1qp&e=.csv')
         return
 
     csvdatalines = response.text.rstrip().split('\n')
