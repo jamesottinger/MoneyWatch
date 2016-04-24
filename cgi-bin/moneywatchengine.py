@@ -880,11 +880,11 @@ def b_accounttally(in_bacctid):
     for dbrow in dbrows:
         if dbrow['updown'] == '+':
             totalall += float(dbrow['amt'])
-            if h_dateinfuture(dbrow['transdate']):
+            if not h_dateinfuture(dbrow['transdate']):
                 totaluptotoday += float(dbrow['amt'])
         else:
             totalall -= float(dbrow['amt'])
-            if h_dateinfuture(dbrow['transdate']):
+            if not h_dateinfuture(dbrow['transdate']):
                 totaluptotoday -= float(dbrow['amt'])
 
     sqlstr = """UPDATE moneywatch_bankaccounts SET totalall=%s, totaluptotoday=%s,
