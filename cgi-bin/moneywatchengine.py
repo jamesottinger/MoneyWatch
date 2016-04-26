@@ -285,7 +285,7 @@ def i_electionget():
     sqlstr = "SELECT * FROM moneywatch_invtransactions WHERE ielectionid=%s ORDER BY transdate,action"
     cursor.execute(sqlstr, (request.args.get('ielectionid'),))
     dbrows = cursor.fetchall()
-    #ielectionid, transdate, ticker, updown, action, sharesamt, shareprice, transprice, totalshould
+    # ielectionid, transdate, ticker, updown, action, sharesamt, shareprice, transprice, totalshould
 
     for dbrow in dbrows:
         amtup = ''
@@ -406,11 +406,12 @@ def i_bulkadd_edit():
     return markup + '</script>'
 
 
-# I.BULKADD.SAVE = save "Investment Bulk Add" submission
 def i_bulkadd_save():
+    """I.BULKADD.SAVE = save "Investment Bulk Add" submission"""
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
     cursor = dbcon.cursor(dictionary=True)
-    sqlstr = "SELECT * FROM moneywatch_invelections WHERE ticker IS NOT NULL AND active=1 ORDER BY iacctname,ielectionname"
+    sqlstr = "SELECT * FROM moneywatch_invelections WHERE ticker IS NOT NULL AND active=1 \
+                ORDER BY iacctname,ielectionname"
     cursor.execute(sqlstr)
     dbrows = cursor.fetchall()
 
@@ -424,15 +425,15 @@ def i_bulkadd_save():
             each_action = request.form.get(str(dbrow['ielectionid']) + '-action')
 
             i_saveadd(
-                ticker=dbrow['ticker'], transdate=each_date, shares=each_shares, cost=each_cost,
-                fromacct=each_fromid, action=each_action, ielectionid=each_ielectionid, ielectionname=dbrow['ielectionname']
+                ticker=dbrow['ticker'], transdate=each_date, shares=each_shares, cost=each_cost, fromacct=each_fromid,
+                action=each_action, ielectionid=each_ielectionid, ielectionname=dbrow['ielectionname']
             )
 
     dbcon.close()
 
 
-# I.ENTRY.ADD = generates body needed for "Investment Single Add" Section
 def i_entry_prepareadd():
+    """I.ENTRY.ADD = generates body needed for "Investment Single Add" Section"""
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
     cursor = dbcon.cursor(dictionary=True)
     sqlstr = "SELECT * FROM moneywatch_invelections WHERE ielectionid=%s"
