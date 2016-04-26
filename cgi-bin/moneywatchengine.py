@@ -567,32 +567,37 @@ def i_edit_template(mode, ielectionname, ticker, itransid, ielectionid, btransid
 
     return markup
 
+
 def i_edit_liveinvchart():
     return '''
            <!-- widget came from http://www.macroaxis.com/invest/widgets/native/intradaySymbolFeed?ip=true&s=VFIAX -->
                 <iframe bgcolor='#ffffff' id='intraday_symbol_feed' name='intraday_symbol_feed' marginheight='0' marginwidth='0' SCROLLING='NO' height='300px' width='300px' frameborder='0' src='http://widgets.macroaxis.com/widgets/intradaySymbolFeed.jsp?gia=t&tid=279&t=24&s=%s&_=1381101748535'></iframe>
     ''' % (request.args.get('ticker'))
 
+
 def i_prepare_addupdate():
 
     # get form items
-    in_job      = request.form.get('job')
-    in_ticker   = request.form.get('ticker')
+    in_job = request.form.get('job')
+    in_ticker = request.form.get('ticker')
     in_transdate = request.form.get('tradedate')
-    in_shares   = request.form.get('shares')
-    in_cost     = request.form.get('cost')
-    in_action   = request.form.get('action')
-    in_btransid = int(request.form.get('btransid'))             # updates only (hidden field)
-    in_itransid    = int(request.form.get('itransid'))          # updates only (hidden field)
+    in_shares = request.form.get('shares')
+    in_cost = request.form.get('cost')
+    in_action = request.form.get('action')
+    in_btransid = int(request.form.get('btransid'))  # updates only (hidden field)
+    in_itransid = int(request.form.get('itransid'))  # updates only (hidden field)
     in_ielectionid = int(request.form.get('ielectionid'))
     in_ielectionname = request.form.get('ielectionname')
-    in_fromid   = int(request.form.get('fromaccount'))
+    in_fromid = int(request.form.get('fromaccount'))
 
     if in_job == 'I.ENTRY.ADDSAVE':
-        i_saveadd(ticker=in_ticker, transdate=in_transdate, shares=in_shares, cost=in_cost, fromacct=in_fromid, action=in_action, ielectionid=in_ielectionid, ielectionname=in_ielectionname)
+        i_saveadd(ticker=in_ticker, transdate=in_transdate, shares=in_shares, cost=in_cost, fromacct=in_fromid,
+                  action=in_action, ielectionid=in_ielectionid, ielectionname=in_ielectionname)
 
     if in_job == 'I.ENTRY.EDITSAVE':
-        i_saveupdate(ticker=in_ticker, transdate=in_transdate, shares=in_shares, cost=in_cost, fromacct=in_fromid, action=in_action, ielectionid=in_ielectionid, ielectionname=in_ielectionname, btransid=in_btransid, itransid=in_itransid)
+        i_saveupdate(ticker=in_ticker, transdate=in_transdate, shares=in_shares, cost=in_cost, fromacct=in_fromid,
+                     action=in_action, ielectionid=in_ielectionid, ielectionname=in_ielectionname,
+                     btransid=in_btransid, itransid=in_itransid)
 
 
 def i_saveadd(ticker, transdate, shares, cost, fromacct, action, ielectionid, ielectionname):
@@ -1060,8 +1065,8 @@ def b_accountget():
     return markup
 
 
-# B.ENTRY.ADD = generates body needed for "Bank Single Add" Section
-def b_entry_prepareadd():
+def b_entry_prepare_add():
+    """B.ENTRY.ADD = generates body needed for "Bank Single Add" Section"""
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
     cursor = dbcon.cursor(dictionary=True)
     sqlstr = "SELECT * FROM moneywatch_bankaccounts WHERE bacctid=%s"
@@ -1075,8 +1080,8 @@ def b_entry_prepareadd():
     )
 
 
-# B.ENTRY.EDIT = generates body needed for "Bank Single Edit" Section
-def b_entry_prepareedit():
+def b_entry_prepare_edit():
+    """B.ENTRY.EDIT = generates body needed for "Bank Single Edit" Section"""
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
     cursor = dbcon.cursor(dictionary=True)
     sqlstr = """SELECT bt.*, ba.bacctname FROM moneywatch_banktransactions bt \
