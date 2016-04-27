@@ -992,28 +992,19 @@ def b_summary():
     return markup + '</table>'
 
 
-# B.ACCOUNT.GET
 def b_accountget():
-
-    markup = ''
-    counter = 0
-    rtotal = 0
+    """B.ACCOUNT.GET"""
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
     cursor = dbcon.cursor(dictionary=True)
-
     sqlstr = "SELECT * FROM moneywatch_banktransactions WHERE bacctid=%s ORDER BY transdate,numnote"
     cursor.execute(sqlstr, (request.args.get('bacctid'),))
     dbrows = cursor.fetchall()
 
+    markup = ''
+    counter = 0
+    rtotal = 0
+
     for dbrow in dbrows:
-        amtup = ''
-        amtdown = ''
-        showwho = ''
-        whomclass = ''
-        classfuture = ''
-        rtotalclass = ''
-        rtotalshow = ''
-        #deletelink = "<a href=\"?action=DELETEBANKENTRY&type={$trans['type']}&account={$document['name']}&transdate={$trans['date']}&transamt={$trans['transactionamt']}\">x</a>";
 
         if dbrow['updown'] == '+':
             amtup = "+" + h_showmoney(dbrow['amt'])
@@ -1041,8 +1032,7 @@ def b_accountget():
             showwho = dbrow['whom1']
             whomclass = 'rwhom'
 
-        if h_dateinfuture(str(dbrow['transdate'])):
-            classfuture = 'future'
+        classfuture = 'future' if h_dateinfuture(str(dbrow['transdate'])) else ''
 
         if counter % 2 == 0:
             classoe = 'recordeven'
@@ -1050,7 +1040,10 @@ def b_accountget():
             classoe = 'recordodd'
 
         markup += '''<div id="b%s" class="%s %s">\
-                        <span class="irow0"><input type="button" value="D" onclick="return MW.comm.sendBankDelete('%s','%s');"> <input type="button" value="E" onclick="return MW.comm.getBankEdit('%s');"></span>
+                        <span class="irow0">
+                            <input type="button" value="D" onclick="return MW.comm.sendBankDelete('%s','%s');">
+                            <input type="button" value="E" onclick="return MW.comm.getBankEdit('%s');">
+                        </span>
                         <span class="rdate">%s</span>
                         <span class="rnum">%s</span>
                         <span class="%s">%s</span>
@@ -1060,9 +1053,8 @@ def b_accountget():
                      </div>''' % (
                      dbrow['btransid'], classoe, classfuture, dbrow['bacctid'], dbrow['btransid'],
                      dbrow['btransid'], dbrow['transdate'], dbrow['numnote'], whomclass, showwho,
-                     amtup, amtdown, rtotalclass, rtotalshow
-                    )
-        counter +=1
+                     amtup, amtdown, rtotalclass, rtotalshow)
+        counter += 1
     return markup
 
 
@@ -1217,7 +1209,8 @@ def b_edit_template(mode, bacctname, btransid, bacctid, transferbtransid, transf
         ''' % (
             bacctname, typeselect, transdate, numnote, amt, transshow, transsay,
             b_makeselects(transferbacctid,''), whom1, whom2, bacctname, btransid,
-            bacctid, transferbtransid, transferbacctid, bacctid, buttonduplicate, buttonsay, sendcmd, b_autocomplete(bacctid)
+            bacctid, transferbtransid, transferbacctid, bacctid, buttonduplicate,
+            buttonsay, sendcmd, b_autocomplete(bacctid)
         )
 
     return markup
@@ -1225,16 +1218,15 @@ def b_edit_template(mode, bacctname, btransid, bacctid, transferbtransid, transf
 
 def b_prepare_addupdate(in_job):
     # get form items
-    in_date     = request.form.get('transdate')
-    in_numnote  = request.form.get('numnote')
-    in_amt      = request.form.get('amt')
-    in_type     = request.form.get('ttype')
-    in_whom1     = request.form.get('whom1')
-    in_bacctname = request.form.get('bacctname')
-    in_btransid  = int(request.form.get('btransid'))                  # (bank transaction id) updates only (hidden field)
-    in_bacctid   = int(request.form.get('bacctid'))
-    in_transferbtransid  = int(request.form.get('transferbtransid'))  # updates only (hidden field)
-    in_transferbacctid   = int(request.form.get('transferbacctid'))   # updates only (hidden field)
+    in_date = request.form.get('transdate')
+    in_numnote = request.form.get('numnote')
+    in_amt = request.form.get('amt')
+    in_type = request.form.get('ttype')
+    in_whom1 = request.form.get('whom1')
+    in_btransid = int(request.form.get('btransid'))  # (bank transaction id) updates only (hidden field)
+    in_bacctid = int(request.form.get('bacctid'))
+    in_transferbtransid = int(request.form.get('transferbtransid'))  # updates only (hidden field)
+    in_transferbacctid = int(request.form.get('transferbacctid'))  # updates only (hidden field)
 
     if 'bacctid_transferselected' in request.form: # bacctid_transferselected can be hidden and may not be included
         in_bacctid_transferselected = int(request.form.get('bacctid_transferselected'))
