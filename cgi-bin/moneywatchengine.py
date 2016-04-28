@@ -684,14 +684,15 @@ def i_saveupdate(ticker, transdate, shares, cost, fromacct, action, ielectionid,
         # Buy: Mutual Fund Name 4.439 @ $22.754
         whom1 = 'Buy : ' + ticker + ' ' + shares + ' @ ' + h_showmoney(float(cost) / float(shares))
         whom2 = 'Buy Investment/CD: ' + ielectionname
-        sqlstr = """INSERT INTO moneywatch_banktransactions (bacctid, transdate, type, updown, amt, whom1, whom2, numnote, splityn, transferbtransid, transferbacctid, itransid) \
+        sqlstr = """INSERT INTO moneywatch_banktransactions (bacctid, transdate, type, updown, amt, whom1, whom2, \
+                    numnote, splityn, transferbtransid, transferbacctid, itransid) \
                     VALUES (%s, %s, 'w', '-', %s, %s, %s, 'INV', 0, 0, 0, %s)"""
         cursor.execute(sqlstr, (fromacct, transdate, cost, whom1, whom2, itransid))
         h_logsql(cursor.statement)
         dbcon.commit()
         b_accounttally(fromacct)
 
-        update_btransid = cursor.lastrowid # use new btransid
+        update_btransid = cursor.lastrowid  # use new btransid
 
     # (2) it was bank funded before, but it isn't anymore
     elif btransid > 0 and fromacct == 0:
@@ -701,7 +702,7 @@ def i_saveupdate(ticker, transdate, shares, cost, fromacct, action, ielectionid,
         cursor.execute(sqlstr, (btransid,))
         h_logsql(cursor.statement)
         dbrow = cursor.fetchone()
-        bacctid_lookup = dbrow['bacctid'] # need to parent bank acct for re-tally
+        bacctid_lookup = dbrow['bacctid']  # need to parent bank acct for re-tally
 
         # not associated with a bank account anymore, delete the bank entry
         sqlstr = "DELETE FROM moneywatch_banktransactions WHERE btransid=%s"
@@ -915,7 +916,8 @@ def b_makeselects(selected,identifier):
             selectedsay = ' selected'
         else:
             selectedsay = ''
-        markup += '<option value="' + identifier + str(dbrow['bacctid']) + '"' + selectedsay + '>[Bank] ' + dbrow['bacctname'] + '</option>'
+        markup += '<option value="' + identifier + str(dbrow['bacctid']) + '"' + selectedsay + '>[Bank] ' + \
+                  dbrow['bacctname'] + '</option>'
     dbcon.close()
     return markup
 
