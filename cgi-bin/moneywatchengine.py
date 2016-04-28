@@ -453,16 +453,16 @@ def i_entry_prepareadd():
             action="", shares="", cost="", fundsorigin=0, manuallyupdateprice=tocheckornottocheck
         )
 
-# I.ENTRY.EDIT = generates body needed for "Investment Single Edit" Section
+
 def i_entry_prepareedit():
+    """I.ENTRY.EDIT = generates body needed for "Investment Single Edit" Section"""
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
     cursor = dbcon.cursor(dictionary=True)
-    sqlstr = """SELECT it.*, ie.ielectionname, ie.fetchquotes FROM moneywatch_invtransactions it \
-                INNER JOIN moneywatch_invelections ie ON it.ielectionid=ie.ielectionid WHERE it.itransid=%s"""
+    sqlstr = "SELECT it.*, ie.ielectionname, ie.fetchquotes FROM moneywatch_invtransactions it \
+                INNER JOIN moneywatch_invelections ie ON it.ielectionid=ie.ielectionid WHERE it.itransid=%s"
     cursor.execute(sqlstr, (request.args.get('itransid'),))
     dbrow = cursor.fetchone()
     dbcon.close()
-
 
     tocheckornottocheck = ''
     if dbrow['fetchquotes'] == 0:
@@ -662,12 +662,11 @@ def i_saveupdate(ticker, transdate, shares, cost, fromacct, action, ielectionid,
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
     cursor = dbcon.cursor(dictionary=True)
 
-    update_btransid = 0
     costpershare = "{:.3f}".format(float(cost) / float(shares))
 
     if action == 'SELL' or action == 'SELLX':
         updown = '-'
-    else: # BUY BUYX BUYE REINVDIV
+    else:  # BUY BUYX BUYE REINVDIV
         updown = '+'
 
     # ---------  [update investment transaction]  ---------
@@ -1356,7 +1355,8 @@ def b_saveupdate(btransid, bacctid, transferbtransid, transferbacctid, transdate
                 transferbtransid=%s,
                 transferbacctid=%s
                 WHERE btransid=%s"""
-            cursor.execute(sqlstr, (bacctid_transferselected, transdate, transferaction, updownother, amt, whom1trans, whom2, numnote, btransid, bacctid, transferbtransid))
+            cursor.execute(sqlstr, (bacctid_transferselected, transdate, transferaction, updownother, amt, whom1trans,
+                                    whom2, numnote, btransid, bacctid, transferbtransid))
             h_logsql(cursor.statement)
             dbcon.commit()
             b_accounttally(bacctid_transferselected)
