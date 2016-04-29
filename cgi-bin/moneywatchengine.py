@@ -796,7 +796,7 @@ def i_entry_delete():
         cursor.execute(sqlstr, (dbrow['btransid'],))
         h_logsql(cursor.statement)
         dbcon.commit()
-        u_banktotals()
+        u_bank_totals()
 
     # delete inv transaction
     sqlstr = "DELETE FROM moneywatch_invtransactions WHERE itransid=%s"
