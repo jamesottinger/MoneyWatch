@@ -1254,51 +1254,54 @@ def b_prepare_addupdate(in_job):
         )
 
 
-def b_saveadd(btransid, bacctid, transferbtransid, transferbacctid, transdate, ttype, amt, numnote, whom1, whom2, bacctid_transferselected):
+def b_saveadd(btransid, bacctid, transferbtransid, transferbacctid, transdate, ttype, amt, numnote, whom1,
+              whom2, bacctid_transferselected):
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
     cursor = dbcon.cursor(dictionary=True)
 
-    if ttype == 'w':     # withdrawal
+    if ttype == 'w':  # withdrawal
         updown = '-'
-    elif ttype == 'to': # transfer out
+    elif ttype == 'to':  # transfer out
         updown = '-'
         updownother = '+'
         transferaction = 'ti'
         whom1 = '[' + b_saybacctname(bacctid_transferselected) + ']'
         whom1trans = '[' + b_saybacctname(bacctid) + ']'
-    elif ttype == 'ti': # transfer in
+    elif ttype == 'ti':  # transfer in
         updown = '+'
         updownother = '-'
         transferaction = 'to'
         whom1 = '[' + b_saybacctname(bacctid_transferselected) + ']'
         whom1trans = '[' + b_saybacctname(bacctid) + ']'
-    else: # d = deposit
+    else:  # d = deposit
         updown = '+'
 
     # enter transaction in db
-    sqlstr = """INSERT INTO moneywatch_banktransactions (bacctid, transdate, type, updown, amt, whom1, whom2, numnote, splityn, transferbtransid, transferbacctid, itransid) \
-                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, 0, %s, %s, 0)"""
+    sqlstr = """INSERT INTO moneywatch_banktransactions (bacctid, transdate, type, updown, amt, whom1, \
+                whom2, numnote, splityn, transferbtransid, transferbacctid, itransid) \
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, 0, %s, %s, 0)"""
 
-    cursor.execute(sqlstr, (bacctid, transdate, ttype, updown, amt, whom1, whom2, numnote, transferbtransid, bacctid_transferselected))
+    cursor.execute(sqlstr, (bacctid, transdate, ttype, updown, amt, whom1, whom2, numnote, transferbtransid,
+                            bacctid_transferselected))
     h_logsql(cursor.statement)
     dbcon.commit()
     btransid_learn1 = cursor.lastrowid
     b_accounttally(bacctid)
 
-    if ttype == 'to' or ttype == 'ti': # do the transfer part
-        sqlstr = """INSERT INTO moneywatch_banktransactions (bacctid, transdate, type, updown, amt, whom1, whom2, numnote, splityn, transferbtransid, transferbacctid, itransid) \
-                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, 0, %s, %s, 0)"""
+    if ttype == 'to' or ttype == 'ti':  # do the transfer part
+        sqlstr = """INSERT INTO moneywatch_banktransactions (bacctid, transdate, type, updown, amt, whom1, whom2, \
+                    numnote, splityn, transferbtransid, transferbacctid, itransid) \
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, 0, %s, %s, 0)"""
 
-        cursor.execute(sqlstr, (bacctid_transferselected, transdate, transferaction , updownother, amt, whom1trans, whom2, numnote, btransid_learn1, bacctid))
+        cursor.execute(sqlstr, (bacctid_transferselected, transdate, transferaction , updownother, amt, whom1trans,
+                                whom2, numnote, btransid_learn1, bacctid))
         h_logsql(cursor.statement)
         dbcon.commit()
         b_accounttally(bacctid_transferselected)
         btransid_learn2 = cursor.lastrowid
 
         # update the bank account to show transid
-        sqlstr = """UPDATE moneywatch_banktransactions SET \
-                    transferbtransid=%s
-                    WHERE btransid=%s"""
+        sqlstr = """UPDATE moneywatch_banktransactions SET transferbtransid=%s WHERE btransid=%s"""
         cursor.execute(sqlstr, (btransid_learn2, btransid_learn1))
         h_logsql(cursor.statement)
         dbcon.commit()
@@ -1306,21 +1309,22 @@ def b_saveadd(btransid, bacctid, transferbtransid, transferbacctid, transdate, t
     dbcon.close()
 
 
-def b_saveupdate(btransid, bacctid, transferbtransid, transferbacctid, transdate, ttype, amt, numnote, whom1, whom2, bacctid_transferselected):
+def b_saveupdate(btransid, bacctid, transferbtransid, transferbacctid, transdate, ttype, amt, numnote,
+                 whom1, whom2, bacctid_transferselected):
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
     cursor = dbcon.cursor(dictionary=True)
 
     # these are the previously saved values -> transferbtransid, transferbacctid
 
-    if ttype == 'w':     # withdrawal
+    if ttype == 'w':  # withdrawal
         updown = '-'
-    elif ttype == 'to': # transfer out
+    elif ttype == 'to':  # transfer out
         updown = '-'
         updownother = '+'
         transferaction = 'ti'
         whom1 = '[' + b_saybacctname(bacctid_transferselected) + ']'
         whom1trans = '[' + b_saybacctname(bacctid) + ']'
-    elif ttype == 'ti': # transfer in
+    elif ttype == 'ti':  # transfer in
         updown = '+'
         updownother = '-'
         transferaction = 'to'
