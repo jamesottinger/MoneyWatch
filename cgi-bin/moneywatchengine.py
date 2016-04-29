@@ -1177,7 +1177,9 @@ def b_edit_template(mode, bacctname, btransid, bacctid, transferbtransid, transf
                             alert("Please provide the total amount for this transaction.");
                         } else if(jQuery('#beditsingle-whom1').val() == '') {
                             alert("Please provide the who/whom for this transaction.");
-                        } else if((jQuery('#beditsingle-ttype').val() == 'ti' || jQuery('#beditsingle-ttype').val() == 'to') && jQuery('#beditsingle-transferaccount').val() == '0') {
+                        } else if((jQuery('#beditsingle-ttype').val() == 'ti' || \
+                                   jQuery('#beditsingle-ttype').val() == 'to') && \
+                                   jQuery('#beditsingle-transferaccount').val() == '0') {
                             alert("Please select the transfer account.");
                         } else {
                             MW.comm.sendCommand(in_sendjob);
@@ -1229,12 +1231,12 @@ def b_prepare_addupdate(in_job):
     in_transferbtransid = int(request.form.get('transferbtransid'))  # updates only (hidden field)
     in_transferbacctid = int(request.form.get('transferbacctid'))  # updates only (hidden field)
 
-    if 'bacctid_transferselected' in request.form: # bacctid_transferselected can be hidden and may not be included
+    if 'bacctid_transferselected' in request.form:  # bacctid_transferselected can be hidden and may not be included
         in_bacctid_transferselected = int(request.form.get('bacctid_transferselected'))
     else:
         in_bacctid_transferselected = 0
 
-    if 'whom2' in request.form: # was coming in as None
+    if 'whom2' in request.form:  # was coming in as None
         in_whom2 = request.form.get('whom2')
     else:
         in_whom2 = ''
@@ -1369,12 +1371,14 @@ def b_saveupdate(btransid, bacctid, transferbtransid, transferbacctid, transdate
 
         else:
             # insert a transfer
-            sqlstr = """INSERT INTO moneywatch_banktransactions (bacctid, transdate, type, updown, amt, whom1, whom2, numnote, splityn, transferbtransid, transferbacctid, itransid) \
+            sqlstr = """INSERT INTO moneywatch_banktransactions (bacctid, transdate, type, updown, amt, whom1, whom2, \
+                        numnote, splityn, transferbtransid, transferbacctid, itransid)
                         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, 0, %s, %s, 0)"""
-            cursor.execute(sqlstr, (bacctid_transferselected, transdate, transferaction, updownother, amt, whom1trans, whom2, numnote, btransid, bacctid))
+            cursor.execute(sqlstr, (bacctid_transferselected, transdate, transferaction, updownother, amt, whom1trans,
+                                    whom2, numnote, btransid, bacctid))
             h_logsql(cursor.statement)
             dbcon.commit()
-            transferbtransid = cursor.lastrowid # use new id
+            transferbtransid = cursor.lastrowid  # use new id
             transferbacctid = bacctid_transferselected
             b_accounttally(bacctid_transferselected)
 
