@@ -742,9 +742,9 @@ def i_saveupdate(ticker, transdate, shares, cost, fromacct, action, ielectionid,
         cursor.execute(sqlstr, (btransid,))
         h_logsql(cursor.statement)
         dbrow = cursor.fetchone()
-        bacctid_lookup = dbrow['bacctid'] # need to parent bank acct for re-tally
+        bacctid_lookup = dbrow['bacctid']  # need to parent bank acct for re-tally
 
-        if fromacct != bacctid_lookup: # different bank account?
+        if fromacct != bacctid_lookup:  # different bank account?
             b_accounttally(bacctid_lookup)
 
         # btransid is the same, we just changed parts of the bank transaction
@@ -753,7 +753,6 @@ def i_saveupdate(ticker, transdate, shares, cost, fromacct, action, ielectionid,
     # 4) it wasn't bank funded before and it still isn't
     else:
         update_btransid = 0
-
 
     # -- [update investment transaction]
     sqlstr = """UPDATE moneywatch_invtransactions SET \
@@ -769,7 +768,7 @@ def i_saveupdate(ticker, transdate, shares, cost, fromacct, action, ielectionid,
     h_logsql(cursor.statement)
     dbcon.commit()
 
-    if  str(ielectionid) + '-updateprice' in request.form: # update price based on new entry
+    if str(ielectionid) + '-updateprice' in request.form: # update price based on new entry
         # update the elections price
         sqlstr = "UPDATE moneywatch_invelections SET manualoverrideprice=%s, quotedate=%s WHERE ielectionid=%s"
         cursor.execute(sqlstr, ("{:.3f}".format(float(cost) / float(shares)), h_todaydatetimeformysql(), ielectionid))
@@ -781,14 +780,13 @@ def i_saveupdate(ticker, transdate, shares, cost, fromacct, action, ielectionid,
     dbcon.close()
 
 
-    # I.ENTRY.DELETE = removes an investment entry and possibly a transfer
 def i_entry_delete():
+    """I.ENTRY.DELETE = removes an investment entry and possibly a transfer"""
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
     cursor = dbcon.cursor(dictionary=True)
     sqlstr = "SELECT * FROM moneywatch_invtransactions WHERE itransid=%s"
     cursor.execute(sqlstr, (request.args.get('itransid'),))
     dbrow = cursor.fetchone()
-
 
     # delete a bank transaction?
     if dbrow['btransid'] > 0:
@@ -808,11 +806,12 @@ def i_entry_delete():
     dbcon.close()
 
 
-# I.ENTRY.ADD = generates body needed for "Investment Single Add" Section
 def i_entry_edit():
+    """I.ENTRY.ADD = generates body needed for "Investment Single Add" Section"""
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
     cursor = dbcon.cursor(dictionary=True)
-    sqlstr = "SELECT * FROM moneywatch_invelections WHERE ticker IS NOT NULL AND active=1 AND ielectionid=%s ORDER BY iacctname,ielectionname"
+    sqlstr = "SELECT * FROM moneywatch_invelections WHERE ticker IS NOT NULL AND \
+              active=1 AND ielectionid=%s ORDER BY iacctname,ielectionname"
     cursor.execute(sqlstr, (request.args.get('ielectionid',)))
     dbrows = cursor.fetchall()
 
@@ -857,7 +856,6 @@ def i_entry_edit():
             dbrow['ticker'], dbrow['ticker'], dbrow['ticker']
         )
 
-        #markup += '<div><span>' +  dbrow['name'] + '</span><span><input type="text" class="tickerentry" size="8" name="' + dbrow['ticker'] + '-shares" value=""></span></div>'
     dbcon.close()
 
     markup += '''</table><div style="text-align:right; padding-top: 20px; padding-right: 25px;"> \
