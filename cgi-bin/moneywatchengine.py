@@ -1517,21 +1517,26 @@ def b_bulkbills_edit():
                         <td>%s</td>
                         <td><select name="%s-fromaccount">%s</select></td>
                         <td><input type="text" name="%s" id="%s" size="10"></td>
-                        <td><nobr>$<input type="text" size="8" name="%s-amt" value="" onChange="MW.util.checkValueDecimals(this, 2);"></nobr></td>
+                        <td><nobr>$<input type="text" size="8" name="%s-amt" value="" \
+                        onChange="MW.util.checkValueDecimals(this, 2);"></nobr></td>
                     </tr>
-        ''' % (dbrow['payeename'], str(dbrow['payeeid']), b_makeselects(selected='8', identifier=''), each_datepicker, each_datepicker, str(dbrow['payeeid']))
+        ''' % (dbrow['payeename'], str(dbrow['payeeid']), b_makeselects(selected='8', identifier=''), each_datepicker,
+               each_datepicker, str(dbrow['payeeid']))
 
     dbcon.close()
 
-    markup += '''</table><div style="text-align:right; padding-top: 20px; padding-right: 25px;"><input type="button" name="doit" VALUE="Save" onClick="MW.comm.sendCommand('B.BULKBILLS.SAVE');"></div></form><script>'''
+    markup += '''</table>\
+                 <div style="text-align:right; padding-top: 20px; padding-right: 25px;">
+                 <input type="button" name="doit" VALUE="Save" onClick="MW.comm.sendCommand('B.BULKBILLS.SAVE');">
+                 </div></form><script>'''
     for js in javascriptcalls:
         markup += js
 
     return markup + '</script>'
 
 
-# B.BULKBILLS.SAVE = save "Bills Bulk SAVE" submission
 def b_bulkbills_save():
+    """B.BULKBILLS.SAVE = save "Bills Bulk SAVE" submission"""
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
     cursor = dbcon.cursor(dictionary=True)
     sqlstr = "SELECT * FROM moneywatch_bankbills ORDER BY payeename"
@@ -1544,7 +1549,8 @@ def b_bulkbills_save():
         each_amt = request.form.get(str(dbrow['payeeid']) + '-amt')
 
         if each_amt != '' and each_date != '':
-            sqlstr = """INSERT INTO moneywatch_banktransactions (bacctid, transdate, type, updown, amt, whom1, whom2, numnote, splityn, transferbtransid, transferbacctid, itransid) \
+            sqlstr = """INSERT INTO moneywatch_banktransactions (bacctid, transdate, type, updown, amt, \
+                        whom1, whom2, numnote, splityn, transferbtransid, transferbacctid, itransid) \
                         VALUES (%s, %s, 'w', '-', %s, %s, 'Bill', 'EBILLPAY', 0, 0, 0, 0)"""
             cursor.execute(sqlstr, (each_fromacct, each_date, each_amt, dbrow['payeename']))
             h_logsql(cursor.statement)
@@ -1553,11 +1559,13 @@ def b_bulkbills_save():
 
     dbcon.close()
 
+
 def b_autocomplete(in_bacctid):
-    # generates autocomplete possabilities, excludes fund purchases
+    """generates autocomplete possabilities, excludes fund purchases"""
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
     cursor = dbcon.cursor(dictionary=True)
-    sqlstr = "SELECT DISTINCT whom1 FROM moneywatch_banktransactions WHERE bacctid=%s AND whom1 NOT LIKE 'Buy : %%' ORDER BY whom1"
+    sqlstr = "SELECT DISTINCT whom1 FROM moneywatch_banktransactions WHERE bacctid=%s \
+              AND whom1 NOT LIKE 'Buy : %%' ORDER BY whom1"
     cursor.execute(sqlstr, (in_bacctid,))
     dbrows = cursor.fetchall()
     whomlist = []
