@@ -1085,18 +1085,20 @@ def b_entry_prepare_edit():
         mode='edit', bacctname=dbrow['bacctname'], btransid=str(dbrow['btransid']),
         bacctid=str(dbrow['bacctid']), transferbtransid=str(dbrow['transferbtransid']),
         transferbacctid=str(dbrow['transferbacctid']), transdate=dbrow['transdate'],
-        ttype=dbrow['type'], updown="", amt="{:.2f}".format(float(dbrow['amt'])),
+        ttype=dbrow['type'], amt="{:.2f}".format(float(dbrow['amt'])),
         numnote=dbrow['numnote'], whom1=dbrow['whom1'], whom2=dbrow['whom2']
     )
 
 
 # created the single template
-def b_edit_template(mode, bacctname, btransid, bacctid, transferbtransid, transferbacctid, transdate, ttype, updown, amt, numnote, whom1, whom2):
+def b_edit_template(mode, bacctname, btransid, bacctid, transferbtransid, transferbacctid, transdate, ttype, amt,
+                    numnote, whom1, whom2):
 
     if mode == 'edit':
         sendcmd = 'B.ENTRY.EDITSAVE'
         buttonsay = 'Save Edit'
-        buttonduplicate = '''<input type="button" name="doitnew" VALUE="Save Edit As New" onClick="beditsingle_validate('B.ENTRY.ADDSAVE');">'''
+        buttonduplicate = '''<input type="button" name="doitnew" VALUE="Save Edit As New" \
+                             onClick="beditsingle_validate('B.ENTRY.ADDSAVE');">'''
     else:
         sendcmd = 'B.ENTRY.ADDSAVE'
         buttonsay = 'Add New'
@@ -1106,22 +1108,27 @@ def b_edit_template(mode, bacctname, btransid, bacctid, transferbtransid, transf
     transsay = 'From'
     # add type options here
     if ttype == 'w':
-        typeselect = '<option value="d">Deposit</option><option value="w" selected>Withdraw</option><option value="to">Transfer Out</option><option value="ti">Transfer In</option>'
+        typeselect = '<option value="d">Deposit</option><option value="w" selected>Withdraw</option><option value="to">\
+                      Transfer Out</option><option value="ti">Transfer In</option>'
     elif ttype == 'to':
-        typeselect = '<option value="d">Deposit</option><option value="w">Withdraw</option><option value="to" selected>Transfer Out</option><option value="ti">Transfer In</option>'
+        typeselect = '<option value="d">Deposit</option><option value="w">Withdraw</option><option value="to" selected>\
+                      Transfer Out</option><option value="ti">Transfer In</option>'
         transshow = 'block'
         transsay = 'To'
     elif ttype == 'ti':
-        typeselect = '<option value="d">Deposit</option><option value="w">Withdraw</option><option value="to">Transfer Out</option><option value="ti" selected>Transfer In</option>'
+        typeselect = '<option value="d">Deposit</option><option value="w">Withdraw</option><option value="to">\
+                      Transfer Out</option><option value="ti" selected>Transfer In</option>'
         transshow = 'block'
         transsay = 'From'
     else: # d = deposit
-        typeselect = '<option value="d" selected>Deposit</option><option value="w">Withdraw</option><option value="to">Transfer Out</option><option value="ti">Transfer In</option>'
+        typeselect = '<option value="d" selected>Deposit</option><option value="w">Withdraw</option><option value="to">\
+                      Transfer Out</option><option value="ti">Transfer In</option>'
 
     markup = '''<form name="beditsingle" id="beditsingle">\
                     <table class="cleantable" width="300">
                         <tr>
-                            <td colspan="2" style="box-shadow: 0px 1px 2px #999999;background-color: #ffffff;text-align:center;">%s</td>
+                            <td colspan="2" style="box-shadow: 0px 1px 2px #999999;background-color: #ffffff;\
+                            text-align:center;">%s</td>
                         </tr>
                         <tr>
                             <td class="tdborderright">Action:<br>
@@ -1129,26 +1136,36 @@ def b_edit_template(mode, bacctname, btransid, bacctid, transferbtransid, transf
                                     %s
                                 </select>
                             </td>
-                            <td>Date:<br><input type="text" name="transdate" id="beditsingle-transdate" size="10" value="%s"></td>
+                            <td>Date:<br>
+                                <input type="text" name="transdate" id="beditsingle-transdate" size="10" value="%s">
+                            </td>
                         </tr>
                         <tr>
-                            <td class="tdborderright">Num-Note:<br><input type="text" size="10" placeholder="Num" name="numnote" id="beditsingle-numnote" value="%s"></td>
-                            <td>Value:<br><nobr>$<input type="text" size="10" name="amt" id="beditsingle-amt" value="%s" onChange="MW.util.checkValueDecimals(this, 2);"></nobr></td>
+                            <td class="tdborderright">Num-Note:<br><input type="text" size="10" placeholder="Num" \
+                            name="numnote" id="beditsingle-numnote" value="%s"></td>
+                            <td>Value:<br><nobr>$<input type="text" size="10" name="amt" id="beditsingle-amt" \
+                            value="%s" onChange="MW.util.checkValueDecimals(this, 2);"></nobr></td>
                         </tr>
                         <tr>
                             <td colspan="2">
-                            <div id="beditsingle-transblock" style="display: %s">Transfer <span id="beditsingle-transsay">%s</span>:<br><select name="bacctid_transferselected" id="beditsingle-bacctid_transferselected"><option value="0">--none--</option>%s</select></div></td>
+                            <div id="beditsingle-transblock" style="display: %s">Transfer \
+                            <span id="beditsingle-transsay">%s</span>:<br><select name="bacctid_transferselected" \
+                            id="beditsingle-bacctid_transferselected"><option value="0">--none--</option>%s</select>\
+                            </div></td>
                         </tr>
                         <tr>
                             <td colspan="2">
                                 Whom:<br>
-                                <input type="text" name="whom1" value="%s" id="beditsingle-whom1" size="35" style="margin-bottom: 4px;"/><br>
+                                <input type="text" name="whom1" value="%s" id="beditsingle-whom1" size="35" \
+                                style="margin-bottom: 4px;"/><br>
                                 <input type="text" name="whom2" value="%s" placeholder="Memo (optional)" size="35" />
                             </td>
                         </tr>
                         <!--
                         <tr>
-                            <td colspan="2">Category:<br><input type="text" name="category" id="autocategories" size="35" /></td>
+                            <td colspan="2">Category:
+                                <br><input type="text" name="category" id="autocategories" size="35" /><
+                            /td>
                         </tr>
                         -->
                     </table>
