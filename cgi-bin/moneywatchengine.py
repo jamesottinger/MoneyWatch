@@ -977,16 +977,20 @@ def b_summary():
                         <td style="text-align: right;"><!-- value extended -->%s</td>
                         <td style="text-align: right;"><!-- MINE - value current/today -->%s</td>
                         <td style="text-align: right;"><!-- MINE - value extended -->%s</td>
-                    </tr>''' % (dbrow['bank'], dbrow['bacctid'], dbrow['bacctname'], h_showmoney(dbrow['totalall']), ownvaluetoday, ownvalueextended)
+                    </tr>''' % (dbrow['bank'], dbrow['bacctid'], dbrow['bacctname'], h_showmoney(dbrow['totalall']),
+                                ownvaluetoday, ownvalueextended)
 
     dbcon.close()
     markup += '''\
                 <tr>
                     <td class="invtabletrgraytop" colspan="2">&nbsp;</td>
                     <td class="invtabletrgraytop" >&nbsp;</td>
-                    <td class="invtotalsbottom" style="width:60px;text-align: right;"><!-- MINE - value current/today --><b>%s</b>  <input type="hidden" id="networth-banks" name="networth-banks" value="%s"></td>
+                    <td class="invtotalsbottom" style="width:60px;text-align: right;">
+                         <!-- MINE - value current/today --><b>%s</b>  \
+                         <input type="hidden" id="networth-banks" name="networth-banks" value="%s">
+                    </td>
                     <td class="invtabletrgraytop" style="text-align: right;"><!-- MINE - value extended --></td>
-                </tr>''' % (h_showmoney(totalmytoday),totalmytoday)
+                </tr>''' % (h_showmoney(totalmytoday), totalmytoday)
 
     return markup + '</table>'
 
@@ -1090,9 +1094,9 @@ def b_entry_prepare_edit():
     )
 
 
-# created the single template
 def b_edit_template(mode, bacctname, btransid, bacctid, transferbtransid, transferbacctid, transdate, ttype, amt,
                     numnote, whom1, whom2):
+    """created the single template"""
 
     if mode == 'edit':
         sendcmd = 'B.ENTRY.EDITSAVE'
@@ -1310,7 +1314,7 @@ def b_saveadd(btransid, bacctid, transferbtransid, transferbacctid, transdate, t
                     numnote, splityn, transferbtransid, transferbacctid, itransid) \
                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, 0, %s, %s, 0)"""
 
-        cursor.execute(sqlstr, (bacctid_transferselected, transdate, transferaction , updownother, amt, whom1trans,
+        cursor.execute(sqlstr, (bacctid_transferselected, transdate, transferaction, updownother, amt, whom1trans,
                                 whom2, numnote, btransid_learn1, bacctid))
         h_logsql(cursor.statement)
         dbcon.commit()
