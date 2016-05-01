@@ -1,16 +1,15 @@
 #!/ usr/bin/env python3
-#===============================================================================
+# ===============================================================================
 # Copyright (c) 2015, James Ottinger. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 #
 # MoneyWatch - https://github.com/jamesottinger/moneywatch
-#===============================================================================
+# ===============================================================================
 import cgi, cgitb, os, datetime, locale, csv, time, json, requests
 from flask import request
 import moneywatchconfig
 import mysql.connector  # python3-mysql.connector
-
 
 
 locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
@@ -21,9 +20,10 @@ cgitb.enable(
     format='text'
 )
 
-#================================================================================================================
+# ================================================================================================================
 # INVESTMENT
-#================================================================================================================
+# ================================================================================================================
+
 
 def i_electiontally(in_ielectionid):
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
@@ -33,8 +33,8 @@ def i_electiontally(in_ielectionid):
     dbrows = cursor.fetchall()
     rtotal = 0
     costbasis = 0
-    sharesbydividend = 0 # from dividends (shown as income)
-    sharesfromemployer = 0 # from employer match or employer direct
+    sharesbydividend = 0  # from dividends (shown as income)
+    sharesfromemployer = 0  # from employer match or employer direct
     costbasisbydividend = 0
     costbasisfromemployer = 0
     costbasisme = 0
@@ -63,7 +63,8 @@ def i_electiontally(in_ielectionid):
             else:
                 costbasisme -= float(dbrow['transprice'])
 
-    sqlstr = "UPDATE moneywatch_invelections SET shares=%s, costbasis=%s, sharesbydividend=%s, sharesfromemployer=%s, costbasisbydividend=%s, costbasisfromemployer=%s, costbasisme=%s WHERE ielectionid=%s"
+    sqlstr = "UPDATE moneywatch_invelections SET shares=%s, costbasis=%s, sharesbydividend=%s, sharesfromemployer=%s, \
+              costbasisbydividend=%s, costbasisfromemployer=%s, costbasisme=%s WHERE ielectionid=%s"
     cursor.execute(sqlstr, (
         "{:.3f}".format(rtotal),
         "{:.3f}".format(costbasis),
@@ -361,7 +362,8 @@ def i_bulkadd_edit():
     for dbrow in dbrows:
 
         if dbrow['iacctname'] != parent:
-            markup += '<tr><td colspan="8" style="background-color: #efefef;"><span class="bigbluetext">' + dbrow['iacctname'] + '</span></td></tr>'
+            markup += '<tr><td colspan="8" style="background-color: #efefef;"><span class="bigbluetext">' + \
+                      dbrow['iacctname'] + '</span></td></tr>'
             parent = dbrow['iacctname']
 
         tocheckornottocheck = ''
@@ -417,7 +419,7 @@ def i_bulkadd_save():
 
     for dbrow in dbrows:
         each_shares = request.form.get(str(dbrow['ielectionid']) + '-shares')
-        each_cost = request.form.get(str(dbrow['ielectionid']) + '-cost') # cost of full sale
+        each_cost = request.form.get(str(dbrow['ielectionid']) + '-cost')  # cost of full sale
         each_date = request.form.get(str(dbrow['ielectionid']) + '-date')
         if each_shares != '' and each_cost != '' and each_date != '':
             each_ielectionid = int(request.form.get(str(dbrow['ielectionid']) + '-ielectionid'))
