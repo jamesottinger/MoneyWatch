@@ -479,8 +479,9 @@ def i_entry_prepareedit():
     )
 
 
-# created the single
-def i_edit_template(mode, ielectionname, ticker, itransid, ielectionid, btransid, transdate, action, shares, cost, fundsorigin, manuallyupdateprice):
+def i_edit_template(mode, ielectionname, ticker, itransid, ielectionid, btransid, transdate, action, shares, cost,
+                    fundsorigin, manuallyupdateprice):
+    """Created the single"""
 
     if mode == 'edit':
         sendcmd = 'I.ENTRY.EDITSAVE'
@@ -491,18 +492,31 @@ def i_edit_template(mode, ielectionname, ticker, itransid, ielectionid, btransid
 
     if action == 'BUY' or action == 'BUYX':
         # the save will deal with the difference of a BUY or a BUYX (one funded by a bank transfer)
-        actionselect = '<option value="BUY" selected>Buy</option><option value="BUYE">Buy (Employer)</option><option value="REINVDIV">Dividend (ReInvest)</option><option value="SELL">Sell</option>'
+        actionselect = '<option value="BUY" selected>Buy</option>\
+                        <option value="BUYE">Buy (Employer)</option>\
+                        <option value="REINVDIV">Dividend (ReInvest)</option>\
+                        <option value="SELL">Sell</option>'
     elif action == 'BUYE':
         # BUYE is a Buy funded by an employer (match)
-        actionselect = '<option value="BUY">Buy</option><option value="BUYE" selected>Buy (Employer)</option><option value="REINVDIV">Dividend (ReInvest)</option><option value="SELL">Sell</option>'
+        actionselect = '<option value="BUY">Buy</option><option value="BUYE" selected>Buy (Employer)</option>\
+                        <option value="REINVDIV">Dividend (ReInvest)</option>\
+                        <option value="SELL">Sell</option>'
     elif action == 'REINVDIV':
-        actionselect = '<option value="BUY">Buy</option><option value="BUYE">Buy (Employer)</option><option value="REINVDIV" selected>Dividend (ReInvest)</option><option value="SELL">Sell</option>'
+        actionselect = '<option value="BUY">Buy</option><option value="BUYE">Buy (Employer)</option>\
+                        <option value="REINVDIV" selected>Dividend (ReInvest)</option>\
+                        <option value="SELL">Sell</option>'
     elif action == 'SELL' or action == 'SELLX':
         # the save will deal with the difference of a SELL or a SELLX(one funded by a bank transfer)
         # TODO: may need to revisit when dealing with SELLs that transfer money to a bank account (SELLX)
-        actionselect = '<option value="BUY">Buy</option><option value="BUYE">Buy (Employer)</option><option value="REINVDIV">Dividend (ReInvest)</option><option value="SELL" selected>Sell</option>'
+        actionselect = '<option value="BUY">Buy</option>\
+                        <option value="BUYE">Buy (Employer)</option>\
+                        <option value="REINVDIV">Dividend (ReInvest)</option>\
+                        <option value="SELL" selected>Sell</option>'
     else:
-        actionselect = '<option value="BUY">Buy</option><option value="BUYE">Buy (Employer)</option><option value="REINVDIV">Dividend (ReInvest)</option><option value="SELL">Sell</option>'
+        actionselect = '<option value="BUY">Buy</option>\
+                        <option value="BUYE">Buy (Employer)</option>\
+                        <option value="REINVDIV">Dividend (ReInvest)</option>\
+                        <option value="SELL">Sell</option>'
 
     bacctid = 0
     if fundsorigin > 0:
