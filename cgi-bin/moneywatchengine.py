@@ -1712,33 +1712,37 @@ def u_linksgenerate():
     return markup
 
 
-# U.WEATHER.GET
 def u_weathergenerate():
-    return '''<iframe id="forecast_embed" type="text/html" frameborder="0" height="245" width="100%%" src="http://forecast.io/embed/#lat=%s&lon=%s&name=%s"> </iframe>''' % (
+    """U.WEATHER.GET - grabs weather from forcast.io"""
+    return '''<iframe id="forecast_embed" type="text/html" frameborder="0" height="245" width="100%%" /
+              src="http://forecast.io/embed/#lat=%s&lon=%s&name=%s"> </iframe>''' % (
         moneywatchconfig.weather['latitude'], moneywatchconfig.weather['longitude'], moneywatchconfig.weather['title']
     )
 
-#================================================================================================================
+# ================================================================================================================
 # HELPER FUNCTIONS
-#================================================================================================================
+# ================================================================================================================
+
 
 def h_showmoney(in_num):
     return locale.currency(in_num, grouping=True)
 
+
 def h_dateclean(in_date):
-    # 4/1'2008 or 12/31'2009 format in
-    # 2009-12-31 returned
-    sp1 = str(in_date).split("'") # [0] = 4/1, [1] = 2008
-    sp2 = sp1[0].split("/") # [0] = 4(month), [1] = 1(day)
+    """4/1'2008 or 12/31'2009 format in
+       2009-12-31 returned"""
+    sp1 = str(in_date).split("'")  # [0] = 4/1, [1] = 2008
+    sp2 = sp1[0].split("/")  # [0] = 4(month), [1] = 1(day)
     return sp1[1] + '-' + sp2[0].zfill(2) + '-' + sp2[1].zfill(2)
 
+
 def h_dateinfuture(in_date):
-    # 2009-12-31 format in
-    # boolean returned
+    """2009-12-31 format in
+       boolean returned"""
     if in_date == '' or in_date is None:
         return False
 
-    boom = str(in_date).split("-") # [0] = year, [1] = month, [2] = day
+    boom = str(in_date).split("-")  # [0] = year, [1] = month, [2] = day
     if len(boom) != 3:
         return False
     numdate = int(boom[0] + boom[1] + boom[2])
@@ -1752,33 +1756,39 @@ def h_dateinfuture(in_date):
     else:
         return False
 
+
 def h_todaydateformysql():
-    # returns todays date as 2009-12-31
-    # import time
+    """returns todays date as 2009-12-31
+       import time"""
     return time.strftime('%Y-%m-%d')
 
+
 def h_todaydatetimeformysql():
-    # returns todays date as 2009-12-31 HH:MM:SS format
-    # import time
+    """returns todays date as 2009-12-31 HH:MM:SS format
+       requires: import time"""
     return time.strftime('%Y-%m-%d %H:%M:%S')
 
+
 def h_dateqiftoint(in_date):
-    # 4/1'2008 or 12/31'2009 format in
-    # 20091231 int returned
-    sp1 = str(in_date).split("'") # [0] = 4/1, [1] = 2008
-    sp2 = sp1[0].split("/") # [0] = 4(month), [1] = 1(day)
+    """4/1'2008 or 12/31'2009 format in
+       20091231 int returned"""
+    sp1 = str(in_date).split("'")  # [0] = 4/1, [1] = 2008
+    sp2 = sp1[0].split("/")  # [0] = 4(month), [1] = 1(day)
     return int(sp1[1] + sp2[0].zfill(2) + sp2[1].zfill(2))
 
+
 def h_datemysqltoint(in_date):
-    # 2009-12-31 format in
-    # 20091231 int returned
-    boom = str(in_date).split("-") # [0] = year, [1] = month, [2] = day
+    """2009-12-31 format in
+       20091231 int returned"""
+    boom = str(in_date).split("-")  # [0] = year, [1] = month, [2] = day
     return int(boom[0] + boom[1] + boom[2])
+
 
 def h_logsql(in_sqlstr):
     debugout = open(moneywatchconfig.dirlogs + 'sqllog.txt', 'a')
     debugout.write('Entered: ' + datetime.datetime.now().strftime("%Y%m%d-%H%M%S") + "\n" + in_sqlstr + "\n")
     debugout.close()
+
 
 def h_loginfo(in_infostr):
     debugout = open(moneywatchconfig.dirlogs + 'infolog.txt', 'a')
@@ -1786,18 +1796,19 @@ def h_loginfo(in_infostr):
     debugout.close()
 
 
-#================================================================================================================
+# ================================================================================================================
 # GRAPHING
-#================================================================================================================
+# ================================================================================================================
 
 def i_graph():
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
     cursor = dbcon.cursor(dictionary=True)
     sqlstr = """SELECT it.*, ie.ielectionname FROM moneywatch_invtransactions it \
-                INNER JOIN moneywatch_invelections ie ON it.ielectionid=ie.ielectionid WHERE it.ielectionid=%s ORDER BY it.transdate,it.action"""
+                INNER JOIN moneywatch_invelections ie ON it.ielectionid=ie.ielectionid WHERE \
+                it.ielectionid=%s ORDER BY it.transdate,it.action"""
     cursor.execute(sqlstr, (request.args.get('ielectionid'),))
     dbrows = cursor.fetchall()
-    #ielectionid, transdate, ticker, updown, action, sharesamt, shareprice, transprice, totalshould
+    # ielectionid, transdate, ticker, updown, action, sharesamt, shareprice, transprice, totalshould
 
     fundstart = str(dbrows[0]['transdate']).split("-")
 
@@ -1809,14 +1820,15 @@ def i_graph():
     priceslist = []
 
     for dbrow in dbrows:
-        datesplit = str(dbrow['transdate']).split("-") # [0] = year, [1] = month, [2] = day
+        datesplit = str(dbrow['transdate']).split("-")  # [0] = year, [1] = month, [2] = day
         if dbrow['updown'] == '+':
             stotal += float(dbrow['sharesamt'])
         else:
             stotal -= float(dbrow['sharesamt'])
         # Date.UTC(1971,  1, 24), 1.92],
-        shareslist.append('[ Date.UTC(' + datesplit[0] + ', ' + datesplit[1] + ', ' + datesplit[2] + '), ' + "{:.3f}".format(stotal) + ']')
-        priceslist.append('[ Date.UTC(' + datesplit[0] + ', ' + datesplit[1] + ', ' + datesplit[2] + '), ' + "{:.3f}".format(float(dbrow['shareprice'])) + ']')
+        shareslist.append('[ Date.UTC(' + datesplit[0] + ', ' + datesplit[1] + ', ' + datesplit[2] + '), ' +
+                          "{:.3f}".format(stotal) + ']')
+        priceslist.append('[ Date.UTC(' + datesplit[0] + ', ' + datesplit[1] + ', ' + datesplit[2] + '), ' +
 
     dbcon.close()
 
@@ -1946,4 +1958,5 @@ def i_graph():
         });
     });
 
-</script>""" % (ielectionname, ticker, fundstartyear, ', '.join(shareslist), ielectionname, ticker, fundstartyear, ', '.join(priceslist))
+</script>""" % (ielectionname, ticker, fundstartyear, ', '.join(shareslist), ielectionname, ticker, fundstartyear,
+                ', '.join(priceslist))
