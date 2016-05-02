@@ -1140,7 +1140,7 @@ def b_edit_template(mode, bacctname, btransid, bacctid, transferbtransid, transf
                       Transfer Out</option><option value="ti" selected>Transfer In</option>'
         transshow = 'block'
         transsay = 'From'
-    else: # d = deposit
+    else:  # d = deposit
         typeselect = '<option value="d" selected>Deposit</option><option value="w">Withdraw</option><option value="to">\
                       Transfer Out</option><option value="ti">Transfer In</option>'
 
@@ -1246,7 +1246,7 @@ def b_edit_template(mode, bacctname, btransid, bacctid, transferbtransid, transf
                 </script>
         ''' % (
             bacctname, typeselect, transdate, numnote, amt, transshow, transsay,
-            b_makeselects(transferbacctid,''), whom1, whom2, bacctname, btransid,
+            b_makeselects(transferbacctid, ''), whom1, whom2, bacctname, btransid,
             bacctid, transferbtransid, transferbacctid, bacctid, buttonduplicate,
             buttonsay, sendcmd, b_autocomplete(bacctid)
         )
@@ -1367,7 +1367,7 @@ def b_saveupdate(btransid, bacctid, transferbtransid, transferbacctid, transdate
         transferaction = 'to'
         whom1 = '[' + b_saybacctname(bacctid_transferselected) + ']'
         whom1trans = '[' + b_saybacctname(bacctid) + ']'
-    else: # d = deposit
+    else:  # d = deposit
         updown = '+'
 
     # ---------  [update any bank transfers]  ---------
@@ -1429,14 +1429,15 @@ def b_saveupdate(btransid, bacctid, transferbtransid, transferbacctid, transdate
         transferbtransid=%s,
         transferbacctid=%s
         WHERE btransid=%s"""
-    cursor.execute(sqlstr, (transdate, ttype, updown, amt, whom1, whom2, numnote, transferbtransid, transferbacctid, btransid))
+    cursor.execute(sqlstr, (transdate, ttype, updown, amt, whom1, whom2, numnote, transferbtransid,
+                            transferbacctid, btransid))
     h_logsql(cursor.statement)
     dbcon.commit()
     b_accounttally(bacctid)
 
 
-    # B.ENTRY.DELETE = removes a bank entry and possibly a transfer
 def b_entry_delete():
+    """B.ENTRY.DELETE = removes a bank entry and possibly a transfer"""
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
     cursor = dbcon.cursor(dictionary=True)
     sqlstr = "SELECT * FROM moneywatch_banktransactions WHERE btransid=%s"
