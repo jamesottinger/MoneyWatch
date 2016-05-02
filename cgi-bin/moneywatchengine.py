@@ -1469,25 +1469,26 @@ def b_entry_delete():
     dbcon.close()
 
 
-# B.BULKINTEREST.EDIT = generates body needed for "Interest Bulk Add" utility panel
 def b_bulkinterest_edit():
+    """B.BULKINTEREST.EDIT = generates body needed for "Interest Bulk Add" utility panel"""
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
     cursor = dbcon.cursor(dictionary=True)
     sqlstr = "SELECT * FROM moneywatch_bankaccounts ORDER BY bacctname"
     cursor.execute(sqlstr)
     dbrows = cursor.fetchall()
 
-    markup = ''
-    parent = ''
-    javascriptcalls = []
-
-    markup += '''<form name="bbulkinterestedit" id="bbulkinterestedit"><table class="invtable" width="100%">\
+    markup = '''<form name="bbulkinterestedit" id="bbulkinterestedit"><table class="invtable" width="100%">
                     <tr>
-                        <td colspan="2">Date <input type="text" name="bbulkinterest-date" id="bbulkinterest-date" size="10"></td>
+                        <td colspan="2">
+                            Date <input type="text" name="bbulkinterest-date" id="bbulkinterest-date" size="10">
+                        </td>
                     </tr>
                     <tr>
-                        <td style="border-bottom: solid 1px #cccccc;border-top: solid 1px #cccccc;"><strong>Account Name</strong></td>
-                        <td style="border-bottom: solid 1px #cccccc;border-top: solid 1px #cccccc;"><strong>Amount</strong></td>
+                        <td style="border-bottom: solid 1px #cccccc;border-top: solid 1px #cccccc;">
+                            <strong>Account Name</strong></td>
+                        <td style="border-bottom: solid 1px #cccccc;border-top: solid 1px #cccccc;">
+                            <strong>Amount</strong>
+                        </td>
                     </tr>
     '''
 
@@ -1495,21 +1496,23 @@ def b_bulkinterest_edit():
         markup += '''\
                     <tr>
                         <td>%s</td>
-                        <td><nobr>$<input type="text" size="8" name="%s-amt" value="" onChange="MW.util.checkValueDecimals(this, 2);"></nobr></td>
+                        <td><nobr>$<input type="text" size="8" name="%s-amt" \
+                        value="" onChange="MW.util.checkValueDecimals(this, 2);"></nobr></td>
                     </tr>
         ''' % (dbrow['bacctname'], str(dbrow['bacctid']))
 
     dbcon.close()
 
     markup += '''</table><div style="text-align:right; padding-top: 20px; padding-right: 25px;"> \
-        <input type="button" name="doit" VALUE="Save" onClick="MW.comm.sendCommand('B.BULKINTEREST.SAVE');"></div></form><script>'''
+                <input type="button" name="doit" VALUE="Save" onClick="MW.comm.sendCommand('B.BULKINTEREST.SAVE');">
+                </div></form><script>'''
     markup += '''jQuery("#bbulkinterest-date").datepicker({ dateFormat: "yy-mm-dd" });'''
 
     return markup + '</script>'
 
 
-# B.BULKINTEREST.SAVE = save "Interest Bulk Save" submission
 def b_bulkinterest_save():
+    """B.BULKINTEREST.SAVE = save "Interest Bulk Save" submission"""
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
     cursor = dbcon.cursor(dictionary=True)
     sqlstr = "SELECT * FROM moneywatch_bankaccounts ORDER BY bacctname"
@@ -1521,7 +1524,8 @@ def b_bulkinterest_save():
     for dbrow in dbrows:
         each_amt = request.form.get(str(dbrow['bacctid']) + '-amt')
         if each_amt != '' and in_date != '':
-            sqlstr = """INSERT INTO moneywatch_banktransactions (bacctid, transdate, type, updown, amt, whom1, whom2, numnote, splityn, transferbtransid, transferbacctid, itransid) \
+            sqlstr = """INSERT INTO moneywatch_banktransactions (bacctid, transdate, type, updown, amt, whom1, whom2, \
+                        numnote, splityn, transferbtransid, transferbacctid, itransid) \
                         VALUES (%s, %s, 'd', '+', %s, 'Interest', '', 'INT', 0, 0, 0, 0)"""
             cursor.execute(sqlstr, (dbrow['bacctid'], in_date, each_amt))
             h_logsql(cursor.statement)
@@ -1531,8 +1535,8 @@ def b_bulkinterest_save():
     dbcon.close()
 
 
-# B.BULKBILLS.EDIT = generates body needed for "Bills Bulk Add" utility panel
 def b_bulkbills_edit():
+    """B.BULKBILLS.EDIT = generates body needed for "Bills Bulk Add" utility panel"""
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
     cursor = dbcon.cursor(dictionary=True)
     sqlstr = "SELECT * FROM moneywatch_bankbills ORDER BY payeename"
@@ -1829,6 +1833,7 @@ def i_graph():
         shareslist.append('[ Date.UTC(' + datesplit[0] + ', ' + datesplit[1] + ', ' + datesplit[2] + '), ' +
                           "{:.3f}".format(stotal) + ']')
         priceslist.append('[ Date.UTC(' + datesplit[0] + ', ' + datesplit[1] + ', ' + datesplit[2] + '), ' +
+                          "{:.3f}".format(float(dbrow['shareprice'])) + ']')
 
     dbcon.close()
 
