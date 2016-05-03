@@ -588,7 +588,10 @@ def i_edit_template(mode, ielectionname, ticker, itransid, ielectionid, btransid
 def i_edit_liveinvchart():
     return '''
            <!-- widget came from http://www.macroaxis.com/invest/widgets/native/intradaySymbolFeed?ip=true&s=VFIAX -->
-                <iframe bgcolor='#ffffff' id='intraday_symbol_feed' name='intraday_symbol_feed' marginheight='0' marginwidth='0' SCROLLING='NO' height='300px' width='300px' frameborder='0' src='http://widgets.macroaxis.com/widgets/intradaySymbolFeed.jsp?gia=t&tid=279&t=24&s=%s&_=1381101748535'></iframe>
+                <iframe bgcolor='#ffffff' id='intraday_symbol_feed' name='intraday_symbol_feed' marginheight='0' \
+                marginwidth='0' SCROLLING='NO' height='300px' width='300px' frameborder='0' \
+                src='http://widgets.macroaxis.com/widgets/intradaySymbolFeed.jsp?\
+                gia=t&tid=279&t=24&s=%s&_=1381101748535'></iframe>
     ''' % (request.args.get('ticker'))
 
 
@@ -784,7 +787,7 @@ def i_saveupdate(ticker, transdate, shares, cost, fromacct, action, ielectionid,
     h_logsql(cursor.statement)
     dbcon.commit()
 
-    if str(ielectionid) + '-updateprice' in request.form: # update price based on new entry
+    if str(ielectionid) + '-updateprice' in request.form:  # update price based on new entry
         # update the elections price
         sqlstr = "UPDATE moneywatch_invelections SET manualoverrideprice=%s, quotedate=%s WHERE ielectionid=%s"
         cursor.execute(sqlstr, ("{:.3f}".format(float(cost) / float(shares)), h_todaydatetimeformysql(), ielectionid))
@@ -839,7 +842,6 @@ def i_entry_edit():
     for dbrow in dbrows:
 
         if dbrow['iacctname'] != parent:
-            #markup += '<tr><td colspan="2" style="background-color: #efefef;"><span class="bigbluetext">' + dbrow['iacctname'] + '</span></td></tr>'
             parent = dbrow['iacctname']
 
         each_datepicker = dbrow['ticker'] + str(dbrow['ielectionid']) + '-date'
@@ -847,10 +849,12 @@ def i_entry_edit():
 
         markup += '''\
                     <tr>
-                        <td colspan="2" style="box-shadow: 0px 1px 2px #999999;background-color: #ffffff;">%s<input type="hidden" name="%s-ielectionid" value="%s"> [ <b>%s</b> ]</td>
+                        <td colspan="2" style="box-shadow: 0px 1px 2px #999999;background-color: #ffffff;">%s\
+                        <input type="hidden" name="%s-ielectionid" value="%s"> [ <b>%s</b> ]</td>
                     </tr>
                     <tr>
-                        <td colspan="2">Funded From:<br><select name="%s-fromaccount"><option value="0">--none--</option>%s</select></td>
+                        <td colspan="2">Funded From:<br>
+                        <select name="%s-fromaccount"><option value="0">--none--</option>%s</select></td>
                     </tr>
                     <tr>
                         <td class="tdborderright">Trade Date:<br><input type="text" name="%s" id="%s" size="10"></td>
@@ -863,8 +867,10 @@ def i_entry_edit():
                         </td>
                     </tr>
                     <tr>
-                        <td class="tdborderright"># Shares:<br><input type="text" size="10" name="%s-shares" value="" onChange="MW.util.checkValueDecimals(this, 3);"></td>
-                        <td>Trade Cost:<br><nobr>$<input type="text" size="8" name="%s-cost" value="" onChange="MW.util.checkValueDecimals(this, 2);"></nobr></td>
+                        <td class="tdborderright"># Shares:<br><input type="text" size="10" name="%s-shares" value="" \
+                        onChange="MW.util.checkValueDecimals(this, 3);"></td>
+                        <td>Trade Cost:<br><nobr>$<input type="text" size="8" name="%s-cost" value="" \
+                        onChange="MW.util.checkValueDecimals(this, 2);"></nobr></td>
                     </tr>
         ''' % (
             dbrow['ielectionname'], dbrow['ticker'], dbrow['ielectionid'], dbrow['ticker'],
@@ -965,7 +971,8 @@ def b_summary():
     dbrows = cursor.fetchall()
 
     markup = '''\
-                <div class="summary1heading">Bank Accounts <span class="smgraytext">( last tally: %s <a href="#" onClick="return MW.comm.sendCommand('U.UPDATEBANKTOTALS');">tally</a> )</span></div>
+                <div class="summary1heading">Bank Accounts <span class="smgraytext">( last tally: %s \
+                <a href="#" onClick="return MW.comm.sendCommand('U.UPDATEBANKTOTALS');">tally</a> )</span></div>
                 <table class="invtable" width="100%%">
                     <tr style="background-color: #ffffff;">
                         <td style="border-bottom: solid 1px #cccccc;" width="150">Bank</td>
@@ -1087,7 +1094,7 @@ def b_entry_prepare_add():
     dbcon.close()
     return b_edit_template(
         mode='add', bacctname=dbrow['bacctname'], btransid="0", bacctid=str(dbrow['bacctid']),
-        transferbtransid="0", transferbacctid="0", transdate="", ttype="", updown="", amt="",
+        transferbtransid="0", transferbacctid="0", transdate="", ttype="", amt="",
         numnote="", whom1="", whom2=""
     )
 
