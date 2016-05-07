@@ -654,7 +654,6 @@ def i_saveadd(ticker, transdate, shares, cost, fromacct, action, ielectionid, ie
         updown = '+'
 
     btransid = 0
-    transferbtransid = 0
     # do bank insert first, since we will need to learn the transaction id
     if fromacct > 0: # was this bank funded?
         # enter bank transaction
