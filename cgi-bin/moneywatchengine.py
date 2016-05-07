@@ -1705,7 +1705,7 @@ def u_fetch_quotes():
     i_electiontallyall()
 
 
-def u_banktotals():
+def u_bank_totals():
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
     cursor = dbcon.cursor(dictionary=True)
     sqlstr = "SELECT * FROM moneywatch_bankaccounts ORDER BY bacctname"
@@ -1717,14 +1717,15 @@ def u_banktotals():
     dbcon.close()
 
 
-# U.LINKS.GET
-def u_linksgenerate():
+def u_links_generate():
+    """U.LINKS.GET"""
     markup = ''
     sets = 0
     for linksets in moneywatchconfig.uilinks:
         sets += 1
         for name, link in linksets:
-            markup += '''<li><a tabindex="-1" href="%s" target="_blank"><span class="glyphicon glyphicon-globe" aria-hidden="true"></span> %s</a></li>''' % ( link, name )
+            markup += '''<li><a tabindex="-1" href="%s" target="_blank"> \
+                    <span class="glyphicon glyphicon-globe" aria-hidden="true"></span> %s</a></li>''' % (link, name)
 
         if sets != len(moneywatchconfig.uilinks):
             markup += '<li class="divider"></li>'
