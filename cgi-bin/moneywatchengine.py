@@ -339,11 +339,12 @@ def i_electionget():
     return markup
 
 
-# I.BULKADD.EDIT = generates body needed for "Investment Bulk Add" utility panel
 def i_bulkadd_edit():
+    """I.BULKADD.EDIT = generates body needed for "Investment Bulk Add" utility panel"""
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
     cursor = dbcon.cursor(dictionary=True)
-    sqlstr = "SELECT * FROM moneywatch_invelections WHERE ticker IS NOT NULL AND active=1 ORDER BY iacctname,ielectionname"
+    sqlstr = "SELECT * FROM moneywatch_invelections WHERE ticker IS NOT NULL \
+              AND active=1 ORDER BY iacctname,ielectionname"
     cursor.execute(sqlstr)
     dbrows = cursor.fetchall()
 
@@ -637,7 +638,7 @@ def i_saveadd(ticker, transdate, shares, cost, fromacct, action, ielectionid, ie
 
     if action == 'SELL' or action == 'SELLX':
         updown = '-'
-    else: # BUY BUYX BUYE REINVDIV
+    else:  # BUY BUYX BUYE REINVDIV
         updown = '+'
 
     btransid = 0
@@ -932,7 +933,7 @@ def b_accounttally(in_bacctid):
     dbcon.close()
 
 
-def b_makeselects(selected,identifier):
+def b_makeselects(selected, identifier):
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
     cursor = dbcon.cursor(dictionary=True)
     sqlstr = "SELECT * FROM moneywatch_bankaccounts ORDER BY bacctname"
