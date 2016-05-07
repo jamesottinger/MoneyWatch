@@ -103,21 +103,25 @@ def i_makeselectsparents(selected, identifier):
             selectedsay = ' selected'
         else:
             selectedsay = ''
-        markup += '<option value="' + identifier + str(dbrow['iacctname']) + '"' + selectedsay + '>[Investment] ' + dbrow['iacctname'] + '</option>'
+        markup += '<option value="' + identifier + str(dbrow['iacctname']) + '"' + selectedsay + '>[Investment] ' + \
+                  dbrow['iacctname'] + '</option>'
     dbcon.close()
     return markup
 
 
-# I.SUMMARY.GET = Shows Summary of Investment Accounts
 def i_summary():
+    """I.SUMMARY.GET = Shows Summary of Investment Accounts"""
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
     cursor = dbcon.cursor(dictionary=True)
-    sqlstr = "SELECT * FROM moneywatch_invelections WHERE active > 0 AND ticker IS NOT NULL ORDER BY iacctname,ielectionname"
+    sqlstr = "SELECT * FROM moneywatch_invelections WHERE active > 0 AND ticker IS NOT NULL ORDER BY \
+              iacctname,ielectionname"
     cursor.execute(sqlstr)
     dbrows = cursor.fetchall()
 
     markup = '''\
-                <div class="summary1heading">Investment Accounts <span class="smgraytext">( last fetch: %s <a href="#" onClick="return MW.comm.sendCommand('U.UPDATEQUOTES');">fetch</a> )</span></div>
+                <div class="summary1heading">Investment Accounts <span class="smgraytext">
+                ( last fetch: %s <a href="#" onClick="return MW.comm.sendCommand('U.UPDATEQUOTES');">fetch</a> )</span>
+                </div>
                 <table class="invtable" align="center" width="100%%">
                     <tr>
                         <td>Symbol</td>
@@ -387,8 +391,10 @@ def i_bulkadd_edit():
                               <option value="SELL">Sell</option>
                             </select>
                         </td>
-                        <td><input type="text" size="8" name="%s-shares" value="" onChange="MW.util.checkValueDecimals(this, 3);"></td>
-                        <td><nobr>$<input type="text" size="8" name="%s-cost" value="" onChange="MW.util.checkValueDecimals(this, 2);"></nobr></td>
+                        <td><input type="text" size="8" name="%s-shares" value="" \
+                        onChange="MW.util.checkValueDecimals(this, 3);"></td>
+                        <td><nobr>$<input type="text" size="8" name="%s-cost" value="" \
+                        onChange="MW.util.checkValueDecimals(this, 2);"></nobr></td>
                         <td><input type="checkbox" name="%s-updateprice" value="yes" %s/></td>
                     </tr>
         ''' % (
@@ -398,10 +404,13 @@ def i_bulkadd_edit():
             str(dbrow['ielectionid']), str(dbrow['ielectionid']), tocheckornottocheck
         )
 
-        #markup += '<div><span>' +  dbrow['name'] + '</span><span><input type="text" class="tickerentry" size="8" name="' + dbrow['ticker'] + '-shares" value=""></span></div>'
+        # markup += '<div><span>' +  dbrow['name'] + '</span><span><input type="text" class="tickerentry" size="8"
+        # name="' + dbrow['ticker'] + '-shares" value=""></span></div>'
     dbcon.close()
 
-    markup += '''</table><div style="text-align:right; padding-top: 20px; padding-right: 25px;"><input type="hidden" name="job" value="I.BULKADD.SAVE"><input type="button" name="doit" VALUE="Save" onClick="MW.comm.sendCommand('I.BULKADD.SAVE');"></div></form><script>'''
+    markup += '''</table><div style="text-align:right; padding-top: 20px; padding-right: 25px;">\
+                 <input type="hidden" name="job" value="I.BULKADD.SAVE"><input type="button" name="doit" \
+                 VALUE="Save" onClick="MW.comm.sendCommand('I.BULKADD.SAVE');"></div></form><script>'''
     for js in javascriptcalls:
         markup += js
 
@@ -1638,23 +1647,22 @@ def b_autocomplete(in_bacctid):
 
 
 def u_fetch_quotes():
-    """
-    U.UPDATEQUOTES - Pull stock quotes from Yahoo Finance
-    http://finance.yahoo.com/d/quotes.csv?s=LLL+VFINX&f=snl1d1cjkyr1q
-    "LLL","L-3 Communication",66.24,"12/2/2011","+0.23"
-    "VFINX","VANGUARD INDEX TR",115.07,"12/1/2011","-0.21"
-    stockstring = 'VBINX+LLL'
-    0  = Ticker
-    1  = Name
-    2  = Price
-    3  = Date of Price
-    4  = Change
-    5  = 52 week low
-    6  = (k) 52 week high
-    7  = (y) yield
-    8  = (r1) dividend date (next)
-    9  = (q) dividend date (prev)
-    10 = (p) previous close
+    """ U.UPDATEQUOTES - Pull stock quotes from Yahoo Finance
+        http://finance.yahoo.com/d/quotes.csv?s=LLL+VFINX&f=snl1d1cjkyr1q
+        "LLL","L-3 Communication",66.24,"12/2/2011","+0.23"
+        "VFINX","VANGUARD INDEX TR",115.07,"12/1/2011","-0.21"
+        stockstring = 'VBINX+LLL'
+        0  = Ticker
+        1  = Name
+        2  = Price
+        3  = Date of Price
+        4  = Change
+        5  = 52 week low
+        6  = (k) 52 week high
+        7  = (y) yield
+        8  = (r1) dividend date (next)
+        9  = (q) dividend date (prev)
+        10 = (p) previous close
     """
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
     cursor = dbcon.cursor(dictionary=True)
