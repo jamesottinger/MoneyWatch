@@ -655,14 +655,15 @@ def i_saveadd(ticker, transdate, shares, cost, fromacct, action, ielectionid, ie
 
     btransid = 0
     # do bank insert first, since we will need to learn the transaction id
-    if fromacct > 0: # was this bank funded?
+    if fromacct > 0:  # was this bank funded?
         # enter bank transaction
         # Category: Buy Investment/CD: The Name Of Account
         # Buy: Mutual Fund Name 4.439 @ $22.754
         whom1 = 'Buy : ' + ticker + ' ' + shares + ' @ ' + h_showmoney(float(cost) / float(shares))
         whom2 = 'Buy Investment/CD: ' + ielectionname
-        sqlstr = """INSERT INTO moneywatch_banktransactions (bacctid, transdate, type, updown, amt, whom1, whom2, numnote, splityn, transferbtransid, transferbacctid, itransid) \
-                    VALUES (%s, %s, 'w', '-', %s, %s, %s, 'INV', 0, 0, 0, 0)"""
+        sqlstr = "INSERT INTO moneywatch_banktransactions (bacctid, transdate, type, updown, amt, whom1, whom2, \
+                  numnote, splityn, transferbtransid, transferbacctid, itransid) \
+                  VALUES (%s, %s, 'w', '-', %s, %s, %s, 'INV', 0, 0, 0, 0)"
         cursor.execute(sqlstr, (fromacct, transdate, cost, whom1, whom2))
         h_logsql(cursor.statement)
         dbcon.commit()
@@ -670,27 +671,25 @@ def i_saveadd(ticker, transdate, shares, cost, fromacct, action, ielectionid, ie
         btransid = cursor.lastrowid
 
     # enter transaction in db
-    sqlstr = """INSERT INTO moneywatch_invtransactions (ielectionid, btransid, transdate, ticker, updown, action, sharesamt, shareprice, transprice, totalshould)  \
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, 0)"""
+    sqlstr = "INSERT INTO moneywatch_invtransactions (ielectionid, btransid, transdate, ticker, updown, action, \
+              sharesamt, shareprice, transprice, totalshould) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, 0)"
 
     cursor.execute(sqlstr, (ielectionid, btransid, transdate, ticker, updown, action, shares, costpershare, cost))
     h_logsql(cursor.statement)
     dbcon.commit()
 
-    if  str(ielectionid) + '-updateprice' in g_formdata: # update price based on new entry
+    if str(ielectionid) + '-updateprice' in g_formdata:  # update price based on new entry
         # update the elections price
         sqlstr = "UPDATE moneywatch_invelections SET manualoverrideprice=%s, quotedate=%s WHERE ielectionid=%s"
         cursor.execute(sqlstr, ("{:.3f}".format(float(cost) / float(shares)), h_todaydatetimeformysql(), ielectionid))
         dbcon.commit()
 
-
     i_electiontally(ielectionid)
 
-    if fromacct > 0: # was this bank funded?
+    if fromacct > 0:  # was this bank funded?
         # update the bank account to show investmentid
         sqlstr = """UPDATE moneywatch_banktransactions SET \
-            itransid=%s
-            WHERE btransid=%s"""
+                    itransid=%s WHERE btransid=%s"""
         cursor.execute(sqlstr, (cursor.lastrowid, btransid))
         h_logsql(cursor.statement)
         dbcon.commit()
