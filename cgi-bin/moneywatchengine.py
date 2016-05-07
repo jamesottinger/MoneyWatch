@@ -1306,26 +1306,26 @@ def b_prepare_addupdate(in_job):
 
     if in_job == 'B.ENTRY.ADDSAVE':
         b_saveadd(
-            btransid=in_btransid, bacctid=in_bacctid, transferbtransid=in_transferbtransid,
-            transferbacctid=in_transferbacctid, transdate=in_date, ttype=in_type, amt=in_amt,
-            numnote=in_numnote, whom1=in_whom1, whom2=in_whom2, bacctid_transferselected=in_bacctid_transferselected
-        )
+            bacctid=in_bacctid, transferbtransid=in_transferbtransid, transdate=in_date, ttype=in_type, amt=in_amt,
+            numnote=in_numnote, whom1=in_whom1, whom2=in_whom2, bacctid_transferselected=in_bacctid_transferselected)
 
     if in_job == 'B.ENTRY.EDITSAVE':
         b_saveupdate(
             btransid=in_btransid, bacctid=in_bacctid, transferbtransid=in_transferbtransid,
             transferbacctid=in_transferbacctid, transdate=in_date, ttype=in_type, amt=in_amt,
-            numnote=in_numnote, whom1=in_whom1, whom2=in_whom2, bacctid_transferselected=in_bacctid_transferselected
-        )
+            numnote=in_numnote, whom1=in_whom1, whom2=in_whom2, bacctid_transferselected=in_bacctid_transferselected)
 
 
-def b_saveadd(btransid, bacctid, transferbtransid, transferbacctid, transdate, ttype, amt, numnote, whom1,
+def b_saveadd(bacctid, transferbtransid, transdate, ttype, amt, numnote, whom1,
               whom2, bacctid_transferselected):
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
     cursor = dbcon.cursor(dictionary=True)
 
     if ttype == 'w':  # withdrawal
         updown = '-'
+        updownother = ''
+        transferaction = ''
+        whom1trans = ''
     elif ttype == 'to':  # transfer out
         updown = '-'
         updownother = '+'
@@ -1340,6 +1340,9 @@ def b_saveadd(btransid, bacctid, transferbtransid, transferbacctid, transdate, t
         whom1trans = '[' + b_saybacctname(bacctid) + ']'
     else:  # d = deposit
         updown = '+'
+        updownother = ''
+        transferaction = ''
+        whom1trans = ''
 
     # enter transaction in db
     sqlstr = """INSERT INTO moneywatch_banktransactions (bacctid, transdate, type, updown, amt, whom1, \
