@@ -6,7 +6,7 @@
 #
 # MoneyWatch - https://github.com/jamesottinger/moneywatch
 # ===============================================================================
-import cgi, cgitb, os, datetime, locale, csv, time, json, requests
+import cgi, cgitb, datetime, locale, time, requests
 from flask import request
 import moneywatchconfig
 import mysql.connector  # python3-mysql.connector
