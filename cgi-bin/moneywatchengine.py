@@ -280,8 +280,8 @@ def i_summary():
     return markup + '</table>'
 
 
-# I.ELECTION.GET
 def i_electionget():
+    """I.ELECTION.GET"""
     markup = ''
     counter = 0
     rtotal = 0
@@ -293,24 +293,20 @@ def i_electionget():
     # ielectionid, transdate, ticker, updown, action, sharesamt, shareprice, transprice, totalshould
 
     for dbrow in dbrows:
-        amtup = ''
-        amtdown = ''
-        showwho = ''
-        whomclass = ''
-        classfuture = ''
         showcheck = ''
 
         if dbrow['updown'] == '+':
-            amtup = "+" + "{:.3f}".format(float(dbrow['sharesamt'])) #locale.currency(trans['transactionamt'], grouping=True)
+            amtup = "+" + "{:.3f}".format(float(dbrow['sharesamt']))
             amtdown = '&nbsp;'
             rtotal += float(dbrow['sharesamt'])
         else:
             amtup = '&nbsp;'
-            amtdown = "-" + "{:.3f}".format(float(dbrow['sharesamt'])) #locale.currency(trans['transactionamt'], grouping=True)
+            amtdown = "-" + "{:.3f}".format(float(dbrow['sharesamt']))
             rtotal -= float(dbrow['sharesamt'])
 
         if dbrow['totalshould'] != 0 and (dbrow['totalshould'] != round(rtotal, 3)):
-            showcheck = """%s diff: %s""" % (dbrow['totalshould'],"{:.3f}".format(rtotal - float(dbrow['totalshould'])))
+            showcheck = """%s diff: %s""" % (dbrow['totalshould'],
+                                             "{:.3f}".format(rtotal - float(dbrow['totalshould'])))
 
         if counter % 2 == 0:
             classoe = 'recordeven'
@@ -320,7 +316,9 @@ def i_electionget():
         identifier = str(dbrow['ielectionid']) + str(dbrow['itransid'])
 
         markup += '''<div class="%s" id="%s">\
-                        <span class="irow0"><input type="button" value="D" onclick="return MW.comm.sendInvDelete('%s','%s');"> <input type="button" value="E" onclick="return MW.comm.getInvElectionEdit('%s', '%s');"></span>
+                        <span class="irow0">
+                            <input type="button" value="D" onclick="return MW.comm.sendInvDelete('%s','%s');"> \
+                            <input type="button" value="E" onclick="return MW.comm.getInvElectionEdit('%s', '%s');">
                         <span class="irow1"> %s</span>
                         <span class="irow2">%s</span>
                         <span class="irow3"> ($%s @ $%s each)</span>
@@ -333,8 +331,7 @@ def i_electionget():
                         dbrow['action'], "{:.2f}".format(float(dbrow['transprice'])),
                         "{:.3f}".format(float(dbrow['shareprice'])), amtup, amtdown, "{:.3f}".format(rtotal), showcheck
                     )
-                    #//$R .= $ecounter . "==" . $election['shares'] . "|"; //'<a href="#" onClick="return bank_gettransactions(' . "'" . $document['name'] . "');" . '">' . $document['name'] . " $" .  number_format($document['total'], 2, '.', ',') . "</a><br>";
-        counter +=1
+        counter += 1
         markup += '<div id="scrollmeinv"></div>'
     return markup
 
@@ -532,14 +529,16 @@ def i_edit_template(mode, ielectionname, ticker, itransid, ielectionid, btransid
     if fundsorigin > 0:
         bacctid = b_bacctidfrombtransid(fundsorigin)
 
-
     markup = '''<form name="ieditsingle" id="ieditsingle">\
                     <table class="cleantable" width="300">
                         <tr>
-                            <td colspan="2" style="box-shadow: 0px 1px 2px #999999;background-color: #ffffff;text-align:center;">%s [ <b>%s</b> ]</td>
+                            <td colspan="2" style="box-shadow: 0px 1px 2px #999999;background-color: #ffffff;\
+                            text-align:center;">%s [ <b>%s</b> ]</td>
                         </tr>
                         <tr>
-                            <td colspan="2">Funded From:<br><select name="fromaccount"><option value="0">--none--</option>%s</select></td>
+                            <td colspan="2">Funded From:<br>
+                                <select name="fromaccount"><option value="0">--none--</option>%s</select>
+                            </td>
                         </tr>
                         <tr>
                             <td class="tdborderright">Action:<br>
@@ -547,14 +546,26 @@ def i_edit_template(mode, ielectionname, ticker, itransid, ielectionid, btransid
                                     %s
                                 </select>
                             </td>
-                            <td>Trade Date:<br><input type="text" name="tradedate" id="ieditsingle-tradedate" size="10" value="%s"></td>
+                            <td>Trade Date:<br>
+                                <input type="text" name="tradedate" id="ieditsingle-tradedate" size="10" value="%s">
+                            </td>
                         </tr>
                         <tr>
-                            <td class="tdborderright"># Shares:<br><input type="text" size="10" id="ieditsingle-shares" name="shares" value="%s" onChange="MW.util.checkValueDecimals(this, 3);"></td>
-                            <td>Trade Cost:<br><nobr>$<input type="text" size="8" id="ieditsingle-cost" name="cost" value="%s" onChange="MW.util.checkValueDecimals(this, 2);"></nobr></td>
+                            <td class="tdborderright">
+                                # Shares:<br><input type="text" size="10" id="ieditsingle-shares" name="shares" \
+                                value="%s" onChange="MW.util.checkValueDecimals(this, 3);">
+                            </td>
+                            <td>
+                                Trade Cost:<br><nobr>
+                                $<input type="text" size="8" id="ieditsingle-cost" name="cost" value="%s" \
+                                onChange="MW.util.checkValueDecimals(this, 2);"></nobr>
+                            </td>
                         </tr>
                         <tr>
-                            <td colspan="2"><input type="checkbox" name="%s-updateprice" value="yes" %s/> Manually calculate and update latest quote price</td>
+                            <td colspan="2">
+                                <input type="checkbox" name="%s-updateprice" value="yes" %s/> Manually calculate and \
+                                update latest quote price
+                            </td>
                         </tr>
                     </table>
                     <div style="text-align:right; padding-top: 20px; padding-right: 25px;">
