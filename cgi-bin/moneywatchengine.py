@@ -1383,6 +1383,10 @@ def b_saveupdate(btransid, bacctid, transferbtransid, transferbacctid, transdate
 
     # these are the previously saved values -> transferbtransid, transferbacctid
 
+    updownother = ''
+    transferaction = ''
+    whom1trans = ''
+
     if ttype == 'w':  # withdrawal
         updown = '-'
     elif ttype == 'to':  # transfer out
