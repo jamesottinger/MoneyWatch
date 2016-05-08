@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #===============================================================================
-# Copyright (c) 2014, James Ottinger. All rights reserved.
+# Copyright (c) 2016, James Ottinger. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 #
