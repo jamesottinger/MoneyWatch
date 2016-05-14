@@ -1,4 +1,4 @@
-Copyright (c) 2014, James Ottinger
+Copyright (c) 2016, James Ottinger
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted
