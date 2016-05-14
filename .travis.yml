@@ -1,8 +1,12 @@
 language: python
 python:
-  - "2.6"
-  - "2.7"
-script: python cgi-bin/moneywatch-relay.py
+  - "3.3"
+  - "3.4"
+  - "3.5"
+install:
+  - pip3 install -r requirements.txt
+  - pip3 install https://cdn.mysql.com/Downloads/Connector-Python/mysql-connector-python-2.1.3.tar.gz
+script: nosetests
 branches:
   only:
     - master
