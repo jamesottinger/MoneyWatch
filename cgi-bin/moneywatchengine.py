@@ -162,16 +162,32 @@ def i_summary():
                 markup += '''\
                                 <tr>
                                     <td class="invtabletrgraytop" colspan="4">&nbsp;</td>
-                                    <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;"><!-- in:me -->%s</td>
-                                    <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;"><!-- in:dividends -->%s</td>
-                                    <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;"><!-- in:employer -->%s</td>
-                                    <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;"><!-- total cost basis -->%s</td>
-                                    <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;"><!-- market value --><b>%s</b></td>
-                                    <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;"><!-- appreciation -->%s</td>
-                                    <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;"><!-- gain -->%s</td>
+                                    <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;">
+                                        <!-- in:me -->%s
+                                    </td>
+                                    <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;">
+                                        <!-- in:dividends -->%s
+                                    </td>
+                                    <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;">
+                                        <!-- in:employer -->%s
+                                    </td>
+                                    <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;">
+                                        <!-- total cost basis -->%s
+                                    </td>
+                                    <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;">
+                                        <!-- market value --><b>%s</b>
+                                    </td>
+                                    <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;">
+                                        <!-- appreciation -->%s
+                                    </td>
+                                    <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;">
+                                        <!-- gain -->%s
+                                    </td>
                                     <td class="invtabletrgraytop">&nbsp;</td>
                                 </tr>
-                    ''' % (h_showmoney(election_inme), h_showmoney(election_individends), h_showmoney(election_inemployer), h_showmoney(election_costbasis), h_showmoney(election_market), h_showmoney(election_appres), h_showmoney(election_gain))
+                    ''' % (h_showmoney(election_inme), h_showmoney(election_individends),
+                           h_showmoney(election_inemployer), h_showmoney(election_costbasis),
+                           h_showmoney(election_market), h_showmoney(election_appres), h_showmoney(election_gain))
                 election_inme = 0
                 election_individends = 0
                 election_inemployer = 0
