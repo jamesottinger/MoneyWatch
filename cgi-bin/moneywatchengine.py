@@ -147,6 +147,7 @@ def i_summary():
     all_inemployer = 0
     all_costbasis = 0
     all_market = 0
+    all_marketlast = 0
     all_appres = 0
     all_gain = 0
     parent = ''
@@ -155,6 +156,7 @@ def i_summary():
     election_inemployer = 0
     election_costbasis = 0
     election_market = 0
+    election_marketlast = 0
     election_appres = 0
     election_gain = 0
 
@@ -195,6 +197,7 @@ def i_summary():
                 election_inemployer = 0
                 election_costbasis = 0
                 election_market = 0
+                election_marketlast = 0
                 election_appres = 0
                 election_gain = 0
             markup += '<tr class="invtablehead"><td colspan="12"><b>' + dbrow['iacctname'] + '</b></td></tr>'
@@ -202,14 +205,17 @@ def i_summary():
 
         if dbrow['manualoverrideprice'] is not None:
             election_useprice = dbrow['manualoverrideprice']
+            election_lastcloseuseprice = dbrow['manualoverrideprice']
         else:
-           election_useprice = dbrow['quoteprice']
+            election_useprice = dbrow['quoteprice']
+            election_lastcloseuseprice = dbrow['lastcloseprice']
 
         each_inme = dbrow['costbasisme']
         each_individends = dbrow['costbasisbydividend']
         each_inemployer = dbrow['costbasisfromemployer']
 
         each_market = dbrow['shares'] * election_useprice
+        each_marketlast = dbrow['shares'] * election_lastcloseuseprice
         each_appres = (dbrow['shares'] * election_useprice) - dbrow['costbasis']
         each_gain = each_appres + each_individends + each_inemployer
 
@@ -224,6 +230,7 @@ def i_summary():
         election_inemployer += each_inemployer
         election_costbasis += dbrow['costbasis']
         election_market += each_market
+        election_marketlast += each_marketlast
         election_appres += each_appres
         election_gain += each_gain
 
@@ -232,6 +239,7 @@ def i_summary():
         all_inemployer += each_inemployer
         all_costbasis += dbrow['costbasis']
         all_market += each_market
+        all_marketlast += each_marketlast
         all_appres += each_appres
         all_gain += each_gain
 
@@ -309,8 +317,9 @@ def i_summary():
             h_showmoney(all_costbasis), h_showmoney(all_market), all_market, h_showmoney(all_appres),
             h_showmoney(all_gain))
 
+    value_change = all_market - all_marketlast
     dbcon.close()
-    return markup + '</table>'
+    return markup + '</table>Change since last market close: <strong>' + h_showmoney(value_change) + '<strong>'
 
 
 def i_electionget():
