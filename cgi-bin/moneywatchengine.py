@@ -6,10 +6,15 @@
 #
 # MoneyWatch - https://github.com/jamesottinger/moneywatch
 # ===============================================================================
-import cgi, cgitb, datetime, locale, time, requests
-from flask import request
-import moneywatchconfig
+import cgi
+import cgitb
+import datetime
+import locale
+import time
+import requests
 import mysql.connector  # python3-mysql.connector
+from flask import request
+from moneywatch import moneywatchconfig
 
 
 locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
