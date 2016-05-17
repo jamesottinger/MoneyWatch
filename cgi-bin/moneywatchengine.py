@@ -22,8 +22,7 @@ g_formdata = cgi.FieldStorage()
 cgitb.enable(
     logdir=moneywatchconfig.direrrors,
     display=True,
-    format='text'
-)
+    format='text')
 
 # ================================================================================================================
 # INVESTMENT
