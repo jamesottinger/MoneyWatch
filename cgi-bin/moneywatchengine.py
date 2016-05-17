@@ -153,8 +153,6 @@ def i_summary():
     election_market = 0
     election_appres = 0
     election_gain = 0
-    election_showquote = 0
-    election_useprice = 0
 
     for dbrow in dbrows:
         if dbrow['iacctname'] != parent:
