@@ -1353,11 +1353,12 @@ def b_saveadd(bacctid, transferbtransid, transdate, ttype, amt, numnote, whom1,
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
     cursor = dbcon.cursor(dictionary=True)
 
+    updownother = ''
+    transferaction = ''
+    whom1trans = ''
+
     if ttype == 'w':  # withdrawal
         updown = '-'
-        updownother = ''
-        transferaction = ''
-        whom1trans = ''
     elif ttype == 'to':  # transfer out
         updown = '-'
         updownother = '+'
@@ -1372,9 +1373,6 @@ def b_saveadd(bacctid, transferbtransid, transdate, ttype, amt, numnote, whom1,
         whom1trans = '[' + b_saybacctname(bacctid) + ']'
     else:  # d = deposit
         updown = '+'
-        updownother = ''
-        transferaction = ''
-        whom1trans = ''
 
     # enter transaction in db
     sqlstr = """INSERT INTO moneywatch_banktransactions (bacctid, transdate, type, updown, amt, whom1, \
