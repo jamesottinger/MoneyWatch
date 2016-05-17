@@ -1441,8 +1441,8 @@ def b_saveupdate(btransid, bacctid, transferbtransid, transferbacctid, transdate
         if transferbtransid > 0:
             # delete the transfer, as this is no longer a transfer type
             # delete bank transaction
-            sqlstr = "DELETE FROM moneywatch_banktransactions WHERE bacctid=%s"
-            cursor.execute(sqlstr, (transferbtransid))
+            sqlstr = "DELETE FROM moneywatch_banktransactions WHERE btransid=%s"
+            cursor.execute(sqlstr, (transferbtransid,))
             h_logsql(cursor.statement)
             dbcon.commit()
             b_accounttally(transferbacctid)
