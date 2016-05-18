@@ -1,22 +1,22 @@
-#!/ usr/bin/env python3
-#===============================================================================
-# Copyright (c) 2016, James Ottinger. All rights reserved.
-# Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.
-#
-# MoneyWatch - https://github.com/jamesottinger/moneywatch
-#===============================================================================
-from flask import Flask, abort, request
-import sys
-sys.path.append('./cgi-bin/')
-import moneywatchengine
+from flask import current_app, Blueprint
+from moneywatch import moneywatchengine
+relay = Blueprint('relay', __name__, url_prefix='', static_folder='static')
 
-relay = Flask('relay', static_url_path='')
-#===============================================================================
 
 @relay.route('/', methods=['GET', 'POST'])
 def index():
     return relay.send_static_file('moneywatch.html')
+
+
+@relay.route('/css/<file>', methods=['GET'])
+def css(file):
+    return relay.send_static_file('./css/{}'.format(file))
+
+
+@relay.route('/js/<file>', methods=['GET'])
+def js(file):
+    return relay.send_static_file('./js/{}'.format(file))
+
 
 @relay.route('/action/<job>', methods=['GET', 'POST'])
 def actionhandler(job):
@@ -46,9 +46,9 @@ def actionhandler(job):
     elif job == 'B.ACCOUNT.GET':
         return moneywatchengine.b_accountget()
     elif job == 'B.ENTRY.ADD':
-        return moneywatchengine.b_entry_prepareadd()
+        return moneywatchengine.b_entry_prepare_add()
     elif job == 'B.ENTRY.EDIT':
-        return moneywatchengine.b_entry_prepareedit()
+        return moneywatchengine.b_entry_prepare_edit()
     elif job == 'B.ENTRY.ADDSAVE' or job == 'B.ENTRY.EDITSAVE':
         moneywatchengine.b_prepare_addupdate(job)
         return "ok"
@@ -70,17 +70,14 @@ def actionhandler(job):
     elif job == 'U.IMPORTFILE.SAVE':
         return moneywatchengine.u_importfile_save()
     elif job == 'U.UPDATEQUOTES':
-        moneywatchengine.u_fetchquotes()
+        moneywatchengine.u_fetch_quotes()
         return "ok"
     elif job == 'U.UPDATEBANKTOTALS':
-        moneywatchengine.u_banktotals()
+        moneywatchengine.u_bank_totals()
         return "ok"
     elif job == 'U.LINKS.GET':
-        return moneywatchengine.u_linksgenerate()
+        return moneywatchengine.u_links_generate()
     elif job == 'U.WEATHER.GET':
         return moneywatchengine.u_weathergenerate()
     else:
-        return ")(" # invalid, return ass cheeks
-
-if __name__ == '__main__':
-    relay.run(debug=True, port=5000, host='0.0.0.0')
+        return ")("  # invalid, return ass cheek
