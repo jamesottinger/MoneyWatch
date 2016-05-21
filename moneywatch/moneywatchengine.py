@@ -1129,8 +1129,12 @@ def b_accountget():
 
         markup += '''<div id="b%s" class="%s %s">\
                         <span class="irow0">
-                            <input type="button" value="D" onclick="return MW.comm.sendBankDelete('%s','%s');">
-                            <input type="button" value="E" onclick="return MW.comm.getBankEdit('%s');">
+                            <button type="button" onclick="return MW.comm.sendBankDelete('%s','%s');">
+                                <span class="glyphicon glyphicon-remove"></span>
+                            </button>
+                            <button type="button" onclick="return MW.comm.getBankEdit('%s');">
+                                <span class="glyphicon glyphicon-pencil"></span>
+                            </button>
                         </span>
                         <span class="rdate">%s</span>
                         <span class="rnum">%s</span>
