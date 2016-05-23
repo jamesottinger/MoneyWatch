@@ -359,8 +359,12 @@ def i_electionget():
 
         markup += '''<div class="%s" id="%s">\
                         <span class="irow0">
-                            <input type="button" value="D" onclick="return MW.comm.sendInvDelete('%s','%s');"> \
-                            <input type="button" value="E" onclick="return MW.comm.getInvElectionEdit('%s', '%s');">
+                             <button type="button" onclick="return MW.comm.sendInvDelete('%s', '%s');">
+                                <span class="glyphicon glyphicon-remove"></span>
+                            </button>
+                            <button type="button" onclick="return MW.comm.getInvElectionEdit('%s', '%s');">
+                                <span class="glyphicon glyphicon-pencil"></span>
+                            </button>
                         </span>
                         <span class="irow1"> %s</span>
                         <span class="irow2">%s</span>
@@ -1129,7 +1133,7 @@ def b_accountget():
 
         markup += '''<div id="b%s" class="%s %s">\
                         <span class="irow0">
-                            <button type="button" onclick="return MW.comm.sendBankDelete('%s','%s');">
+                            <button type="button" onclick="return MW.comm.sendBankDelete('%s', '%s');">
                                 <span class="glyphicon glyphicon-remove"></span>
                             </button>
                             <button type="button" onclick="return MW.comm.getBankEdit('%s');">
