@@ -1194,7 +1194,7 @@ def b_edit_template(mode, bacctname, btransid, bacctid, transferbtransid, transf
     if mode == 'edit':
         sendcmd = 'B.ENTRY.EDITSAVE'
         buttonsay = 'Save Edit'
-        buttonduplicate = '''<input type="button" name="doitnew" VALUE="Save Edit As New" \
+        buttonduplicate = '''<input type="button" name="doitnew" VALUE="Duplicate (with Edits)" \
                              onClick="beditsingle_validate('B.ENTRY.ADDSAVE');">'''
     else:
         sendcmd = 'B.ENTRY.ADDSAVE'
