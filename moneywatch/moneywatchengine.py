@@ -1145,11 +1145,12 @@ def b_accountget():
                         <span class="%s">%s</span>
                         <span class="rup">%s</span>
                         <span class="rdown">%s</span>
+                        <span class="recon"><input type="checkbox" %s></span>
                         <span class="%s">%s</span>
                      </div>''' % (
                      dbrow['btransid'], classoe, classfuture, dbrow['bacctid'], dbrow['btransid'],
                      dbrow['btransid'], dbrow['transdate'], dbrow['numnote'], whomclass, showwho,
-                     amtup, amtdown, rtotalclass, rtotalshow)
+                     amtup, amtdown, ' checked', rtotalclass, rtotalshow)
         counter += 1
     return markup
 
