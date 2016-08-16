@@ -583,47 +583,6 @@ MW.util = {
 };
 
 
-// -------  YUI STUFF
-if (typeof (YUI) !== 'undefined') {
 
-    MW.yui = {
-        // YUI panels
-        panelUniversal: null,
-        panelTransactions: null,
-        // make the YUI control close my way
-        YUIcloseMarkup: '<span class="yui3-widget-button-wrapper"><a href="#" class="yui3-button yui3-button-close" onClick="MW.yui.utilClosePanel();"><span class="yui3-button-content"><span class="yui3-button-icon"></span></span></a></span>',
 
-        utilClosePanel: function () {
-            MW.yui.panelUniversal.hide();
-            $('#paneluniversal-inner').html('');
         }
-    };
-
-    // YUI Components
-    YUI({
-         gallery: 'gallery-2011.06.01-20-18' // Last Gallery Build of this module
-    }).use("panel", "dd-plugin", "autocomplete", "autocomplete-filters", "autocomplete-highlighters", "json", "json-parse", function(Y) {
-
-        MW.yui.panelTransactions = new Y.Panel({
-            srcNode: '#paneltransactions',
-            width: 1200,
-            centered: true,
-            zIndex: 5,
-            headerContent: "Transactions",
-            plugins: [Y.Plugin.Drag],
-            visible: false,
-            render: true
-        });
-
-        MW.yui.panelUniversal = new Y.Panel({
-            srcNode: '#paneluniversal',
-            width: 420,
-            centered: true,
-            zIndex: 5,
-            headerContent: "i'm all of the windoze",
-            plugins: [Y.Plugin.Drag],
-            visible: false,
-            render: true
-        });
-    });
-}
