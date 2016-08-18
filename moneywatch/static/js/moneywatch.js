@@ -47,14 +47,11 @@ MW.comm = {
                 });
                 break;
             case 'I.BULKADD.EDIT':
-                MW.yui.panelUniversal.set('width', 950);
-                MW.yui.panelUniversal.set('headerContent', "Investments - Bulk Add" + MW.yui.YUIcloseMarkup);
                 $.ajax({
                     url: urlpost,
                     data: {job: in_job},
                     success: function(data) {
-                        $('#paneluniversal-inner').html(data);
-                        MW.yui.panelUniversal.show();
+                        MW.modaluniversal.show("Investments - Bulk Add", "950", data);
                     }
                 });
                 break;
@@ -67,7 +64,7 @@ MW.comm = {
                     success: function(data) {
                         data = data.replace(/\n/gm, '');
                         if (data == 'ok') {
-                            MW.yui.panelUniversal.hide();
+                            MW.modaluniversal.hide();
                             MW.comm.sendCommand('I.SUMMARY.GET');
                             MW.comm.sendCommand('B.SUMMARY.GET');
                         }
@@ -122,14 +119,11 @@ MW.comm = {
                 });
                 break;
             case 'B.BULKINTEREST.EDIT':
-                MW.yui.panelUniversal.set('width', 350);
-                MW.yui.panelUniversal.set('headerContent', "Bank - Bulk Interest" + MW.yui.YUIcloseMarkup);
                 $.ajax({
                     url: urlpost,
                     data: {},
                     success: function(data) {
-                        $('#paneluniversal-inner').html(data);
-                        MW.yui.panelUniversal.show();
+                        MW.modaluniversal.show("Bank - Bulk Interest", "350", data);
                     }
                 });
                 break;
@@ -142,7 +136,7 @@ MW.comm = {
                     success: function(data) {
                         data = data.replace(/\n/gm, '');
                         if (data == 'ok') {
-                            MW.yui.panelUniversal.hide();
+                            MW.modaluniversal.hide();
                             MW.comm.sendCommand('I.SUMMARY.GET');
                             MW.comm.sendCommand('B.SUMMARY.GET');
                         } else {
@@ -152,14 +146,11 @@ MW.comm = {
                 });
                 break;
             case 'B.BULKBILLS.EDIT':
-                MW.yui.panelUniversal.set('width', 750);
-                MW.yui.panelUniversal.set('headerContent', "Bank - Bulk Bills" + MW.yui.YUIcloseMarkup);
                 $.ajax({
                     url: urlpost,
                     data: {},
                     success: function(data) {
-                        $('#paneluniversal-inner').html(data);
-                        MW.yui.panelUniversal.show();
+                        MW.modaluniversal.show("Bank - Bulk Bills", "750", data);
                     }
                 });
                 break;
@@ -172,7 +163,7 @@ MW.comm = {
                     success: function(data) {
                         data = data.replace(/\n/gm, '');
                         if (data == 'ok') {
-                            MW.yui.panelUniversal.hide();
+                            MW.modaluniversal.hide();
                             MW.comm.sendCommand('I.SUMMARY.GET');
                             MW.comm.sendCommand('B.SUMMARY.GET');
                         } else {
@@ -247,14 +238,11 @@ MW.comm = {
                 });
                 break;
             case 'U.IMPORTFILE.EDIT':
-                MW.yui.panelUniversal.set('width', 420);
-                MW.yui.panelUniversal.set('headerContent', "Import Menu" + MW.yui.YUIcloseMarkup);
                 $.ajax({
                     url: urlpost,
                     data: {},
                     success: function(data) {
-                        $('#paneluniversal-inner').html(data);
-                        MW.yui.panelUniversal.show();
+                        MW.modaluniversal.show("Import Menu", "420", data);
                     }
                 });
                 break;
@@ -332,14 +320,11 @@ MW.comm = {
     },
 
     getInvGraph: function (in_ielectionid) {
-        MW.yui.panelUniversal.set('width', 950);
-        MW.yui.panelUniversal.set('headerContent', "Investment - Graph" + MW.yui.YUIcloseMarkup);
         $.ajax({
             url: MW.moneyWatchURL + '/action/I.GRAPH.GET',
             data: {'ielectionid': in_ielectionid},
             success: function(data) {
-                $('#paneluniversal-inner').html(data);
-                MW.yui.panelUniversal.show();
+                MW.modaluniversal.show("Investment - Graph", "950", data);
             }
         });
     },
@@ -583,6 +568,24 @@ MW.util = {
 };
 
 
+MW.modaluniversal = {
+    // ------------------------------------------------------------------
+    // preps and shows universal modal
+    // ------------------------------------------------------------------
+    show: function (title, width, content) {
+        $('#modaluniversal-inner').html(content);
+        $('.modal-dialog').css("width", width);
+        $('.modal-title').html(title);
+        $('#modaluniversal').modal('show');
+    },
+    // ------------------------------------------------------------------
+    // hides universal modal window and does cleanup
+    // ------------------------------------------------------------------
+    hide: function () {
+        $('#modaluniversal').modal('hide');
+        $('#modaluniversal-inner').html('');
+    }
+};
 
 
         }
