@@ -91,6 +91,7 @@
             <div id="rightcontent2"></div>
         </div>
 
+        <div class="container">
 
           <!-- Modal: universal -->
           <div class="modal" id="modaluniversal" role="dialog">
@@ -105,8 +106,50 @@
             </div>
           </div>
 
+          <!-- Modal: transactions -->
+          <div class="modal" id="modaltransactions" role="dialog">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header modal-header-primary">
+                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+                  <h4 class="modal-title">Transactions</h4>
                 </div>
+                <div class="modal-body">
+
+                    <div id="transactionsblock">
+                       <div id="transactionsleft">
+                           <div id="transactionsheaderinv">
+                               <span class="theader" style="width: 64px;">Adjust</span>
+                               <span class="theader" style="width: 100px;">Date</span>
+                               <span class="theader" style="width: 80px;">Type</span>
+                               <span class="theader" style="width: 191px;">Trade Details</span>
+                               <span class="theader" style="width: 71px;">Add</span>
+                               <span class="theader" style="width: 70px;">Sub</span>
+                               <span class="theader" style="width: 194px;">Total</span>
+                           </div>
+                           <div id="transactionsheaderbank">
+                               <span class="theader" style="width: 64px;">Adjust</span>
+                               <span class="theader" style="width: 80px;">Date</span>
+                               <span class="theader" style="width: 80px;">Type</span>
+                               <span class="theader" style="width: 260px;">Details</span>
+                               <span class="theader" style="width: 71px;">Add</span>
+                               <span class="theader" style="width: 70px;">Sub</span>
+                               <span class="theader" style="width: 146px;">Total</span>
+                           </div>
+                           <div id="transactionslist"></div>
+                       </div>
+                       <div id="transactionsright">
+                           <div id="transactionsrightedit"></div><br><br>
+                           <div id="transactionsrightchart"></div>
+                       </div>
+                       <div class="clear"></div>
+                    </div>
+
                 </div>
+              </div>
+            </div>
+          </div>
+
         </div>
 
         <br><br>
