@@ -274,16 +274,7 @@ MW.comm = {
             url: MW.moneyWatchURL + '/action/I.ELECTION.GET',
             data: {'ielectionid': in_ielectionid},
             success: function(data) {
-                $('#transactionslist').html(data);
-                // clear any previous highlights
-                $('#' + MW.activeRowId).removeClass('activeinvrow');
-                $('#transactionsrightedit').removeClass('activeinveditmenu');
-                $('#transactionsheaderinv').show();
-                $('#transactionsheaderbank').hide();
-                MW.yui.panelTransactions.show();
-                // animate scroll to bottom
-                // $('#transactionslist').stop().animate({ scrollTop: $('#scrollmeinv').offset().top },120);
-                $("#transactionslist").scrollTop($("#transactionslist")[0].scrollHeight);
+                MW.modaltransactions.show("investment", data);
             }
         });
         $.ajax({
@@ -409,14 +400,7 @@ MW.comm = {
             url: MW.moneyWatchURL + '/action/B.ACCOUNT.GET',
             data: {'bacctid': in_bacctid},
             success: function(data) {
-                $('#transactionslist').html(data);
-                // clear any previous highlights
-                $('#' + MW.activeRowId).removeClass('activeinvrow');
-                $('#transactionsrightedit').removeClass('activeinveditmenu');
-                $('#transactionsheaderinv').hide();
-                $('#transactionsheaderbank').show();
-                MW.yui.panelTransactions.show();
-                $("#transactionslist").scrollTop($("#transactionslist")[0].scrollHeight);
+                MW.modaltransactions.show("bank", data);
             }
         });
         $.ajax({
@@ -587,5 +571,26 @@ MW.modaluniversal = {
     }
 };
 
+MW.modaltransactions = {
+    // ------------------------------------------------------------------
+    // preps and shows transaction bank/investment accounts modal
+    // ------------------------------------------------------------------
+    show: function (mode, content) {
 
+        $('#transactionslist').html(content);
+        // clear any previous highlights
+        $('#' + MW.activeRowId).removeClass('activeinvrow');
+        $('#transactionsrightedit').removeClass('activeinveditmenu');
+        $('.modal-dialog').css("width", "1224");
+        // $('.modal-title').html(title);
+        if (mode === "bank") {
+            $('#transactionsheaderinv').hide();
+            $('#transactionsheaderbank').show();
+        } else {
+            $('#transactionsheaderbank').hide();
+            $('#transactionsheaderinv').show();
         }
+        $('#modaltransactions').modal('show');
+        $("#transactionslist").scrollTop($("#transactionslist")[0].scrollHeight);
+    }
+};
