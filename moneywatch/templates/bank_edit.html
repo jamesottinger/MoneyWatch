@@ -31,7 +31,7 @@
                 Transfer <span id="beditsingle-transsay">{% if entry.type == 'to' %}To{% else %}From{% endif %}</span>:<br>
                 <select name="bacctid_transferselected" id="beditsingle-bacctid_transferselected">
                     <option value="0">--none--</option>
-                    {{ entry.account_choices }}
+                    {{ entry.account_select|safe }}
                 </select>
             </div></td>
         </tr>
@@ -99,5 +99,5 @@
     }
 
     // autocomplete (jQuery UI)
-    jQuery('#beditsingle-whom1').autocomplete({ source: [ {{ entry.autocomplete }} ] });
+    jQuery('#beditsingle-whom1').autocomplete({ source: [ {{ entry.autocomplete|safe }} ] });
 </script>
