@@ -1,4 +1,4 @@
-from flask import current_app, Blueprint
+from flask import current_app, Blueprint, render_template
 from moneywatch import moneywatchengine
 relay = Blueprint('relay', __name__, url_prefix='', static_folder='static')
 
@@ -46,9 +46,11 @@ def actionhandler(job):
     elif job == 'B.ACCOUNT.GET':
         return moneywatchengine.b_accountget()
     elif job == 'B.ENTRY.ADD':
-        return moneywatchengine.b_entry_prepare_add()
+        return render_template('bank_edit.html',
+                               entry=moneywatchengine.b_entry_prepare_add())
     elif job == 'B.ENTRY.EDIT':
-        return moneywatchengine.b_entry_prepare_edit()
+        return render_template('bank_edit.html',
+                               entry=moneywatchengine.b_entry_prepare_edit())
     elif job == 'B.ENTRY.ADDSAVE' or job == 'B.ENTRY.EDITSAVE':
         moneywatchengine.b_prepare_addupdate(job)
         return "ok"
