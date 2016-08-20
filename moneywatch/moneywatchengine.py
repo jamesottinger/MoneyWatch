@@ -1179,14 +1179,13 @@ def b_entry_prepare_edit():
     cursor.execute(sqlstr, (request.args.get('btransid'),))
     dbrow = cursor.fetchone()
     dbcon.close()
-    return b_edit_template(
-        mode='edit', bacctname=dbrow['bacctname'], btransid=str(dbrow['btransid']),
-        bacctid=str(dbrow['bacctid']), transferbtransid=str(dbrow['transferbtransid']),
-        transferbacctid=str(dbrow['transferbacctid']), transdate=dbrow['transdate'],
-        ttype=dbrow['type'], amt="{:.2f}".format(float(dbrow['amt'])),
-        numnote=dbrow['numnote'], whom1=dbrow['whom1'], whom2=dbrow['whom2']
-    )
 
+    entry = dbrow
+    entry["amt"] = "{:.2f}".format(float(dbrow['amt']))
+    entry["mode"] = "edit"
+    entry["accounts"] = Markup(b_makeselects(dbrow["transferbacctid"]))
+    entry["autocomplete"] = Markup(b_autocomplete(dbrow["bacctid"]))
+    return entry
 
 def b_edit_template(mode, bacctname, btransid, bacctid, transferbtransid, transferbacctid, transdate, ttype, amt,
                     numnote, whom1, whom2):
