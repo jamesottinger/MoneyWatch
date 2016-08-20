@@ -13,7 +13,7 @@ import locale
 import time
 import requests
 import mysql.connector  # python3-mysql.connector
-from flask import request
+from flask import request, Markup
 from moneywatch import moneywatchconfig
 
 
@@ -1159,15 +1159,18 @@ def b_entry_prepare_add():
     """B.ENTRY.ADD = generates body needed for "Bank Single Add" Section"""
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
     cursor = dbcon.cursor(dictionary=True)
-    sqlstr = "SELECT * FROM moneywatch_bankaccounts WHERE bacctid=%s"
+    sqlstr = "SELECT bacctid,bacctname FROM moneywatch_bankaccounts WHERE bacctid=%s"
     cursor.execute(sqlstr, (request.args.get('bacctid'),))
-    dbrow = cursor.fetchone()
+    entry = cursor.fetchone()
     dbcon.close()
-    return b_edit_template(
-        mode='add', bacctname=dbrow['bacctname'], btransid="0", bacctid=str(dbrow['bacctid']),
-        transferbtransid="0", transferbacctid="0", transdate="", ttype="", amt="",
-        numnote="", whom1="", whom2=""
-    )
+
+    entry["mode"] = "add"
+    entry["transdate"] = entry["whom1"] = entry["whom2"] = entry["numnote"] = entry["type"] = entry["amt"] = ""
+    entry["btransid"] = entry["transferbtransid"] = entry["transferbacctid"] = 0
+
+    entry["account_select"] = b_makeselects(entry["transferbacctid"])
+    entry["autocomplete"] = b_autocomplete(entry["bacctid"])
+    return entry
 
 
 def b_entry_prepare_edit():
