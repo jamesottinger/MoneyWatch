@@ -1180,14 +1180,13 @@ def b_entry_prepare_edit():
     sqlstr = """SELECT bt.*, ba.bacctname FROM moneywatch_banktransactions bt \
                 INNER JOIN moneywatch_bankaccounts ba ON bt.bacctid=ba.bacctid WHERE bt.btransid=%s"""
     cursor.execute(sqlstr, (request.args.get('btransid'),))
-    dbrow = cursor.fetchone()
+    entry = cursor.fetchone()
     dbcon.close()
 
-    entry = dbrow
-    entry["amt"] = "{:.2f}".format(float(dbrow['amt']))
+    entry["amt"] = "{:.2f}".format(float(entry['amt']))
     entry["mode"] = "edit"
-    entry["accounts"] = Markup(b_makeselects(dbrow["transferbacctid"]))
-    entry["autocomplete"] = Markup(b_autocomplete(dbrow["bacctid"]))
+    entry["accounts"] = b_makeselects(entry["transferbacctid"])
+    entry["autocomplete"] = b_autocomplete(entry["bacctid"])
     return entry
 
 def b_edit_template(mode, bacctname, btransid, bacctid, transferbtransid, transferbacctid, transdate, ttype, amt,
