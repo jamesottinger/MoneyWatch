@@ -1,95 +1,61 @@
-
-if mode == 'edit':
-    sendcmd = 'B.ENTRY.EDITSAVE'
-    buttonsay = 'Save Edit'
-    buttonduplicate = '''<input type="button" name="doitnew" VALUE="Duplicate (with Edits)" \
-                         onClick="beditsingle_validate('B.ENTRY.ADDSAVE');">'''
-else:
-    sendcmd = 'B.ENTRY.ADDSAVE'
-    buttonsay = 'Add New'
-    buttonduplicate = ''
-
-transshow = 'none'
-transsay = 'From'
-
-
-
-# add type options here
-if ttype == 'w':
-    typeselect = '<option value="d">Deposit</option><option value="w" selected>Withdraw</option><option value="to">\
-                  Transfer Out</option><option value="ti">Transfer In</option>'
-elif ttype == 'to':
-    typeselect = '<option value="d">Deposit</option><option value="w">Withdraw</option><option value="to" selected>\
-                  Transfer Out</option><option value="ti">Transfer In</option>'
-    transshow = 'block'
-    transsay = 'To'
-elif ttype == 'ti':
-    typeselect = '<option value="d">Deposit</option><option value="w">Withdraw</option><option value="to">\
-                  Transfer Out</option><option value="ti" selected>Transfer In</option>'
-    transshow = 'block'
-    transsay = 'From'
-else:  # d = deposit
-    typeselect = '<option value="d" selected>Deposit</option><option value="w">Withdraw</option><option value="to">\
-                  Transfer Out</option><option value="ti">Transfer In</option>'
-
-
 <form name="beditsingle" id="beditsingle">
     <table class="cleantable" width="300">
         <tr>
-            <td colspan="2" style="box-shadow: 0px 1px 2px #999999;background-color: #ffffff;
-            text-align:center;">%s</td>
+            <td colspan="2" style="box-shadow: 0px 1px 2px #999999;background-color: #ffffff;text-align:center;">{{ entry.bacctname }}</td>
         </tr>
         <tr>
             <td class="tdborderright">Action:<br>
                 <select name="ttype" id="beditsingle-ttype" onChange="beditsingle_typechanged(this);">
-                    <option value="d"{% if edit.ttype == 'd' %} selected{% endif %}>Deposit</option>
-                    <option value="w"{% if edit.ttype == 'w' %} selected{% endif %}>Withdraw</option>
-                    <option value="to"{% if edit.ttype == 'to' %} selected{% endif %}>Transfer Out</option>
-                    <option value="ti"{% if edit.ttype == 'ti' %} selected{% endif %}>Transfer In</option>
+                    <option value="d"{% if entry.type == 'd' %} selected{% endif %}>Deposit</option>
+                    <option value="w"{% if entry.type == 'w' %} selected{% endif %}>Withdraw</option>
+                    <option value="to"{% if entry.type == 'to' %} selected{% endif %}>Transfer Out</option>
+                    <option value="ti"{% if entry.type == 'ti' %} selected{% endif %}>Transfer In</option>
                 </select>
             </td>
             <td>Date:<br>
-                <input type="text" name="transdate" id="beditsingle-transdate" size="10" value="{{ edit.transdate }}">
+                <input type="text" name="transdate" id="beditsingle-transdate" size="10" value="{{ entry.transdate }}">
             </td>
         </tr>
         <tr>
-            <td class="tdborderright">Num-Note:<br><input type="text" size="10" placeholder="Num" \
-            name="numnote" id="beditsingle-numnote" value="{{ edit.numnote }}"></td>
-            <td>Value:<br><nobr>$<input type="text" size="10" name="amt" id="beditsingle-amt" \
-            value="%s" onChange="MW.util.checkValueDecimals(this, 2);"></nobr></td>
+            <td class="tdborderright">
+                Num-Note:<br>
+                <input type="text" size="10" placeholder="Num" name="numnote" id="beditsingle-numnote" value="{{ entry.numnote }}">
+            </td>
+            <td>Value:<br>
+                <nobr>$<input type="text" size="10" name="amt" id="beditsingle-amt" value="{{ entry.amt }}" onChange="MW.util.checkValueDecimals(this, 2);"></nobr>
+            </td>
         </tr>
         <tr>
             <td colspan="2">
-            <div id="beditsingle-transblock" style="display: %s">Transfer \
-            <span id="beditsingle-transsay">{{ edit.transsay }}</span>:<br><select name="bacctid_transferselected" \
-            id="beditsingle-bacctid_transferselected"><option value="0">--none--</option>%s</select>\
+            <div id="beditsingle-transblock" style="display: {% if entry.type == 'to' or entry.type == 'ti' %}block{% else %}none{% endif %}">
+                Transfer <span id="beditsingle-transsay">{% if entry.type == 'to' %}To{% else %}From{% endif %}</span>:<br>
+                <select name="bacctid_transferselected" id="beditsingle-bacctid_transferselected">
+                    <option value="0">--none--</option>
+                    {{ entry.account_choices }}
+                </select>
             </div></td>
         </tr>
         <tr>
             <td colspan="2">
                 Whom:<br>
-                <input type="text" name="whom1" value="{{ edit.whom1 }}" id="beditsingle-whom1" size="35" \
-                style="margin-bottom: 4px;"/><br>
-                <input type="text" name="whom2" value="{{ edit.whom2 }}" placeholder="Memo (optional)" size="35" />
+                <input type="text" name="whom1" value="{{ entry.whom1 }}" id="beditsingle-whom1" size="50" style="margin-bottom: 4px;"/><br>
+                <input type="text" name="whom2" value="{{ entry.whom2 }}" placeholder="Memo (optional)" size="50" />
             </td>
         </tr>
-        <!--
-        <tr>
-            <td colspan="2">Category:
-                <br><input type="text" name="category" id="autocategories" size="35" /><
-            /td>
-        </tr>
-        -->
     </table>
     <div style="text-align:right; padding-top: 20px; padding-right: 25px;">
-        <input type="hidden" name="bacctname" value="{{ edit.bacctname }}">
-        <input type="hidden" name="btransid" value="{{ edit.btransid }}">
-        <input type="hidden" name="bacctid" id="beditsingle-bacctid" value="{{ edit.bacctid }}">
-        <input type="hidden" name="transferbtransid" value="%s">
-        <input type="hidden" name="transferbacctid" value="%s">
-        <input type="button" value="Cancel" onClick="MW.comm.cancelEdit('bank', '%s');">
-        %s
-        <input type="button" name="doit" VALUE="%s" onClick="beditsingle_validate('%s');">
+        <input type="hidden" name="bacctname" value="{{ entry.bacctname }}">
+        <input type="hidden" name="btransid" value="{{ entry.btransid }}">
+        <input type="hidden" name="bacctid" id="beditsingle-bacctid" value="{{ entry.bacctid }}">
+        <input type="hidden" name="transferbtransid" value="{{ entry.transferbtransid }}">
+        <input type="hidden" name="transferbacctid" value="{{ entry.transferbacctid }}">
+        <input type="button" value="Cancel" onClick="MW.comm.cancelEdit('bank', '{{ entry.bacctid }}');">
+        {% if entry.mode == 'edit' %}
+        <input type="button" name="doitnew" VALUE="Duplicate (with Edits)" onClick="beditsingle_validate('B.ENTRY.ADDSAVE');">
+        <input type="button" name="doit" VALUE="Save Edit" onClick="beditsingle_validate('B.ENTRY.EDITSAVE');">
+        {% else %}
+        <input type="button" name="doit" VALUE="Add New" onClick="beditsingle_validate('B.ENTRY.ADDSAVE');">
+        {% endif %}
     </div>
 </form><br>
 <script>
@@ -104,9 +70,8 @@ else:  # d = deposit
             alert("Please provide the total amount for this transaction.");
         } else if(jQuery('#beditsingle-whom1').val() == '') {
             alert("Please provide the who/whom for this transaction.");
-        } else if((jQuery('#beditsingle-ttype').val() == 'ti' || \
-                   jQuery('#beditsingle-ttype').val() == 'to') && \
-                   jQuery('#beditsingle-transferaccount').val() == '0') {
+        } else if((jQuery('#beditsingle-ttype').val() == 'ti' ||
+                   jQuery('#beditsingle-ttype').val() == 'to') && jQuery('#beditsingle-transferaccount').val() == '0') {
             alert("Please select the transfer account.");
         } else {
             MW.comm.sendCommand(in_sendjob);
@@ -133,12 +98,6 @@ else:  # d = deposit
         }
     }
 
-    // autocomplete
-    jQuery('#beditsingle-whom1').autocomplete({ source: [ {{ autocomplete_data }} ] });
+    // autocomplete (jQuery UI)
+    jQuery('#beditsingle-whom1').autocomplete({ source: [ {{ entry.autocomplete }} ] });
 </script>
-(
-        bacctname, typeselect, [transdate], [numnote], amt, transshow, [transsay],
-        b_makeselects(transferbacctid, ''), [whom1], [whom2], [bacctname], [btransid],
-        [bacctid], transferbtransid, transferbacctid, bacctid, buttonduplicate,
-        buttonsay, sendcmd, [b_autocomplete(bacctid)]
-)
