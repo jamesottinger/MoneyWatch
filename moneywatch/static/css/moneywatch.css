@@ -476,3 +476,7 @@ a:active  {color:#6a6aa2;}  /* selected link   */
     border-right: 1px solid #F2F2F2;
     border-left: 1px solid #FFF;
 }
+.ui-front{
+    /* this is for JQuery UI autocomplete */
+    z-index: 1051;
+}
