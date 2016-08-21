@@ -1,0 +1,30 @@
+<form name="bbulkbillsedit" id="bbulkbillsedit">
+    <table class="invtable" width="100%">
+        <tr>
+            <td style="border-bottom: solid 1px #cccccc;"><strong>Payee Name</strong></td>
+            <td style="border-bottom: solid 1px #cccccc;"><strong>Paid From</strong></td>
+            <td style="border-bottom: solid 1px #cccccc;"><strong>Date</strong></td>
+            <td style="border-bottom: solid 1px #cccccc;"><strong>Amount</strong></td>
+        </tr>
+        {% for payee in bulkbills.payees %}
+        <tr>
+            <td>{{ payee.name }}</td>
+            <td>
+                <select name="{{ payee.id }}-fromaccount">
+                {{ bulkbills.account_select|safe }}
+                </select>
+            </td>
+            <td><input type="text" name="bbulkbillsedit-{{ payee.id }}-date" id="bbulkbillsedit-{{ payee.id }}-date" size="10"></td>
+            <td><nobr>$<input type="text" size="8" name="{{ payee.id }}-amt" value="" onChange="MW.util.checkValueDecimals(this, 2);"></nobr></td>
+        </tr>
+        {% endfor %}
+    </table>
+    <div style="text-align:right; padding-top: 20px; padding-right: 25px;">
+        <input type="button" name="doit" VALUE="Save" onClick="MW.comm.sendCommand('B.BULKBILLS.SAVE');">
+    </div>
+</form>
+<script>
+{% for payee in bulkbills.payees %}
+    jQuery("#bbulkbillsedit-{{ payee.id }}-date").datepicker({ dateFormat: "yy-mm-dd" });
+{% endfor %}
+</script>
