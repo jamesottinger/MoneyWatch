@@ -989,7 +989,7 @@ def b_accounttally(in_bacctid):
     dbcon.close()
 
 
-def b_makeselects(selected, identifier):
+def b_makeselects(selected, identifier=''):
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
     cursor = dbcon.cursor(dictionary=True)
     sqlstr = "SELECT * FROM moneywatch_bankaccounts ORDER BY bacctname"
