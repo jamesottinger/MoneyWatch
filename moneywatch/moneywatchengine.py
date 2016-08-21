@@ -1477,51 +1477,18 @@ def b_bulkinterest_save():
 
 
 def b_bulkbills_edit():
-    """B.BULKBILLS.EDIT = generates body needed for "Bills Bulk Add" utility panel"""
+    """B.BULKBILLS.EDIT = generates controller data needed for "Bills Bulk Add" template"""
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
     cursor = dbcon.cursor(dictionary=True)
     sqlstr = "SELECT * FROM moneywatch_bankbills ORDER BY payeename"
     cursor.execute(sqlstr)
     dbrows = cursor.fetchall()
 
-    markup = ''
-    javascriptcalls = []
-
-    markup += '''<form name="bbulkbillsedit" id="bbulkbillsedit"><table class="invtable" width="100%">\
-                    <tr>
-                        <td style="border-bottom: solid 1px #cccccc;"><strong>Payee Name</strong></td>
-                        <td style="border-bottom: solid 1px #cccccc;"><strong>Paid From</strong></td>
-                        <td style="border-bottom: solid 1px #cccccc;"><strong>Date</strong></td>
-                        <td style="border-bottom: solid 1px #cccccc;"><strong>Amount</strong></td>
-                    </tr>
-    '''
-
+    bulkbills = { "payees":[], "account_select": b_makeselects(selected='8') }
     for dbrow in dbrows:
-
-        each_datepicker = 'bbulkbillsedit-' + str(dbrow['payeeid']) + '-date'
-        javascriptcalls.append(' jQuery("#' + each_datepicker + '").datepicker({ dateFormat: "yy-mm-dd" });')
-
-        markup += '''\
-                    <tr>
-                        <td>%s</td>
-                        <td><select name="%s-fromaccount">%s</select></td>
-                        <td><input type="text" name="%s" id="%s" size="10"></td>
-                        <td><nobr>$<input type="text" size="8" name="%s-amt" value="" \
-                        onChange="MW.util.checkValueDecimals(this, 2);"></nobr></td>
-                    </tr>
-        ''' % (dbrow['payeename'], str(dbrow['payeeid']), b_makeselects(selected='8', identifier=''), each_datepicker,
-               each_datepicker, str(dbrow['payeeid']))
-
+        bulkbills["payees"].append( {"id": dbrow['payeeid'], "name": dbrow['payeename']})
     dbcon.close()
-
-    markup += '''</table>\
-                 <div style="text-align:right; padding-top: 20px; padding-right: 25px;">
-                 <input type="button" name="doit" VALUE="Save" onClick="MW.comm.sendCommand('B.BULKBILLS.SAVE');">
-                 </div></form><script>'''
-    for js in javascriptcalls:
-        markup += js
-
-    return markup + '</script>'
+    return bulkbills
 
 
 def b_bulkbills_save():
