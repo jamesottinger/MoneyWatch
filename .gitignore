@@ -9,4 +9,5 @@ _tools/
 *.pyc
 __FUTUREPLANS.md
 .idea/
+.vscode/
 venv/
