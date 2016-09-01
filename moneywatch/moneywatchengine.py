@@ -1418,38 +1418,12 @@ def b_bulkinterest_edit():
     cursor.execute(sqlstr)
     dbrows = cursor.fetchall()
 
-    markup = '''<form name="bbulkinterestedit" id="bbulkinterestedit"><table class="invtable" width="100%">
-                    <tr>
-                        <td colspan="2">
-                            Date <input type="text" name="bbulkinterest-date" id="bbulkinterest-date" size="10">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="border-bottom: solid 1px #cccccc;border-top: solid 1px #cccccc;">
-                            <strong>Account Name</strong></td>
-                        <td style="border-bottom: solid 1px #cccccc;border-top: solid 1px #cccccc;">
-                            <strong>Amount</strong>
-                        </td>
-                    </tr>
-    '''
-
+    bulkinterest = []
     for dbrow in dbrows:
-        markup += '''\
-                    <tr>
-                        <td>%s</td>
-                        <td><nobr>$<input type="text" size="8" name="%s-amt" \
-                        value="" onChange="MW.util.checkValueDecimals(this, 2);"></nobr></td>
-                    </tr>
-        ''' % (dbrow['bacctname'], str(dbrow['bacctid']))
+        bulkinterest.append( {"id": dbrow['bacctid'], "name": dbrow['bacctname']})
 
     dbcon.close()
-
-    markup += '''</table><div style="text-align:right; padding-top: 20px; padding-right: 25px;"> \
-                <input type="button" name="doit" VALUE="Save" onClick="MW.comm.sendCommand('B.BULKINTEREST.SAVE');">
-                </div></form><script>'''
-    markup += '''jQuery("#bbulkinterest-date").datepicker({ dateFormat: "yy-mm-dd" });'''
-
-    return markup + '</script>'
+    return bulkinterest
 
 
 def b_bulkinterest_save():
