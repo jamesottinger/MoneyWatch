@@ -1,0 +1,30 @@
+<form name="bbulkinterestedit" id="bbulkinterestedit">
+    <table class="invtable" width="100%">
+        <tr>
+            <td colspan="2">
+                Date <input type="text" name="bbulkinterest-date" id="bbulkinterest-date" size="10">
+            </td>
+        </tr>
+        <tr>
+            <td style="border-bottom: solid 1px #cccccc;border-top: solid 1px #cccccc;">
+                <strong>Account Name</strong>
+            </td>
+            <td style="border-bottom: solid 1px #cccccc;border-top: solid 1px #cccccc;">
+                <strong>Amount</strong>
+            </td>
+        </tr>
+
+        {% for account in bulkinterest %}
+        <tr>
+            <td>{{ account.name }}</td>
+            <td><nobr>$<input type="text" size="8" name="{{ account.id }}-amt" value="" onChange="MW.util.checkValueDecimals(this, 2);"></nobr></td>
+        </tr>
+        {% endfor %}
+    </table>
+    <div style="text-align:right; padding-top: 20px; padding-right: 25px;">
+        <input type="button" name="doit" VALUE="Save" onClick="MW.comm.sendCommand('B.BULKINTEREST.SAVE');">
+    </div>
+</form>
+<script>
+    jQuery("#bbulkinterest-date").datepicker({ dateFormat: "yy-mm-dd" });
+</script>
