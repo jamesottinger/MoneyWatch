@@ -58,7 +58,8 @@ def actionhandler(job):
         moneywatchengine.b_entry_delete()
         return "ok"
     elif job == 'B.BULKINTEREST.EDIT':
-        return moneywatchengine.b_bulkinterest_edit()
+        return render_template('bulk_interest.html',
+                               bulkinterest=moneywatchengine.b_bulkinterest_edit())
     elif job == 'B.BULKINTEREST.SAVE':
         moneywatchengine.b_bulkinterest_save()
         return "ok"
