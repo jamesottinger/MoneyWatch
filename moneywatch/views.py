@@ -25,7 +25,8 @@ def actionhandler(job):
     elif job == 'I.ELECTION.GET':
         return moneywatchengine.i_electionget()
     elif job == 'I.BULKADD.EDIT':
-        return moneywatchengine.i_bulkadd_edit()
+        return render_template('bulk_investments.html',
+                               bulkinvestments=moneywatchengine.i_bulkadd_edit())
     elif job == 'I.BULKADD.SAVE':
         moneywatchengine.i_bulkadd_save()
         return "ok"
