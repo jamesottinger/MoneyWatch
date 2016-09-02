@@ -1,0 +1,54 @@
+<form name="ibulkedit" id="ibulkedit">
+    <table class="invtable">
+        <tr>
+            <td><strong>Name</strong></td>
+            <td><strong>Ticker</strong></td>
+            <td><strong>Funded From</strong></td>
+            <td><strong>Trade Date</strong></td>
+            <td><strong>Action</strong></td>
+            <td><strong># Shares</strong></td>
+            <td><strong>Trade Cost</strong></td>
+            <td><strong>Update Price</strong></td>
+        </tr>
+    {% for account in bulkinvestments.accounts %}
+        <tr>
+            <td colspan="8" style="background-color: #efefef;">
+                <span class="bigbluetext">{{ account }}</span>
+            </td>
+        </tr>
+        {% for election in bulkinvestments.accounts[account] %}
+        <tr>
+            <td>{{ election.name }}<input type="hidden" name="{{ election.id }}-ielectionid" value="{{ election.id }}"></td>
+            <td>{{ election.ticker }}</td>
+            <td><select name="{{ election.id }}-fromaccount">
+                    <option value="0">--none--</option>
+                    {{ bulkinvestments.selects|safe }}
+                </select></td>
+            <td><input type="text" name="{{ election.id }}-date" id="{{ election.id }}-date" size="10"></td>
+            <td>
+                <select name="{{ election.id }}-action">
+                  <option value="BUY">Buy</option>
+                  <option value="BUYE">Buy (Employer)</option>
+                  <option value="REINVDIV">Dividend (ReInvest)</option>
+                  <option value="SELL">Sell</option>
+                </select>
+            </td>
+            <td><input type="text" size="8" name="{{ election.id }}-shares" value="" onChange="MW.util.checkValueDecimals(this, 3);"></td>
+            <td><nobr>$<input type="text" size="8" name="{{ election.id }}-cost" value="" onChange="MW.util.checkValueDecimals(this, 2);"></nobr></td>
+            <td><input type="checkbox" name="{{ election.id }}-updateprice" value="yes" {% if not election.fetch %}checked{% endif %}/></td>
+        </tr>
+        {% endfor %}
+    {% endfor %}
+    </table>
+    <div style="text-align:right; padding-top: 20px; padding-right: 25px;">
+        <input type="hidden" name="job" value="I.BULKADD.SAVE">
+        <input type="button" name="doit" VALUE="Save" onClick="MW.comm.sendCommand('I.BULKADD.SAVE');">
+    </div>
+</form>
+<script>
+{% for account in bulkinvestments.accounts %}
+    {% for election in bulkinvestments.accounts[account] %}
+        jQuery("#{{ election.id }}-date").datepicker({ dateFormat: "yy-mm-dd" });
+    {% endfor %}
+{% endfor %}
+</script>
