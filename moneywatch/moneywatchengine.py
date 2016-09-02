@@ -13,6 +13,7 @@ import locale
 import time
 import requests
 import mysql.connector  # python3-mysql.connector
+from collections import OrderedDict
 from flask import request, Markup
 from moneywatch import moneywatchconfig
 
@@ -384,7 +385,7 @@ def i_electionget():
 
 
 def i_bulkadd_edit():
-    """I.BULKADD.EDIT = generates body needed for "Investment Bulk Add" utility panel"""
+    """I.BULKADD.EDIT = generates controller data needed for "Investment Bulk Add" utility panel"""
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
     cursor = dbcon.cursor(dictionary=True)
     sqlstr = "SELECT * FROM moneywatch_invelections WHERE ticker IS NOT NULL \
@@ -392,74 +393,19 @@ def i_bulkadd_edit():
     cursor.execute(sqlstr)
     dbrows = cursor.fetchall()
 
-    markup = ''
     parent = ''
-    javascriptcalls = []
+    bulkadd = {"accounts": OrderedDict(), "selects": b_makeselects(selected='')}
 
-    markup += '''<form name="ibulkedit" id="ibulkedit"><table class="invtable">\
-                    <tr>
-                        <td><strong>Name</strong></td>
-                        <td><strong>Ticker</strong></td>
-                        <td><strong>Funded From</strong></td>
-                        <td><strong>Trade Date</strong></td>
-                        <td><strong>Action</strong></td>
-                        <td><strong># Shares</strong></td>
-                        <td><strong>Trade Cost</strong></td>
-                        <td><strong>Update Price</strong></td>
-                    </tr>
-    '''
     for dbrow in dbrows:
-
         if dbrow['iacctname'] != parent:
-            markup += '<tr><td colspan="8" style="background-color: #efefef;"><span class="bigbluetext">' + \
-                      dbrow['iacctname'] + '</span></td></tr>'
             parent = dbrow['iacctname']
+            bulkadd['accounts'][parent] = []
 
-        tocheckornottocheck = ''
-        if dbrow['fetchquotes'] == 0:
-            tocheckornottocheck = 'checked'
+        bulkadd['accounts'][parent].append({"id": dbrow['ielectionid'], "name": dbrow['ielectionname'],
+                                            "ticker": dbrow['ticker'], "fetch": dbrow['fetchquotes'] })
 
-        each_datepicker = str(dbrow['ielectionid']) + '-date'
-        javascriptcalls.append(' jQuery("#' + each_datepicker + '").datepicker({ dateFormat: "yy-mm-dd" });')
-
-        markup += '''\
-                    <tr>
-                        <td>%s<input type="hidden" name="%s-ielectionid" value="%s"></td>
-                        <td>%s</td>
-                        <td><select name="%s-fromaccount"><option value="0">--none--</option>%s</select></td>
-                        <td><input type="text" name="%s" id="%s" size="10"></td>
-                        <td>
-                            <select name="%s-action">
-                              <option value="BUY">Buy</option>
-                              <option value="BUYE">Buy (Employer)</option>
-                              <option value="REINVDIV">Dividend (ReInvest)</option>
-                              <option value="SELL">Sell</option>
-                            </select>
-                        </td>
-                        <td><input type="text" size="8" name="%s-shares" value="" \
-                        onChange="MW.util.checkValueDecimals(this, 3);"></td>
-                        <td><nobr>$<input type="text" size="8" name="%s-cost" value="" \
-                        onChange="MW.util.checkValueDecimals(this, 2);"></nobr></td>
-                        <td><input type="checkbox" name="%s-updateprice" value="yes" %s/></td>
-                    </tr>
-        ''' % (
-            dbrow['ielectionname'], str(dbrow['ielectionid']), str(dbrow['ielectionid']),
-            dbrow['ticker'], str(dbrow['ielectionid']), b_makeselects(selected='', identifier=''),
-            each_datepicker, each_datepicker, str(dbrow['ielectionid']), str(dbrow['ielectionid']),
-            str(dbrow['ielectionid']), str(dbrow['ielectionid']), tocheckornottocheck
-        )
-
-        # markup += '<div><span>' +  dbrow['name'] + '</span><span><input type="text" class="tickerentry" size="8"
-        # name="' + dbrow['ticker'] + '-shares" value=""></span></div>'
     dbcon.close()
-
-    markup += '''</table><div style="text-align:right; padding-top: 20px; padding-right: 25px;">\
-                 <input type="hidden" name="job" value="I.BULKADD.SAVE"><input type="button" name="doit" \
-                 VALUE="Save" onClick="MW.comm.sendCommand('I.BULKADD.SAVE');"></div></form><script>'''
-    for js in javascriptcalls:
-        markup += js
-
-    return markup + '</script>'
+    return bulkadd
 
 
 def i_bulkadd_save():
