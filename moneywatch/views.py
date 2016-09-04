@@ -45,7 +45,8 @@ def actionhandler(job):
     elif job == 'B.SUMMARY.GET':
         return moneywatchengine.b_summary()
     elif job == 'B.ACCOUNT.GET':
-        return moneywatchengine.b_accountget()
+        return render_template('bank_transactions.html',
+                               transactions=moneywatchengine.b_account_get_transactions())
     elif job == 'B.ENTRY.ADD':
         return render_template('bank_edit.html',
                                entry=moneywatchengine.b_entry_prepare_add())
