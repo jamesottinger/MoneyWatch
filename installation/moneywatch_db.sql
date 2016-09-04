@@ -43,6 +43,7 @@ CREATE TABLE `moneywatch_banktransactions` (
   `whom1` varchar(255) DEFAULT NULL,
   `whom2` varchar(255) DEFAULT NULL,
   `numnote` varchar(50) DEFAULT NULL,
+  `reconciled` tinyint(4) DEFAULT '0',
   `splityn` tinyint(4) DEFAULT '0',
   `transferbtransid` int(11) DEFAULT '0',
   `transferbacctid` int(11) DEFAULT '0',
