@@ -1030,75 +1030,36 @@ def b_summary():
     return markup + '</table>'
 
 
-def b_accountget():
+def b_account_get_transactions():
     """B.ACCOUNT.GET"""
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
     cursor = dbcon.cursor(dictionary=True)
     sqlstr = "SELECT * FROM moneywatch_banktransactions WHERE bacctid=%s ORDER BY transdate,numnote"
     cursor.execute(sqlstr, (request.args.get('bacctid'),))
     dbrows = cursor.fetchall()
-
-    markup = ''
-    counter = 0
     rtotal = 0
-
     for dbrow in dbrows:
-
+        dbrow["showamt"] = h_showmoney(dbrow["amt"])
         if dbrow['updown'] == '+':
-            amtup = "+" + h_showmoney(dbrow['amt'])
-            amtdown = ''
             rtotal += float(dbrow['amt'])
         else:
-            amtup = ''
-            amtdown = "-" + h_showmoney(dbrow['amt'])
             rtotal -= float(dbrow['amt'])
-
-        if rtotal >= 0:
-            rtotalclass = 'rbalpos'
-            rtotalshow = h_showmoney(rtotal)
-        else:
-            rtotalclass = 'rbalneg'
-            rtotalshow = '(' + h_showmoney(rtotal) + ')'
+        dbrow["runningtotal"] = rtotal
+        dbrow["showtotal"] = h_showmoney(rtotal)
+        dbrow["future"] = True if h_dateinfuture(str(dbrow['transdate'])) else False
 
         if dbrow['type'] == 'ti' or dbrow['type'] == 'to':
             if dbrow['whom1'] == '':
-                showwho = dbrow['whom2']
+                dbrow["showdetails"] = dbrow['whom2']
             else:
-                showwho = dbrow['whom1']
-            whomclass = 'rwhomtrans'
+                dbrow["showdetails"] = dbrow['whom1']
+            dbrow["whomclass"] = 'rwhomtrans'
         else:
-            showwho = dbrow['whom1']
-            whomclass = 'rwhom'
+            dbrow["showdetails"] = dbrow['whom1']
+            dbrow["whomclass"] = 'rwhom'
 
-        classfuture = 'future' if h_dateinfuture(str(dbrow['transdate'])) else ''
-
-        if counter % 2 == 0:
-            classoe = 'recordeven'
-        else:
-            classoe = 'recordodd'
-
-        markup += '''<div id="b%s" class="%s %s">\
-                        <span class="irow0">
-                            <button type="button" onclick="return MW.comm.sendBankDelete('%s', '%s');">
-                                <span class="glyphicon glyphicon-remove"></span>
-                            </button>
-                            <button type="button" onclick="return MW.comm.getBankEdit('%s');">
-                                <span class="glyphicon glyphicon-pencil"></span>
-                            </button>
-                        </span>
-                        <span class="rdate">%s</span>
-                        <span class="rnum">%s</span>
-                        <span class="%s">%s</span>
-                        <span class="rup">%s</span>
-                        <span class="rdown">%s</span>
-                        <span class="recon"><input type="checkbox" %s></span>
-                        <span class="%s">%s</span>
-                     </div>''' % (
-                     dbrow['btransid'], classoe, classfuture, dbrow['bacctid'], dbrow['btransid'],
-                     dbrow['btransid'], dbrow['transdate'], dbrow['numnote'], whomclass, showwho,
-                     amtup, amtdown, ' checked', rtotalclass, rtotalshow)
-        counter += 1
-    return markup
+    dbcon.close()
+    return dbrows
 
 
 def b_entry_prepare_add():
