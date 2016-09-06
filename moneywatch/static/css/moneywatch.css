@@ -476,6 +476,19 @@ a:active  {color:#6a6aa2;}  /* selected link   */
     border-right: 1px solid #F2F2F2;
     border-left: 1px solid #FFF;
 }
+.modal-header {
+    /* make bootstrap's modal header look more desktop application-y */
+    color:#fff;
+    padding:6px 12px;
+    border-bottom:1px solid #eee;
+    background-color: #428bca;
+    -webkit-border-top-left-radius: 5px;
+    -webkit-border-top-right-radius: 5px;
+    -moz-border-radius-topleft: 5px;
+    -moz-border-radius-topright: 5px;
+     border-top-left-radius: 5px;
+     border-top-right-radius: 5px;
+}
 .ui-front{
     /* this is for JQuery UI autocomplete */
     z-index: 1051;
