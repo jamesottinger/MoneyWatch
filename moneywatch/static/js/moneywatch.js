@@ -396,18 +396,20 @@ MW.comm = {
     },
 
     getBankAccount: function (in_bacctid) {
-        $.ajax({
-            url: MW.moneyWatchURL + '/action/B.ACCOUNT.GET',
-            data: {'bacctid': in_bacctid},
-            success: function(data) {
-                MW.modaltransactions.show("bank", data);
-            }
-        });
+        MW.modaltransactions.show("bank");
         $.ajax({
             url: MW.moneyWatchURL + '/action/B.ENTRY.ADD',
             data: {'bacctid': in_bacctid},
             success: function(data) {
                 $('#transactionsrightedit').html(data);
+            }
+        });
+        $.ajax({
+            url: MW.moneyWatchURL + '/action/B.ACCOUNT.GET',
+            data: {'bacctid': in_bacctid},
+            success: function(data) {
+                $('#transactionslist').html(data);
+                $("#transactionslist").scrollTop($("#transactionslist")[0].scrollHeight);
             }
         });
     },
