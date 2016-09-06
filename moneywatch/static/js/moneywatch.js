@@ -270,18 +270,20 @@ MW.comm = {
     },
 
     getInvElection: function (in_ielectionid) {
-        $.ajax({
-            url: MW.moneyWatchURL + '/action/I.ELECTION.GET',
-            data: {'ielectionid': in_ielectionid},
-            success: function(data) {
-                MW.modaltransactions.show("investment", data);
-            }
-        });
+        MW.modaltransactions.show("investment");
         $.ajax({
             url: MW.moneyWatchURL + '/action/I.ENTRY.ADD',
             data: {'ielectionid': in_ielectionid},
             success: function(data) {
                 $('#transactionsrightedit').html(data);
+            }
+        });
+        $.ajax({
+            url: MW.moneyWatchURL + '/action/I.ELECTION.GET',
+            data: {'ielectionid': in_ielectionid},
+            success: function(data) {
+                $('#transactionslist').html(data);
+                $("#transactionslist").scrollTop($("#transactionslist")[0].scrollHeight);
             }
         });
         $.ajax({
@@ -291,7 +293,6 @@ MW.comm = {
                 $('#transactionsrightchart').html(data);
             }
         });
-        //$('#paneluniversal-inner').html('');
     },
 
     getInvElectionEdit: function (in_ielectionid, in_itransid) {
