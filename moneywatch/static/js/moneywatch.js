@@ -578,9 +578,7 @@ MW.modaltransactions = {
     // ------------------------------------------------------------------
     // preps and shows transaction bank/investment accounts modal
     // ------------------------------------------------------------------
-    show: function (mode, content) {
-
-        $('#transactionslist').html(content);
+    show: function (mode) {
         // clear any previous highlights
         $('#' + MW.activeRowId).removeClass('activeinvrow');
         $('#transactionsrightedit').removeClass('activeinveditmenu');
@@ -594,6 +592,5 @@ MW.modaltransactions = {
             $('#transactionsheaderinv').show();
         }
         $('#modaltransactions').modal('show');
-        $("#transactionslist").scrollTop($("#transactionslist")[0].scrollHeight);
     }
 };
