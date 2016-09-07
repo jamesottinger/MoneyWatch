@@ -582,6 +582,9 @@ MW.modaltransactions = {
         // clear any previous highlights
         $('#' + MW.activeRowId).removeClass('activeinvrow');
         $('#transactionsrightedit').removeClass('activeinveditmenu');
+        $('#transactionslist').html('<div style="text-align:center;padding-top:50px;">' +
+                                    '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
+        $('#transactionsrightedit').html('');
         $('.modal-dialog').css("width", "1224");
         // $('.modal-title').html(title);
         if (mode === "bank") {
