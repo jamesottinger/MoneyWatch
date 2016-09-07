@@ -81,21 +81,37 @@ a:active  {color:#6a6aa2;}  /* selected link   */
     border-bottom: solid 1px #CCCCCC;
     padding: 4px;
     background-color: #FFFFFF;
+    text-shadow: #CCCCCC 0 2px 2px;
+    -webkit-box-sizing:  initial !important;
+    -moz-box-sizing:  initial !important;
+    box-sizing:  initial !important;
 }
 .recordeven{
     border-bottom: solid 1px #CCCCCC;
     padding: 4px;
     background-color: #EFEFEF;
+    text-shadow: #CCCCCC 0 2px 2px;
+    -webkit-box-sizing:  initial !important;
+    -moz-box-sizing:  initial !important;
+    box-sizing:  initial !important;
 }
 .recordoddfuture{
     border-bottom: solid 1px #CCCCCC;
     padding: 4px;
     background-color: #56ace2;
+    text-shadow: #CCCCCC 0 2px 2px;
+    -webkit-box-sizing:  initial !important;
+    -moz-box-sizing:  initial !important;
+    box-sizing:  initial !important;
 }
 .recordevenfuture{
     border-bottom: solid 1px #CCCCCC;
     padding: 4px;
     background-color: #56ace2;
+    text-shadow: #CCCCCC 0 2px 2px;
+    -webkit-box-sizing:  initial !important;
+    -moz-box-sizing:  initial !important;
+    box-sizing:  initial !important;
 }
 .recordeven.hover, .recordeven:hover{
     background-color: #d5e7fe;
@@ -364,6 +380,9 @@ a:active  {color:#6a6aa2;}  /* selected link   */
     z-index: 5;
     text-align: center;
     text-shadow: #CCCCCC 0 2px 1px;
+    -webkit-box-sizing: content-box;
+    -moz-box-sizing: content-box;
+    box-sizing: content-box;
 }
 .activeinvrow {
     background-color: #d5e7fe;
@@ -390,15 +409,24 @@ a:active  {color:#6a6aa2;}  /* selected link   */
 .irow0{
     display:  inline-block;
     width: 84px;
+    -webkit-box-sizing: initial;
+    -moz-box-sizing: initial;
+    box-sizing: initial;
 }
 .irow1{
     display:  inline-block;
     width: 100px;
+    -webkit-box-sizing: initial;
+    -moz-box-sizing: initial;
+    box-sizing: initial;
 }
 .irow2{
     display:  inline-block;
     width: 76px;
     padding-left: 4px;
+    -webkit-box-sizing: initial;
+    -moz-box-sizing: initial;
+    box-sizing: initial;
 }
 .irow3 { /* info */
     color: #A0A0A0;
@@ -409,6 +437,9 @@ a:active  {color:#6a6aa2;}  /* selected link   */
     border-right-style: solid;
     border-right-width: 1px;
     padding-left: 4px;
+    -webkit-box-sizing: initial;
+    -moz-box-sizing: initial;
+    box-sizing: initial;
 }
 .irow4 { /* + */
     border-right-color: #cccccc;
@@ -419,6 +450,9 @@ a:active  {color:#6a6aa2;}  /* selected link   */
     text-shadow: #7ffe79 0 1px 2px;
     text-align: right;
     padding-right: 16px;
+    -webkit-box-sizing: initial;
+    -moz-box-sizing: initial;
+    box-sizing: initial;
 }
 .irow5 { /* - */
     border-right-color: #cccccc;
@@ -429,6 +463,9 @@ a:active  {color:#6a6aa2;}  /* selected link   */
     text-shadow: #CD5C5C 0 1px 2px;
     text-align: right;
     padding-right: 16px;
+    -webkit-box-sizing: initial;
+    -moz-box-sizing: initial;
+    box-sizing: initial;
 }
 .irow6pos{
     display:  inline-block;
@@ -437,6 +474,9 @@ a:active  {color:#6a6aa2;}  /* selected link   */
     font-weight: bold;
     color: #3B6AA0; /* #3B4990; */
     text-shadow: #CCCCCC 0 1px 1px;
+    -webkit-box-sizing: initial;
+    -moz-box-sizing: initial;
+    box-sizing: initial;
 }
 .irow6neg{
     display:  inline-block;
@@ -445,6 +485,9 @@ a:active  {color:#6a6aa2;}  /* selected link   */
     font-weight: bold;
     color: #707070;
     text-shadow: #CCCCCC 1px 1px;
+    -webkit-box-sizing: initial;
+    -moz-box-sizing: initial;
+    box-sizing: initial;
 }
 .future {
     background-color: #E6E6FA;
