@@ -124,9 +124,6 @@ def i_summary():
     dbrows = cursor.fetchall()
 
     markup = '''\
-                <div class="summary1heading">Investment Accounts <span class="smgraytext">
-                ( last fetch: %s <a href="#" onClick="return MW.comm.sendCommand('U.UPDATEQUOTES');">fetch</a> )</span>
-                </div>
                 <table class="invtable" align="center" width="100%%">
                     <tr>
                         <td>Symbol</td>
@@ -142,7 +139,7 @@ def i_summary():
                         <td>Gain</td>
                         <td>Links/Schedule</td>
                     </tr>
-    ''' % (str(dbrows[0]['quotedate'].strftime("%A  %B %d, %Y %r")))
+    '''
     all_inme = 0
     all_individends = 0
     all_inemployer = 0
@@ -160,8 +157,12 @@ def i_summary():
     election_marketlast = 0
     election_appres = 0
     election_gain = 0
+    last_fetch  = dbrows[0]['quotedate']
 
     for dbrow in dbrows:
+        if dbrow['quotedate'] > last_fetch:
+            last_fetch = dbrow['quotedate']
+
         if dbrow['iacctname'] != parent:
             if dbrows[0] != dbrow:
                 markup += '''\
@@ -320,7 +321,13 @@ def i_summary():
 
     value_change = all_market - all_marketlast
     dbcon.close()
-    return markup + '</table>Change since last market close: <strong>' + h_showmoney(value_change) + '<strong>'
+
+    last_fetch_markup = '''\
+         <div class="summary1heading">Investment Accounts <span class="smgraytext">
+            ( last fetch: {} <a href="#" onClick="return MW.comm.sendCommand('U.UPDATEQUOTES');">fetch</a> )</span>
+         </div>'''.format(last_fetch.strftime("%A  %B %d, %Y %r"))
+
+    return last_fetch_markup + markup + '</table>Change since last market close: <strong>' + h_showmoney(value_change) + '<strong>'
 
 
 def i_electionget():
