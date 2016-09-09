@@ -1,0 +1,26 @@
+{% set counter = 0 %}
+{% for t in transactions %}
+{% set counter = counter + 1 %}
+<div id="{{ t.ielectionid }}{{ t.itransid }}" class="{% if counter % 2 %}recordodd{% else %}recordeven{% endif %} {% if t.future %}future{% endif %}">
+    <span class="irow0">
+        <button type="button" onclick="return MW.comm.sendInvDelete('{{ t.ielectionid }}', '{{ t.itransid }}');">
+            <span class="glyphicon glyphicon-remove"></span>
+        </button>
+        <button type="button" onclick="return MW.comm.getInvElectionEdit('{{ t.ielectionid }}', '{{ t.itransid }}');">
+            <span class="glyphicon glyphicon-pencil"></span>
+        </button>
+    </span>
+    <span class="irow1"> {{ t.transdate}}</span>
+    <span class="irow2">{{ t.action }}</span>
+    <span class="irow3"> ({{ t.showtransprice }} @ ${{ t.showshareprice }} each)</span>
+    {% if t.updown == '+' %}
+    <span class="irow4 rup">+{{ t.showamt }}</span>
+    <span class="irow5 rdown">&nbsp;</span>
+    {% else %}
+    <span class="irow4 rup">&nbsp;</span>
+    <span class="irow5 rdown">-{{ t.showamt }}</span>
+    {% endif %}
+    <span class="irow6pos"> {{ t.showtotal }} {{ t.showcheck }}</span>
+</div>
+{% endfor %}
+<div id="scrollmeinv"></div>
