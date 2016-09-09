@@ -23,7 +23,8 @@ def actionhandler(job):
     if job == 'I.SUMMARY.GET':
         return moneywatchengine.i_summary()
     elif job == 'I.ELECTION.GET':
-        return moneywatchengine.i_electionget()
+        return render_template('investment_transactions.html',
+                               transactions=moneywatchengine.i_election_get_transactions())
     elif job == 'I.BULKADD.EDIT':
         return render_template('bulk_investments.html',
                                bulkinvestments=moneywatchengine.i_bulkadd_edit())
