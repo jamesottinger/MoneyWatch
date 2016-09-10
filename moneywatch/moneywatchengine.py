@@ -330,65 +330,36 @@ def i_summary():
     return last_fetch_markup + markup + '</table>Change since last market close: <strong>' + h_showmoney(value_change) + '<strong>'
 
 
-def i_electionget():
+def i_election_get_transactions():
     """I.ELECTION.GET"""
-    markup = ''
-    counter = 0
-    rtotal = 0
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
     cursor = dbcon.cursor(dictionary=True)
     sqlstr = "SELECT * FROM moneywatch_invtransactions WHERE ielectionid=%s ORDER BY transdate,action"
     cursor.execute(sqlstr, (request.args.get('ielectionid'),))
     dbrows = cursor.fetchall()
+    rtotal = 0
     # ielectionid, transdate, ticker, updown, action, sharesamt, shareprice, transprice, totalshould
 
     for dbrow in dbrows:
-        showcheck = ''
-
+        dbrow["showamt"] = "{:.3f}".format(float(dbrow['sharesamt']))
         if dbrow['updown'] == '+':
-            amtup = "+" + "{:.3f}".format(float(dbrow['sharesamt']))
-            amtdown = '&nbsp;'
             rtotal += float(dbrow['sharesamt'])
         else:
-            amtup = '&nbsp;'
-            amtdown = "-" + "{:.3f}".format(float(dbrow['sharesamt']))
             rtotal -= float(dbrow['sharesamt'])
+        dbrow["runningtotal"] = rtotal
+        dbrow["showtotal"] = "{:.3f}".format(rtotal)
+        dbrow["showtransprice"] = "{:.2f}".format(float(dbrow['transprice']))
+        dbrow["showshareprice"] = "{:.3f}".format(float(dbrow['shareprice']))
+        dbrow["future"] = True if h_dateinfuture(str(dbrow['transdate'])) else False
 
         if dbrow['totalshould'] != 0 and (dbrow['totalshould'] != round(rtotal, 3)):
-            showcheck = """%s diff: %s""" % (dbrow['totalshould'],
-                                             "{:.3f}".format(rtotal - float(dbrow['totalshould'])))
-
-        if counter % 2 == 0:
-            classoe = 'recordeven'
+            dbrow["showcheck"] = "{} diff:{}".format(dbrow['totalshould'],
+                "{:.3f}".format(rtotal - float(dbrow['totalshould'])))
         else:
-            classoe = 'recordodd'
+            dbrow["showcheck"] = ""
 
-        identifier = str(dbrow['ielectionid']) + str(dbrow['itransid'])
-
-        markup += '''<div class="%s" id="%s">\
-                        <span class="irow0">
-                             <button type="button" onclick="return MW.comm.sendInvDelete('%s', '%s');">
-                                <span class="glyphicon glyphicon-remove"></span>
-                            </button>
-                            <button type="button" onclick="return MW.comm.getInvElectionEdit('%s', '%s');">
-                                <span class="glyphicon glyphicon-pencil"></span>
-                            </button>
-                        </span>
-                        <span class="irow1"> %s</span>
-                        <span class="irow2">%s</span>
-                        <span class="irow3"> ($%s @ $%s each)</span>
-                        <span class="irow4">%s</span>
-                        <span class="irow5">%s</span>
-                        <span class="irow6pos"> %s %s</span>
-                     </div>''' % (
-                        classoe, identifier, str(dbrow['ielectionid']), str(dbrow['itransid']),
-                        str(dbrow['ielectionid']), str(dbrow['itransid']), dbrow['transdate'],
-                        dbrow['action'], "{:.2f}".format(float(dbrow['transprice'])),
-                        "{:.3f}".format(float(dbrow['shareprice'])), amtup, amtdown, "{:.3f}".format(rtotal), showcheck
-                    )
-        counter += 1
-        markup += '<div id="scrollmeinv"></div>'
-    return markup
+    dbcon.close()
+    return dbrows
 
 
 def i_bulkadd_edit():
