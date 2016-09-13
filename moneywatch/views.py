@@ -42,7 +42,8 @@ def actionhandler(job):
         moneywatchengine.i_entry_delete()
         return "ok"
     elif job == 'I.GRAPH.GET':
-        return moneywatchengine.i_graph()
+        return render_template('investment_purchase_graph.html',
+                               data=moneywatchengine.i_graph())
     elif job == 'B.SUMMARY.GET':
         return moneywatchengine.b_summary()
     elif job == 'B.ACCOUNT.GET':
