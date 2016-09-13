@@ -1,0 +1,125 @@
+<div id="graphpurchases" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+<div>&nbsp;</div>
+<div id="graphprices" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+
+<script>
+
+    jQuery(function () {
+        jQuery('#graphpurchases').highcharts({
+            chart: {
+                zoomType: 'x',
+                spacingRight: 20
+            },
+            title: {
+                text: 'Purchases for: {{ data.election_name }} [ {{ data.ticker }} ]'
+            },
+            xAxis: {
+                type: 'datetime',
+                maxZoom: 14 * 24 * 3600000, // fourteen days
+                title: {
+                    text: null
+                }
+            },
+            yAxis: {
+                title: {
+                    text: 'Shares'
+                }
+            },
+            tooltip: {
+                shared: true
+            },
+            legend: {
+                enabled: false
+            },
+            plotOptions: {
+                area: {
+                    fillColor: {
+                        linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1},
+                        stops: [
+                            [0, Highcharts.getOptions().colors[0]],
+                            [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+                        ]
+                    },
+                    lineWidth: 1,
+                    marker: {
+                        enabled: true
+                    },
+                    shadow: true,
+                    states: {
+                        hover: {
+                            lineWidth: 1
+                        }
+                    },
+                    threshold: null
+                }
+            },
+
+            series: [{
+                type: 'area',
+                name: 'Shares',
+                pointInterval: 24 * 3600 * 1000,
+                pointStart: Date.UTC({{ data.start_year }}, 0, 01),
+                data: [ {{ data.shares }} ]
+            }]
+        });
+
+        jQuery('#graphprices').highcharts({
+            chart: {
+                zoomType: 'x',
+                spacingRight: 20
+            },
+            title: {
+                text: 'Prices for: {{ data.election_name }} [ {{ data.ticker }} ]'
+            },
+            xAxis: {
+                type: 'datetime',
+                maxZoom: 14 * 24 * 3600000, // fourteen days
+                title: {
+                    text: null
+                }
+            },
+            yAxis: {
+                title: {
+                    text: 'Prices'
+                }
+            },
+            tooltip: {
+                shared: true
+            },
+            legend: {
+                enabled: false
+            },
+            plotOptions: {
+                area: {
+                    fillColor: {
+                        linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1},
+                        stops: [
+                            [0, Highcharts.getOptions().colors[0]],
+                            [1, Highcharts.Color(Highcharts.getOptions().colors[9]).setOpacity(0).get('rgba')]
+                        ]
+                    },
+                    lineWidth: 1,
+                    marker: {
+                        enabled: true
+                    },
+                    shadow: true,
+                    states: {
+                        hover: {
+                            lineWidth: 1
+                        }
+                    },
+                    threshold: null
+                }
+            },
+
+            series: [{
+                type: 'area',
+                name: 'Prices',
+                pointInterval: 24 * 3600 * 1000,
+                pointStart: Date.UTC({{ data.start_year }}, 0, 01),
+                data: [ {{ data.prices }} ]
+            }]
+        });
+    });
+
+</script>
