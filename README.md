@@ -1,4 +1,4 @@
-# MoneyWatch
+# MoneyWatch <img src="https://api.travis-ci.org/jamesottinger/MoneyWatch.svg?branch=master" alt="Build status" />
 
 ### Introduction
 
