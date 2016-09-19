@@ -1580,155 +1580,29 @@ def i_graph():
     cursor.execute(sqlstr, (request.args.get('ielectionid'),))
     dbrows = cursor.fetchall()
     # ielectionid, transdate, ticker, updown, action, sharesamt, shareprice, transprice, totalshould
-
-    fundstart = str(dbrows[0]['transdate']).split("-")
-
-    fundstartyear = fundstart[0]
-    ielectionname = dbrows[0]['ielectionname']
-    ticker = dbrows[0]['ticker']
-    stotal = 0
-    shareslist = []
-    priceslist = []
+    data = {}
+    data['start_year'] = str(dbrows[0]['transdate']).split("-")[0]
+    data['election_name'] = dbrows[0]['ielectionname']
+    data['ticker'] = dbrows[0]['ticker']
+    shares_total = 0
+    shares_list = []
+    prices_list = []
 
     for dbrow in dbrows:
         datesplit = str(dbrow['transdate']).split("-")  # [0] = year, [1] = month, [2] = day
         if dbrow['updown'] == '+':
-            stotal += float(dbrow['sharesamt'])
+            shares_total += float(dbrow['sharesamt'])
         else:
-            stotal -= float(dbrow['sharesamt'])
-        # Date.UTC(1971,  1, 24), 1.92],
-        shareslist.append('[ Date.UTC(' + datesplit[0] + ', ' + datesplit[1] + ', ' + datesplit[2] + '), ' +
-                          "{:.3f}".format(stotal) + ']')
-        priceslist.append('[ Date.UTC(' + datesplit[0] + ', ' + datesplit[1] + ', ' + datesplit[2] + '), ' +
-                          "{:.3f}".format(float(dbrow['shareprice'])) + ']')
+            shares_total -= float(dbrow['sharesamt'])
+        # Date.UTC(1971, 1, 24), 1.92],
+        shares_list.append("[ Date.UTC({}, {}, {}), {:.3f} ]".format(
+                datesplit[0], datesplit[1], datesplit[2], shares_total))
 
+        prices_list.append("[ Date.UTC({}, {}, {}), {:.3f} ]".format(
+                datesplit[0], datesplit[1], datesplit[2], float(dbrow['shareprice'])))
+
+    data['shares'] = ', '.join(shares_list)
+    data['prices'] = ', '.join(prices_list)
     dbcon.close()
 
-    return """\
-
-<div id="graphpurchases" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
-<div>&nbsp;</div>
-<div id="graphprices" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
-
-<script>
-
-    jQuery(function () {
-        jQuery('#graphpurchases').highcharts({
-            chart: {
-                zoomType: 'x',
-                spacingRight: 20
-            },
-            title: {
-                text: 'Purchases for: %s [ %s ]'
-            },
-            xAxis: {
-                type: 'datetime',
-                maxZoom: 14 * 24 * 3600000, // fourteen days
-                title: {
-                    text: null
-                }
-            },
-            yAxis: {
-                title: {
-                    text: 'Shares'
-                }
-            },
-            tooltip: {
-                shared: true
-            },
-            legend: {
-                enabled: false
-            },
-            plotOptions: {
-                area: {
-                    fillColor: {
-                        linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1},
-                        stops: [
-                            [0, Highcharts.getOptions().colors[0]],
-                            [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
-                        ]
-                    },
-                    lineWidth: 1,
-                    marker: {
-                        enabled: true
-                    },
-                    shadow: true,
-                    states: {
-                        hover: {
-                            lineWidth: 1
-                        }
-                    },
-                    threshold: null
-                }
-            },
-
-            series: [{
-                type: 'area',
-                name: 'Shares',
-                pointInterval: 24 * 3600 * 1000,
-                pointStart: Date.UTC(%s, 0, 01),
-                data: [ %s ]
-            }]
-        });
-
-        jQuery('#graphprices').highcharts({
-            chart: {
-                zoomType: 'x',
-                spacingRight: 20
-            },
-            title: {
-                text: 'Prices for: %s [ %s ]'
-            },
-            xAxis: {
-                type: 'datetime',
-                maxZoom: 14 * 24 * 3600000, // fourteen days
-                title: {
-                    text: null
-                }
-            },
-            yAxis: {
-                title: {
-                    text: 'Prices'
-                }
-            },
-            tooltip: {
-                shared: true
-            },
-            legend: {
-                enabled: false
-            },
-            plotOptions: {
-                area: {
-                    fillColor: {
-                        linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1},
-                        stops: [
-                            [0, Highcharts.getOptions().colors[0]],
-                            [1, Highcharts.Color(Highcharts.getOptions().colors[9]).setOpacity(0).get('rgba')]
-                        ]
-                    },
-                    lineWidth: 1,
-                    marker: {
-                        enabled: true
-                    },
-                    shadow: true,
-                    states: {
-                        hover: {
-                            lineWidth: 1
-                        }
-                    },
-                    threshold: null
-                }
-            },
-
-            series: [{
-                type: 'area',
-                name: 'Prices',
-                pointInterval: 24 * 3600 * 1000,
-                pointStart: Date.UTC(%s, 0, 01),
-                data: [ %s ]
-            }]
-        });
-    });
-
-</script>""" % (ielectionname, ticker, fundstartyear, ', '.join(shareslist), ielectionname, ticker, fundstartyear,
-                ', '.join(priceslist))
+    return data
