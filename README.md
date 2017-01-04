@@ -18,7 +18,7 @@ and others it just doesn't do at all. With MoneyWatch, you'll gain control of yo
 ### What is it made out of?
 
 MoneyWatch is a mix of HTML5, CSS3, and JavaScript on the front-end. Python3 with Flask drive the back-end with MySQL data storage.
-Frameworks used include a mix of jQuery, jQuery UI, YUI 3, and Bootstrap 3. HighCharts is used for the graphing pieces.
+Frameworks used include a mix of jQuery, jQuery UI, and Bootstrap 3. HighCharts is used for the graphing pieces.
 MoneyWatch pulls stock quotes from Yahoo's Finance API.
 
 ### Installation
