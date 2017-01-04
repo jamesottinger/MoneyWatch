@@ -57,6 +57,7 @@ MW.comm = {
                 break;
             case 'I.BULKADD.SAVE':
                 formdata = $('#ibulkedit').serialize();
+                $('#bulkedit-submit').prop('disabled', true);
                 $.ajax({
                     type: 'POST',
                     url: urlpost,
@@ -129,6 +130,7 @@ MW.comm = {
                 break;
             case 'B.BULKINTEREST.SAVE':
                 formdata = $('#bbulkinterestedit').serialize();
+                $('#bulkinterest-submit').prop('disabled', true);
                 $.ajax({
                     type: 'POST',
                     url: urlpost,
