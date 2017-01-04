@@ -560,10 +560,10 @@ MW.modaluniversal = {
     // preps and shows universal modal
     // ------------------------------------------------------------------
     show: function (title, width, content) {
-        $('#modaluniversal-inner').html(content);
         $('.modal-dialog').css("width", width);
         $('.modal-title').html(title);
         $('#modaluniversal').modal('show');
+        $('#modaluniversal-inner').html(content);
     },
     // ------------------------------------------------------------------
     // hides universal modal window and does cleanup
