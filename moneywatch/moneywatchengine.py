@@ -1540,8 +1540,7 @@ def h_todaydatetimeformysql():
 
 
 def h_dateqiftoint(in_date):
-    """4/1'2008 or 12/31'2009 format in
-       20091231 int returned"""
+    """4/1'2008 or 12/31'2009 format in - 20091231 int out"""
     sp1 = str(in_date).split("'")  # [0] = 4/1, [1] = 2008
     sp2 = sp1[0].split("/")  # [0] = 4(month), [1] = 1(day)
     return int(sp1[1] + sp2[0].zfill(2) + sp2[1].zfill(2))
