@@ -6,7 +6,6 @@
 #
 # MoneyWatch - https://github.com/jamesottinger/moneywatch
 # ===============================================================================
-import cgi
 import cgitb
 import datetime
 import locale
@@ -19,7 +18,6 @@ from moneywatch import moneywatchconfig
 
 
 locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
-g_formdata = cgi.FieldStorage()
 cgitb.enable(
     logdir=moneywatchconfig.direrrors,
     display=True,
