@@ -650,6 +650,7 @@ def i_saveadd(ticker, transdate, shares, cost, fromacct, action, ielectionid, ie
         # update the elections price
         sqlstr = "UPDATE moneywatch_invelections SET manualoverrideprice=%s, quotedate=%s WHERE ielectionid=%s"
         cursor.execute(sqlstr, ("{:.3f}".format(float(cost) / float(shares)), h_todaydatetimeformysql(), ielectionid))
+        h_logsql(cursor.statement)
         dbcon.commit()
 
     i_electiontally(ielectionid)
