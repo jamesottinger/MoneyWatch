@@ -370,7 +370,7 @@ def i_bulkadd_edit():
     dbrows = cursor.fetchall()
 
     parent = ''
-    bulkadd = {"accounts": OrderedDict(), "selects": b_makeselects(selected='')}
+    bulkadd = {"accounts": OrderedDict(), "selects": b_makeselects()}
 
     for dbrow in dbrows:
         if dbrow['iacctname'] != parent:
@@ -567,7 +567,7 @@ def i_edit_template(mode, ielectionname, ticker, itransid, ielectionid, btransid
                     }
                 </script>
         ''' % (
-            ielectionname, ticker, b_makeselects(selected=bacctid, identifier=''), actionselect,
+            ielectionname, ticker, b_makeselects(bselected=bacctid, sweep=sweep), actionselect,
             transdate, shares, cost, ielectionid, manuallyupdateprice, sendcmd, ticker, ielectionname, ielectionid,
             itransid, btransid, bacctid, ielectionid, buttonsay, sendcmd
         )
@@ -863,7 +863,7 @@ def i_entry_edit():
                     </tr>
         ''' % (
             dbrow['ielectionname'], dbrow['ticker'], dbrow['ielectionid'], dbrow['ticker'],
-            dbrow['ticker'], b_makeselects(selected='', identifier=''), each_datepicker, each_datepicker,
+            dbrow['ticker'], b_makeselects(bselected=None, sweep=dbrow['sweep']), each_datepicker, each_datepicker,
             dbrow['ticker'], dbrow['ticker'], dbrow['ticker']
         )
 
@@ -912,20 +912,33 @@ def b_accounttally(in_bacctid):
     dbcon.close()
 
 
-def b_makeselects(selected, identifier=''):
+def b_makeselects(bselected=None, sweep=None):
+    """bselected - optional pre-selected bacctid
+       sweep - optional, shows investment election (ielectionid)
+    """
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
     cursor = dbcon.cursor(dictionary=True)
+
+    markup = ''
+    # sweep
+    if sweep:
+        sqlstr = "SELECT * FROM moneywatch_invelections WHERE active=1 AND ielectionid=%s"
+        cursor.execute(sqlstr, (sweep,))
+        dbrow = cursor.fetchone()
+        selectedsay = ''
+        markup += '<option value="sweep"' + selectedsay + '>[Sweep] ' + \
+                  dbrow['ielectionname'] + '</option>'
+
+    # bank accounts
     sqlstr = "SELECT * FROM moneywatch_bankaccounts ORDER BY bacctname"
     cursor.execute(sqlstr)
     dbrows = cursor.fetchall()
-
-    markup = ''
     for dbrow in dbrows:
-        if str(dbrow['bacctid']) == str(selected):
+        if bselected is not None and str(dbrow['bacctid']) == str(bselected):
             selectedsay = ' selected'
         else:
             selectedsay = ''
-        markup += '<option value="' + identifier + str(dbrow['bacctid']) + '"' + selectedsay + '>[Bank] ' + \
+        markup += '<option value="' + str(dbrow['bacctid']) + '"' + selectedsay + '>[Bank] ' + \
                   dbrow['bacctname'] + '</option>'
     dbcon.close()
     return markup
@@ -1052,7 +1065,7 @@ def b_entry_prepare_add():
     entry["transdate"] = entry["whom1"] = entry["whom2"] = entry["numnote"] = entry["type"] = entry["amt"] = ""
     entry["btransid"] = entry["transferbtransid"] = entry["transferbacctid"] = 0
 
-    entry["account_select"] = b_makeselects(entry["transferbacctid"])
+    entry["account_select"] = b_makeselects(bselected=entry["transferbacctid"])
     entry["autocomplete"] = b_autocomplete(entry["bacctid"])
     return entry
 
@@ -1069,7 +1082,7 @@ def b_entry_prepare_edit():
 
     entry["amt"] = "{:.2f}".format(float(entry['amt']))
     entry["mode"] = "edit"
-    entry["accounts"] = b_makeselects(entry["transferbacctid"])
+    entry["accounts"] = b_makeselects(bselected=entry["transferbacctid"])
     entry["autocomplete"] = b_autocomplete(entry["bacctid"])
     return entry
 
@@ -1342,7 +1355,7 @@ def b_bulkbills_edit():
     cursor.execute(sqlstr)
     dbrows = cursor.fetchall()
 
-    bulkbills = { "payees":[], "account_select": b_makeselects(selected='8') }
+    bulkbills = { "payees":[], "account_select": b_makeselects(bselected='8') }
     for dbrow in dbrows:
         bulkbills["payees"].append( {"id": dbrow['payeeid'], "name": dbrow['payeename']})
     dbcon.close()
