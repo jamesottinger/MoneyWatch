@@ -69,6 +69,7 @@ CREATE TABLE `moneywatch_invelections` (
   `divschedule` varchar(20) DEFAULT NULL,
   `shares` double DEFAULT NULL,
   `sharesareunits` tinyint(4) DEFAULT '0',
+  `sweep` tinyint(4) DEFAULT '0',
   `active` tinyint(4) DEFAULT NULL,
   `fetchquotes` tinyint(4) DEFAULT NULL,
   `sharesbydividend` double DEFAULT '0',
