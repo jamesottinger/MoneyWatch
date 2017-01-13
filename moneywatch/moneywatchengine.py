@@ -428,7 +428,8 @@ def i_entry_prepareadd():
         return i_edit_template(
             mode='add', ielectionname=dbrow['ielectionname'], ticker=dbrow['ticker'],
             itransid=0, ielectionid=str(dbrow['ielectionid']), btransid=0, transdate="",
-            action="", shares="", cost="", fundsorigin=0, manuallyupdateprice=tocheckornottocheck
+            action="", shares="", cost="", fundsorigin=0, manuallyupdateprice=tocheckornottocheck,
+            sweep=dbrow['sweep']
         )
 
 
@@ -451,12 +452,13 @@ def i_entry_prepareedit():
         itransid=str(dbrow['itransid']), ielectionid=str(dbrow['ielectionid']),
         btransid=dbrow['btransid'], transdate=str(dbrow['transdate']), action=dbrow['action'],
         shares="{:.3f}".format(float(dbrow['sharesamt'])), cost="{:.2f}".format(float(dbrow['transprice'])),
-        fundsorigin=dbrow['btransid'], manuallyupdateprice=tocheckornottocheck
+        fundsorigin=dbrow['btransid'], manuallyupdateprice=tocheckornottocheck,
+        sweep=dbrow['sweep']
     )
 
 
 def i_edit_template(mode, ielectionname, ticker, itransid, ielectionid, btransid, transdate, action, shares, cost,
-                    fundsorigin, manuallyupdateprice):
+                    fundsorigin, manuallyupdateprice, sweep):
     """Created the single"""
 
     if mode == 'edit':
@@ -547,6 +549,7 @@ def i_edit_template(mode, ielectionname, ticker, itransid, ielectionid, btransid
                         <input type="hidden" name="itransid" value="%s">
                         <input type="hidden" name="btransid" value="%s">
                         <input type="hidden" name="bacctid" value="%s">
+                        <input type="hidden" name="sweep" value="%s">
                         <input type="button" value="Cancel" onClick="MW.comm.cancelEdit('investment', '%s');">
                         <input type="button" name="doit" VALUE="%s" onClick="ieditsingle_validate('%s');">
                     </div>
@@ -569,7 +572,7 @@ def i_edit_template(mode, ielectionname, ticker, itransid, ielectionid, btransid
         ''' % (
             ielectionname, ticker, b_makeselects(bselected=bacctid, sweep=sweep), actionselect,
             transdate, shares, cost, ielectionid, manuallyupdateprice, sendcmd, ticker, ielectionname, ielectionid,
-            itransid, btransid, bacctid, ielectionid, buttonsay, sendcmd
+            itransid, btransid, bacctid, sweep, ielectionid, buttonsay, sendcmd
         )
 
     return markup
@@ -598,19 +601,20 @@ def i_prepare_addupdate():
     in_itransid = int(request.form.get('itransid'))  # updates only (hidden field)
     in_ielectionid = int(request.form.get('ielectionid'))
     in_ielectionname = request.form.get('ielectionname')
-    in_fromid = int(request.form.get('fromaccount'))
+    in_fromacct = request.form.get('fromaccount')
+    in_sweep = int(request.form.get('sweep'))
 
     if in_job == 'I.ENTRY.ADDSAVE':
-        i_saveadd(ticker=in_ticker, transdate=in_transdate, shares=in_shares, cost=in_cost, fromacct=in_fromid,
-                  action=in_action, ielectionid=in_ielectionid, ielectionname=in_ielectionname)
+        i_saveadd(ticker=in_ticker, transdate=in_transdate, shares=in_shares, cost=in_cost, fromacct=in_fromacct,
+                  action=in_action, ielectionid=in_ielectionid, ielectionname=in_ielectionname, sweep=in_sweep)
 
     if in_job == 'I.ENTRY.EDITSAVE':
-        i_saveupdate(ticker=in_ticker, transdate=in_transdate, shares=in_shares, cost=in_cost, fromacct=in_fromid,
+        i_saveupdate(ticker=in_ticker, transdate=in_transdate, shares=in_shares, cost=in_cost, fromacct=in_fromacct,
                      action=in_action, ielectionid=in_ielectionid, ielectionname=in_ielectionname,
                      btransid=in_btransid, itransid=in_itransid)
 
 
-def i_saveadd(ticker, transdate, shares, cost, fromacct, action, ielectionid, ielectionname):
+def i_saveadd(ticker, transdate, shares, cost, fromacct, action, ielectionid, ielectionname, sweep):
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
     cursor = dbcon.cursor(dictionary=True)
 
@@ -622,21 +626,37 @@ def i_saveadd(ticker, transdate, shares, cost, fromacct, action, ielectionid, ie
         updown = '+'
 
     btransid = 0
-    # do bank insert first, since we will need to learn the transaction id
-    if fromacct > 0:  # was this bank funded?
-        # enter bank transaction
-        # Category: Buy Investment/CD: The Name Of Account
-        # Buy: Mutual Fund Name 4.439 @ $22.754
-        whom1 = 'Buy : ' + ticker + ' ' + shares + ' @ ' + h_showmoney(float(cost) / float(shares))
-        whom2 = 'Buy Investment/CD: ' + ielectionname
-        sqlstr = "INSERT INTO moneywatch_banktransactions (bacctid, transdate, type, updown, amt, whom1, whom2, \
-                  numnote, splityn, transferbtransid, transferbacctid, itransid) \
-                  VALUES (%s, %s, 'w', '-', %s, %s, %s, 'INV', 0, 0, 0, 0)"
-        cursor.execute(sqlstr, (fromacct, transdate, cost, whom1, whom2))
+    if fromacct == "sweep" and action == "BUY":
+        # enter a sweep account sale transaction
+        # look up sweep election
+        sqlstr = "SELECT * FROM moneywatch_invelections WHERE active=1 AND ielectionid=%s"
+        cursor.execute(sqlstr, (sweep,))
+        dbrow = cursor.fetchone()
+        # sell sweep shares
+        sqlstr = "INSERT INTO moneywatch_invtransactions (ielectionid, btransid, transdate, ticker, updown, action, \
+                  sharesamt, shareprice, transprice, totalshould) VALUES (%s, 0, %s, %s, '-', 'SELL', %s, 1, %s, 0)"
+        # shares = cost
+        cursor.execute(sqlstr, (dbrow["ielectionid"], transdate, dbrow["ticker"], cost, cost))
         h_logsql(cursor.statement)
         dbcon.commit()
-        b_accounttally(fromacct)
-        btransid = cursor.lastrowid
+        fromacct = 0
+    else:
+        fromacct = int(fromacct) # bacctid
+        # do bank insert first, since we will need to learn the transaction id
+        if fromacct > 0:  # was this bank funded?
+            # enter bank transaction
+            # Category: Buy Investment/CD: The Name Of Account
+            # Buy: Mutual Fund Name 4.439 @ $22.754
+            whom1 = 'Buy : ' + ticker + ' ' + shares + ' @ ' + h_showmoney(float(cost) / float(shares))
+            whom2 = 'Buy Investment/CD: ' + ielectionname
+            sqlstr = "INSERT INTO moneywatch_banktransactions (bacctid, transdate, type, updown, amt, whom1, whom2, \
+                      numnote, splityn, transferbtransid, transferbacctid, itransid) \
+                      VALUES (%s, %s, 'w', '-', %s, %s, %s, 'INV', 0, 0, 0, 0)"
+            cursor.execute(sqlstr, (fromacct, transdate, cost, whom1, whom2))
+            h_logsql(cursor.statement)
+            dbcon.commit()
+            b_accounttally(fromacct)
+            btransid = cursor.lastrowid
 
     # enter transaction in db
     sqlstr = "INSERT INTO moneywatch_invtransactions (ielectionid, btransid, transdate, ticker, updown, action, \
