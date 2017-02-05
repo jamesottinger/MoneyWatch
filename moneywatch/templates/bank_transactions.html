@@ -20,7 +20,8 @@
     <span class="rup"></span>
     <span class="rdown">-{{ t.showamt }}</span>
     {% endif %}
-    <span class="recon"><input type="checkbox" {% if t.reconciled %}checked{% endif %}></span>
+    <span class="recon"><input type="checkbox" {% if t.reconciled %}checked{% endif %}
+        onclick="return MW.comm.toggleReconciled('{{ t.btransid }}', this.checked);" ></span>
     {% if t.runningtotal >= 0 %}
     <span class="rbalpos">{{ t.showtotal }}</span>
     {% else %}

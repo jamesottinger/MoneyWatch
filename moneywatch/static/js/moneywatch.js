@@ -417,6 +417,16 @@ MW.comm = {
         });
     },
 
+    toggleReconciled: function (in_btransid, in_onoff) {
+        $.ajax({
+            url: MW.moneyWatchURL + '/action/B.RECONCILED.TOGGLE',
+            data: {'btransid': in_btransid, 'state': in_onoff},
+            success: function(data) {
+                // TODO: update totals summary area
+            }
+        });
+    },
+
     cancelEdit: function (in_type, in_xacctid) {
         // unhighlight the selected row
         $('#' + MW.activeRowId).removeClass('activeinvrow');
