@@ -984,6 +984,23 @@ def b_bacctidfrombtransid(in_btransid):
     return dbrow['bacctid']
 
 
+def b_reconciled_toggle():
+    dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
+    cursor = dbcon.cursor(dictionary=True)
+
+    mystate = 1 if request.args.get('state') == "true" else 0
+    sqlstr = "UPDATE moneywatch_banktransactions SET reconciled=%s WHERE btransid=%s"
+    cursor.execute(sqlstr, (mystate, request.args.get('btransid')))
+    #h_logsql(cursor.statement)
+    dbcon.commit()
+    dbcon.close()
+    return h_showmoney(b_accounttally(b_bacctidfrombtransid(request.args.get('btransid')))['total_reconciled'])
+
+
+def b_reconciled_get():
+    return h_showmoney(b_accounttally(request.args.get('bacctid'))['total_reconciled'])
+
+
 # B.SUMMARY.GET = Shows Summary of Bank Accounts
 def b_summary():
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
