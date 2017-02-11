@@ -61,6 +61,10 @@ def actionhandler(job):
     elif job == 'B.ENTRY.DELETE':
         moneywatchengine.b_entry_delete()
         return "ok"
+    elif job == 'B.RECONCILED.TOGGLE':
+        return moneywatchengine.b_reconciled_toggle()
+    elif job == 'B.RECONCILED.GET':
+        return moneywatchengine.b_reconciled_get()
     elif job == 'B.BULKINTEREST.EDIT':
         return render_template('bulk_interest.html',
                                bulkinterest=moneywatchengine.b_bulkinterest_edit())
