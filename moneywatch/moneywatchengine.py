@@ -404,7 +404,7 @@ def i_bulkadd_save():
 
             i_saveadd(
                 ticker=dbrow['ticker'], transdate=each_date, shares=each_shares, cost=each_cost, fromacct=each_fromid,
-                action=each_action, ielectionid=each_ielectionid, ielectionname=dbrow['ielectionname']
+                action=each_action, ielectionid=each_ielectionid, ielectionname=dbrow['ielectionname'], sweep=None
             )
 
     dbcon.close()
