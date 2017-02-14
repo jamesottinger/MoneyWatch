@@ -909,28 +909,32 @@ def b_accounttally(in_bacctid):
     sqlstr = "SELECT * FROM moneywatch_banktransactions WHERE bacctid=%s ORDER BY transdate,amt"
     cursor.execute(sqlstr, (in_bacctid,))
     dbrows = cursor.fetchall()
-    totalall = 0
-    totaluptotoday = 0
+    ret = { 'total_all': 0, 'total_up_to_today': 0, 'total_reconciled': 0 }
 
     for dbrow in dbrows:
         if dbrow['updown'] == '+':
-            totalall += float(dbrow['amt'])
+            ret['total_all'] += float(dbrow['amt'])
+            if dbrow['reconciled']:
+                ret['total_reconciled'] += float(dbrow['amt'])
             if not h_dateinfuture(dbrow['transdate']):
-                totaluptotoday += float(dbrow['amt'])
+                ret['total_up_to_today'] += float(dbrow['amt'])
         else:
-            totalall -= float(dbrow['amt'])
+            ret['total_all'] -= float(dbrow['amt'])
+            if dbrow['reconciled']:
+                ret['total_reconciled'] -= float(dbrow['amt'])
             if not h_dateinfuture(dbrow['transdate']):
-                totaluptotoday -= float(dbrow['amt'])
+                ret['total_up_to_today'] -= float(dbrow['amt'])
 
     sqlstr = """UPDATE moneywatch_bankaccounts SET totalall=%s, totaluptotoday=%s,
              todaywas='%s', tallytime='%s' WHERE bacctid=%s""" % (
-             "{:.2f}".format(float(totalall)), "{:.2f}".format(float(totaluptotoday)),
+             "{:.2f}".format(float(ret['total_all'])), "{:.2f}".format(float(ret['total_up_to_today'])),
              h_todaydateformysql(), h_todaydatetimeformysql(), str(in_bacctid)
     )
     cursor.execute(sqlstr)
     dbcon.commit()
     dbcon.close()
 
+    return ret
 
 def b_makeselects(bselected=None, sweep=None):
     """bselected - optional pre-selected bacctid
