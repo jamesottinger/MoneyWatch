@@ -412,7 +412,14 @@ MW.comm = {
             data: {'bacctid': in_bacctid},
             success: function(data) {
                 $('#transactionslist').html(data);
-                $("#transactionslist").scrollTop($("#transactionslist")[0].scrollHeight);
+                $('#transactionslist').scrollTop($("#transactionslist")[0].scrollHeight);
+            }
+        });
+        $.ajax({
+            url: MW.moneyWatchURL + '/action/B.RECONCILED.GET',
+            data: {'bacctid': in_bacctid},
+            success: function(data) {
+                $('#transactionsreconciled').html('Reconciled: ' + data);
             }
         });
     },
@@ -422,7 +429,7 @@ MW.comm = {
             url: MW.moneyWatchURL + '/action/B.RECONCILED.TOGGLE',
             data: {'btransid': in_btransid, 'state': in_onoff},
             success: function(data) {
-                // TODO: update totals summary area
+                $('#transactionsreconciled').html('Reconciled: ' + data);
             }
         });
     },
@@ -597,6 +604,7 @@ MW.modaltransactions = {
         $('#transactionslist').html('<div style="text-align:center;padding-top:50px;">' +
                                     '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
         $('#transactionsrightedit').html('');
+        $('#transactionsreconciled').html('');
         $('.modal-dialog').css("width", "1224");
         // $('.modal-title').html(title);
         if (mode === "bank") {
