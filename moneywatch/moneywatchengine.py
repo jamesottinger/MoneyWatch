@@ -410,53 +410,44 @@ def i_bulkadd_save():
     dbcon.close()
 
 
-def i_entry_prepareadd():
+def i_entry_prepare_add():
     """I.ENTRY.ADD = generates body needed for "Investment Single Add" Section"""
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
     cursor = dbcon.cursor(dictionary=True)
     sqlstr = "SELECT * FROM moneywatch_invelections WHERE ielectionid=%s"
     cursor.execute(sqlstr, (request.args.get('ielectionid'),))
-    dbrows = cursor.fetchall()
+    entry = cursor.fetchone()
     dbcon.close()
 
-    for dbrow in dbrows:
+    entry["manuallyupdateprice"] = ''
+    if entry['fetchquotes'] == 0:
+        entry["manuallyupdateprice"] = 'checked'
 
-        tocheckornottocheck = ''
-        if dbrow['fetchquotes'] == 0:
-            tocheckornottocheck = 'checked'
-
-        return i_edit_template(
-            mode='add', ielectionname=dbrow['ielectionname'], ticker=dbrow['ticker'],
-            itransid=0, ielectionid=str(dbrow['ielectionid']), btransid=0, transdate="",
-            action="", shares="", cost="", fundsorigin=0, manuallyupdateprice=tocheckornottocheck,
-            sweep=dbrow['sweep']
-        )
+    entry["mode"] = "add"
+    entry["itransid"] = entry["btransid"] = entry["fundsorigin"] = 0
+    entry["transdate"] = entry["action"] = entry["shares"] = entry["cost"] = ""
+    return entry
 
 
-def i_entry_prepareedit():
+def i_entry_prepare_edit():
     """I.ENTRY.EDIT = generates body needed for "Investment Single Edit" Section"""
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
     cursor = dbcon.cursor(dictionary=True)
-    sqlstr = "SELECT it.*, ie.ielectionname, ie.fetchquotes FROM moneywatch_invtransactions it \
+    sqlstr = "SELECT it.*, ie.ielectionname, ie.fetchquotes, ie.sweep FROM moneywatch_invtransactions it \
                 INNER JOIN moneywatch_invelections ie ON it.ielectionid=ie.ielectionid WHERE it.itransid=%s"
     cursor.execute(sqlstr, (request.args.get('itransid'),))
-    dbrow = cursor.fetchone()
+    entry = cursor.fetchone()
     dbcon.close()
 
-    tocheckornottocheck = ''
-    if dbrow['fetchquotes'] == 0:
-        tocheckornottocheck = 'checked'
+    entry["manuallyupdateprice"] = ''
+    if entry['fetchquotes'] == 0:
+        entry["manuallyupdateprice"] = 'checked'
 
-    return i_edit_template(
-        mode='edit', ielectionname=dbrow['ielectionname'], ticker=dbrow['ticker'],
-        itransid=str(dbrow['itransid']), ielectionid=str(dbrow['ielectionid']),
-        btransid=dbrow['btransid'], transdate=str(dbrow['transdate']), action=dbrow['action'],
-        shares="{:.3f}".format(float(dbrow['sharesamt'])), cost="{:.2f}".format(float(dbrow['transprice'])),
-        fundsorigin=dbrow['btransid'], manuallyupdateprice=tocheckornottocheck,
-        sweep=dbrow['sweep']
-    )
-
-
+    entry["mode"] = "edit"
+    entry["cost"] = "{:.2f}".format(float(entry['transprice']))
+    entry["shares"] = "{:.3f}".format(float(entry['sharesamt']))
+    entry["fundsorigin"] = entry['btransid']
+    return entry
 
 
 def i_edit_liveinvchart():
