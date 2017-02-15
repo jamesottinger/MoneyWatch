@@ -1,0 +1,80 @@
+<form name="ieditsingle" id="ieditsingle">
+    <table class="cleantable" width="300">
+        <tr>
+            <td colspan="2" style="box-shadow: 0px 1px 2px #999999;background-color: #ffffff; text-align:center;">
+                {{ entry.ielectionname }} [ <strong>{{ entry.ticker }}</strong> ]
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">Funded From:<br>
+                <select name="fromaccount">
+                    <option value="0">--none--</option>
+                    {{ entry.account_select|safe }}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td class="tdborderright">Action:<br>
+                <select name="action">
+                    <option value="BUY"{% if entry.action == 'BUY' or entry.action == 'BUYX' %} selected{% endif %}>Buy</option>
+                    <option value="BUYE"{% if entry.action == 'BUYE' %} selected{% endif %}>Buy (Employer)</option>
+                    <option value="REINVDIV"{% if entry.action == 'REINVDIV' %} selected{% endif %}>Dividend (ReInvest)</option>
+                    <option value="SELL"{% if entry.action == 'SELL' or entry.action == 'SELLX' %} selected{% endif %}>Sell</option>
+                </select>
+            </td>
+            <td>Trade Date:<br>
+                <input type="text" name="tradedate" id="ieditsingle-tradedate" size="10" value="{{ entry.transdate }}">
+            </td>
+        </tr>
+        <tr>
+            <td class="tdborderright">
+                # Shares:<br><input type="text" size="10" id="ieditsingle-shares" name="shares"
+                value="{{ entry.shares }}" onChange="MW.util.checkValueDecimals(this, 3);">
+            </td>
+            <td>
+                Trade Cost:<br><nobr>
+                $<input type="text" size="8" id="ieditsingle-cost" name="cost"
+                value="{{ entry.cost }}" onChange="MW.util.checkValueDecimals(this, 2);"></nobr>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <input type="checkbox" name="{{ entry.ielectionid }}-updateprice" value="yes" {{ entry.manuallyupdateprice }}/>
+                Manually calculate and update latest quote price
+            </td>
+        </tr>
+    </table>
+    <div style="text-align:right; padding-top: 20px; padding-right: 25px;">
+        <input type="hidden" name="ticker" id="ieditsingle-ticker" value="{{ entry.ticker }}">
+        <input type="hidden" name="ielectionname" value="{{ entry.ielectionname }}">
+        <input type="hidden" name="ielectionid" id="ieditsingle-ielectionid" value="{{ entry.ielectionname }}">
+        <input type="hidden" name="itransid" value="{{ entry.itransid }}">
+        <input type="hidden" name="btransid" value="{{ entry.btransid }}">
+        <input type="hidden" name="bacctid" value="{{ entry.bacctid }}">
+        <input type="hidden" name="sweep" value="{{ entry.sweep }}">
+        <input type="button" value="Cancel" onClick="MW.comm.cancelEdit('investment', '{{ entry.ielectionid }}');">
+        {% if entry.mode == 'edit' %}
+        <input type="hidden" name="job" value="I.ENTRY.EDITSAVE">
+        <input type="button" name="doit" VALUE="Save Edit" onClick="ieditsingle_validate('I.ENTRY.EDITSAVE');">
+        {% else %}
+        <input type="hidden" name="job" value="I.ENTRY.ADDSAVE">
+        <input type="button" name="doit" VALUE="Add New" onClick="ieditsingle_validate('I.ENTRY.ADDSAVE');">
+        {% endif %}
+    </div>
+</form><br>
+
+<script>
+    jQuery("#ieditsingle-tradedate").datepicker({ dateFormat: "yy-mm-dd" });
+
+    function ieditsingle_validate(in_sendjob) {
+        if(jQuery('#ieditsingle-tradedate').val() == '') {
+            alert("Please provide a transaction date.");
+        } else if(jQuery('#ieditsingle-shares').val() == '') {
+            alert("Please provide the total number of shares for this transaction.");
+        } else if(jQuery('#ieditsingle-cost').val() == '') {
+            alert("Please provide the total cost for this transaction.");
+        } else {
+            MW.comm.sendCommand(in_sendjob);
+        }
+    }
+</script>
