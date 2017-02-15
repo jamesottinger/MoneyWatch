@@ -419,13 +419,11 @@ def i_entry_prepare_add():
     entry = cursor.fetchone()
     dbcon.close()
 
-    entry["manuallyupdateprice"] = ''
-    if entry['fetchquotes'] == 0:
-        entry["manuallyupdateprice"] = 'checked'
-
     entry["mode"] = "add"
     entry["itransid"] = entry["btransid"] = entry["fundsorigin"] = 0
     entry["transdate"] = entry["action"] = entry["shares"] = entry["cost"] = ""
+    entry["manuallyupdateprice"] = 'checked' if entry['fetchquotes'] == 0 else ''
+    entry["account_select"] = b_makeselects(sweep=entry["sweep"])
     return entry
 
 
@@ -439,14 +437,14 @@ def i_entry_prepare_edit():
     entry = cursor.fetchone()
     dbcon.close()
 
-    entry["manuallyupdateprice"] = ''
-    if entry['fetchquotes'] == 0:
-        entry["manuallyupdateprice"] = 'checked'
-
     entry["mode"] = "edit"
     entry["cost"] = "{:.2f}".format(float(entry['transprice']))
     entry["shares"] = "{:.3f}".format(float(entry['sharesamt']))
     entry["fundsorigin"] = entry['btransid']
+    entry["manuallyupdateprice"] = 'checked' if entry['fetchquotes'] == 0 else ''
+    bacctid = b_bacctidfrombtransid(entry["fundsorigin"]) \
+        if entry["fundsorigin"] > 0 else 0
+    entry["account_select"] = b_makeselects(bselected=bacctid, sweep=entry["sweep"])
     return entry
 
 
