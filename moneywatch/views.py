@@ -32,9 +32,11 @@ def actionhandler(job):
         moneywatchengine.i_bulkadd_save()
         return "ok"
     elif job == 'I.ENTRY.ADD':
-        return moneywatchengine.i_entry_prepareadd()
+        return render_template('investment_edit.html',
+                               entry=moneywatchengine.i_entry_prepare_add())
     elif job == 'I.ENTRY.EDIT':
-        return moneywatchengine.i_entry_prepareedit()
+        return render_template('investment_edit.html',
+                               entry=moneywatchengine.i_entry_prepare_edit())
     elif job == 'I.ENTRY.ADDSAVE' or job == 'I.ENTRY.EDITSAVE':
         moneywatchengine.i_prepare_addupdate()
         return "ok"
