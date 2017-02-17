@@ -1,0 +1,34 @@
+<div class="summary1heading">Bank Accounts <span class="smgraytext">( last tally: {{ banksummary.last_tally }}
+    <a href="#" onClick="return MW.comm.sendCommand('U.UPDATEBANKTOTALS');">tally</a> )</span>
+</div>
+<table class="invtable" width="100%%">
+    <tr style="background-color: #ffffff;">
+        <td style="border-bottom: solid 1px #cccccc;" width="150">Bank</td>
+        <td style="border-bottom: solid 1px #cccccc;">Account</td>
+        <td style="border-bottom: solid 1px #cccccc;" width="100">Value</td>
+        <td style="border-bottom: solid 1px #cccccc;" width="100">Me (Today)</td>
+        <td style="border-bottom: solid 1px #cccccc;" width="100">Me (Future)</td>
+    </tr>
+    {% for account in banksummary.accounts %}
+    <tr class="highlightaccount">
+        <td>{{ account.bank }}</td>
+        <td>
+            <a href="#" onClick="MW.comm.getBankAccount('{{ account.bacctid }}');">
+                {{ account.bacctname }}
+            </a>
+        </td>
+        <td style="text-align: right;"><!-- value extended -->{{ account.total_all }}</td>
+        <td style="text-align: right;"><!-- MINE - value current/today -->{{ account.own_value_today }}</td>
+        <td style="text-align: right;"><!-- MINE - value extended -->{{ account.own_value_extended }}</td>
+      </tr>
+    {% endfor %}
+    <tr>
+        <td class="invtabletrgraytop" colspan="2">&nbsp;</td>
+        <td class="invtabletrgraytop" >&nbsp;</td>
+        <td class="invtotalsbottom" style="width:60px;text-align: right;">
+            <!-- MINE - value current/today --><b>{{ banksummary.total_mine_today }}</b>
+            <input type="hidden" id="networth-banks" name="networth-banks" value="{{ banksummary.total_mine_today_raw }}">
+        </td>
+        <td class="invtabletrgraytop" style="text-align: right;"><!-- MINE - value extended --></td>
+    </tr>
+</table>
