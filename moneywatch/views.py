@@ -47,7 +47,8 @@ def actionhandler(job):
         return render_template('investment_purchase_graph.html',
                                data=moneywatchengine.i_graph())
     elif job == 'B.SUMMARY.GET':
-        return moneywatchengine.b_summary()
+        return render_template('bank_summary.html',
+                               banksummary=moneywatchengine.b_summary())
     elif job == 'B.ACCOUNT.GET':
         return render_template('bank_transactions.html',
                                transactions=moneywatchengine.b_account_get_transactions())
