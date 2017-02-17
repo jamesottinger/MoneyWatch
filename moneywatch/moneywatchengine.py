@@ -817,54 +817,29 @@ def b_summary():
     cursor = dbcon.cursor(dictionary=True)
     sqlstr = "SELECT * FROM moneywatch_bankaccounts ORDER BY bacctname"
     cursor.execute(sqlstr)
-    dbrows = cursor.fetchall()
 
-    markup = '''\
-                <div class="summary1heading">Bank Accounts <span class="smgraytext">( last tally: %s \
-                <a href="#" onClick="return MW.comm.sendCommand('U.UPDATEBANKTOTALS');">tally</a> )</span></div>
-                <table class="invtable" width="100%%">
-                    <tr style="background-color: #ffffff;">
-                        <td style="border-bottom: solid 1px #cccccc;" width="150">Bank</td>
-                        <td style="border-bottom: solid 1px #cccccc;">Account</td>
-                        <td style="border-bottom: solid 1px #cccccc;" width="100">Value</td>
-                        <td style="border-bottom: solid 1px #cccccc;" width="100">Me (Today)</td>
-                        <td style="border-bottom: solid 1px #cccccc;" width="100">Me (Future)</td>
-                    </tr>
-    ''' % (str(dbrows[0]['tallytime'].strftime("%A  %B %d, %Y %r")))
-    totalmytoday = 0
+    bank_summary = {}
+    bank_summary["accounts"] = cursor.fetchall()
+    bank_summary["last_tally"] = str(bank_summary["accounts"][0]['tallytime'].strftime("%A  %B %d, %Y %r"))
 
-    for dbrow in dbrows:
-        if dbrow['mine'] == 1:
-            totalmytoday += dbrow['totaluptotoday']
-            ownvaluetoday = h_showmoney(dbrow['totaluptotoday'])
-            ownvalueextended = h_showmoney(dbrow['totalall'])
+    total_mine_today = 0
+    for account in bank_summary["accounts"]:
+        if account['mine'] == 1:
+            total_mine_today += account['totaluptotoday']
+            account["own_value_today"] = h_showmoney(account['totaluptotoday'])
+            account["own_value_extended"] = h_showmoney(account['totalall'])
         else:
-            ownvaluetoday = ''
-            ownvalueextended = ''
+            account["own_value_today"] = ''
+            account["own_value_extended"] = ''
 
-        markup += '''\
-                    <tr class="highlightaccount">
-                        <td>%s</td>
-                        <td><a href="#" onClick="MW.comm.getBankAccount('%s');">%s</a></td>
-                        <td style="text-align: right;"><!-- value extended -->%s</td>
-                        <td style="text-align: right;"><!-- MINE - value current/today -->%s</td>
-                        <td style="text-align: right;"><!-- MINE - value extended -->%s</td>
-                    </tr>''' % (dbrow['bank'], dbrow['bacctid'], dbrow['bacctname'], h_showmoney(dbrow['totalall']),
-                                ownvaluetoday, ownvalueextended)
+        account["total_all"] = h_showmoney(account['totalall'])
 
     dbcon.close()
-    markup += '''\
-                <tr>
-                    <td class="invtabletrgraytop" colspan="2">&nbsp;</td>
-                    <td class="invtabletrgraytop" >&nbsp;</td>
-                    <td class="invtotalsbottom" style="width:60px;text-align: right;">
-                         <!-- MINE - value current/today --><b>%s</b>  \
-                         <input type="hidden" id="networth-banks" name="networth-banks" value="%s">
-                    </td>
-                    <td class="invtabletrgraytop" style="text-align: right;"><!-- MINE - value extended --></td>
-                </tr>''' % (h_showmoney(totalmytoday), totalmytoday)
 
-    return markup + '</table>'
+    bank_summary["total_mine_today"] = h_showmoney(total_mine_today)
+    bank_summary["total_mine_today_raw"] = total_mine_today
+
+    return bank_summary
 
 
 def b_account_get_transactions():
