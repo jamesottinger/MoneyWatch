@@ -1,0 +1,87 @@
+<div class="summary1heading">Investment Accounts <span class="smgraytext">
+   ( last fetch: {{ i_s.last_fetch }} <a href="#" onClick="return MW.comm.sendCommand('U.UPDATEQUOTES');">fetch</a> )</span>
+</div>
+<table class="invtable" align="center" width="100%">
+    <tr>
+        <td>Symbol</td>
+        <td>Name</td>
+        <td>Total Qty</td>
+        <td>Last Price</td>
+        <td>IN:Me</td>
+        <td>IN:Dividends</td>
+        <td>IN:Employer</td>
+        <td>Total Cost Basis</td>
+        <td>Market Value</td>
+        <td>Apprec.</td>
+        <td>Gain</td>
+        <td>Links/Schedule</td>
+    </tr>
+    {% for account in i_s.accounts %}
+    <tr class="invtablehead">
+        <td colspan="12"><b>{{ account }}</b></td>
+    </tr>
+        {% for election in i_s.accounts[account]['elections'] %}
+        <tr class="highlightaccount">
+            <td><a href="#" onClick="MW.comm.getInvGraph('{{ election.ielectionid }}');">{{ election.ticker }}</a></td>
+            <td><a href="#" onClick="MW.comm.getInvElection('{{ election.ielectionid }}');">{{ election.ielectionname }}</a></td>
+            <td style="text-align: right;">{{ election.shares }}</td>
+            <td style="text-align: right;">{{ election.show_quote }}</td>
+            <td style="text-align: right;"><!-- in:me -->{{ election.each_in_me }}</td>
+            <td style="text-align: right;"><!-- in:dividends -->{{ election.each_in_dividends }}</td>
+            <td style="text-align: right;"><!-- in:employer -->{{ election.each_in_employer }}</td>
+            <td style="text-align: right;"><!-- cost basis-->{{ election.each_cost_basis }}</td>
+            <td style="text-align: right;"><!-- market value --><b>{{ election.each_market }}</b></td>
+            <td style="text-align: right;" class="{% if election.each_appreciation_raw < 0 %}numneg{% else %}numpos{% endif %}">
+                <!-- appreciation -->{{ election.each_appreciation }}
+            </td>
+            <td style="text-align: right;"><!-- gain -->{{ election.each_gain }}</td>
+            <td>
+                <a href="http://www.google.com/finance?q={{ election.ticker }}" target="_blank">G</a>&nbsp;
+                <a href="http://finance.yahoo.com/q?s={{ election.ticker }}" target="_blank">Y</a>&nbsp;
+                <a href="http://quotes.morningstar.com/fund/{{ election.ticker }}/f?t={{ election.ticker }}" target="_blank">MS</a>
+                [{{ election.div_schedule }}]
+            </td>
+        </tr>
+        {% endfor %}
+        <tr>
+            <td class="invtabletrgraytop" colspan="4">&nbsp;</td>
+            <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;">
+                <!-- in:me -->{{ i_s.accounts[account]['totals'].in_me }}
+            </td>
+            <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;">
+                <!-- in:dividends -->{{ i_s.accounts[account]['totals'].in_dividends }}
+            </td>
+            <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;">
+                <!-- in:employer -->{{ i_s.accounts[account]['totals'].in_employer }}
+            </td>
+            <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;">
+                <!-- total cost basis -->{{ i_s.accounts[account]['totals'].cost_basis }}
+            </td>
+            <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;">
+                <!-- market value --><b>{{ i_s.accounts[account]['totals'].market }}</b>
+            </td>
+            <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;">
+                <!-- appreciation -->{{ i_s.accounts[account]['totals'].appreciation}}
+            </td>
+            <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;">
+                <!-- gain -->{{ i_s.accounts[account]['totals'].gain }}
+            </td>
+            <td class="invtabletrgraytop">&nbsp;</td>
+        </tr>
+    {% endfor %}
+    <tr>
+        <td colspan="4">&nbsp;</td>
+        <td class="invtotalsbottom"><!-- in:me -->{{ i_s['totals'].all_in_me }}</td>
+        <td class="invtotalsbottom"><!-- in:dividends -->{{ i_s['totals'].all_in_dividends }}</td>
+        <td class="invtotalsbottom"><!-- in:employer -->{{ i_s['totals'].all_in_employer }}</td>
+        <td class="invtotalsbottom"><!-- total cost basis -->{{ i_s['totals'].all_cost_basis }}</td>
+        <td class="invtotalsbottom">
+            <!-- market value --><b>{{ i_s['totals'].all_market }}</b>&nbsp;
+            <input type="hidden" id="networth-investments" name="networth-investments" value="{{ i_s['totals'].all_market_raw }}">
+        </td>
+        <td class="invtotalsbottom"><!-- appreciation -->{{ i_s['totals'].all_appreciation}}</td>
+        <td class="invtotalsbottom"><!-- gain -->{{ i_s['totals'].all_gain }}</td>
+        <td>&nbsp;</td>
+    </tr>
+</table>
+Change since last market close: <strong>{{ i_s.value_change }}<strong>
