@@ -121,211 +121,102 @@ def i_summary():
     cursor.execute(sqlstr)
     dbrows = cursor.fetchall()
 
-    markup = '''\
-                <table class="invtable" align="center" width="100%%">
-                    <tr>
-                        <td>Symbol</td>
-                        <td>Name</td>
-                        <td>Total Qty</td>
-                        <td>Last Price</td>
-                        <td>IN:Me</td>
-                        <td>IN:Dividends</td>
-                        <td>IN:Employer</td>
-                        <td>Total Cost Basis</td>
-                        <td>Market Value</td>
-                        <td>Apprec.</td>
-                        <td>Gain</td>
-                        <td>Links/Schedule</td>
-                    </tr>
-    '''
-    all_inme = 0
-    all_individends = 0
-    all_inemployer = 0
-    all_costbasis = 0
-    all_market = 0
-    all_marketlast = 0
-    all_appres = 0
-    all_gain = 0
+    i_s = {"accounts": OrderedDict(), "totals": {}}
+    i_s["last_fetch"] = dbrows[0]['quotedate']
+
+    i_s['totals']['all_in_me'] = 0
+    i_s['totals']['all_in_dividends'] = 0
+    i_s['totals']['all_in_employer'] = 0
+    i_s['totals']['all_cost_basis'] = 0
+    i_s['totals']['all_market'] = 0
+    i_s['totals']['all_appreciation'] = 0
+    i_s['totals']['all_gain'] = 0
+    all_market_last = 0
     parent = ''
-    election_inme = 0
-    election_individends = 0
-    election_inemployer = 0
-    election_costbasis = 0
-    election_market = 0
-    election_marketlast = 0
-    election_appres = 0
-    election_gain = 0
-    last_fetch  = dbrows[0]['quotedate']
 
     for dbrow in dbrows:
-        if dbrow['quotedate'] > last_fetch:
-            last_fetch = dbrow['quotedate']
+        if dbrow['quotedate'] > i_s["last_fetch"] :
+            i_s["last_fetch"]  = dbrow['quotedate']
 
         if dbrow['iacctname'] != parent:
-            if dbrows[0] != dbrow:
-                markup += '''\
-                                <tr>
-                                    <td class="invtabletrgraytop" colspan="4">&nbsp;</td>
-                                    <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;">
-                                        <!-- in:me -->%s
-                                    </td>
-                                    <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;">
-                                        <!-- in:dividends -->%s
-                                    </td>
-                                    <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;">
-                                        <!-- in:employer -->%s
-                                    </td>
-                                    <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;">
-                                        <!-- total cost basis -->%s
-                                    </td>
-                                    <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;">
-                                        <!-- market value --><b>%s</b>
-                                    </td>
-                                    <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;">
-                                        <!-- appreciation -->%s
-                                    </td>
-                                    <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;">
-                                        <!-- gain -->%s
-                                    </td>
-                                    <td class="invtabletrgraytop">&nbsp;</td>
-                                </tr>
-                    ''' % (h_showmoney(election_inme), h_showmoney(election_individends),
-                           h_showmoney(election_inemployer), h_showmoney(election_costbasis),
-                           h_showmoney(election_market), h_showmoney(election_appres), h_showmoney(election_gain))
-                election_inme = 0
-                election_individends = 0
-                election_inemployer = 0
-                election_costbasis = 0
-                election_market = 0
-                election_marketlast = 0
-                election_appres = 0
-                election_gain = 0
-            markup += '<tr class="invtablehead"><td colspan="12"><b>' + dbrow['iacctname'] + '</b></td></tr>'
             parent = dbrow['iacctname']
+            i_s['accounts'][parent] = {'elections': [], 'totals': {}}
+            i_s['accounts'][parent]['totals']['in_me'] = 0
+            i_s['accounts'][parent]['totals']['in_dividends'] = 0
+            i_s['accounts'][parent]['totals']['in_employer'] = 0
+            i_s['accounts'][parent]['totals']['cost_basis'] = 0
+            i_s['accounts'][parent]['totals']['market'] = 0
+            i_s['accounts'][parent]['totals']['market_last'] = 0
+            i_s['accounts'][parent]['totals']['appreciation'] = 0
+            i_s['accounts'][parent]['totals']['gain'] = 0
 
         if dbrow['manualoverrideprice'] is not None:
-            election_useprice = dbrow['manualoverrideprice']
-            election_lastcloseuseprice = dbrow['manualoverrideprice']
+            election_use_price = dbrow['manualoverrideprice']
+            election_last_close_use_price = dbrow['manualoverrideprice']
         else:
-            election_useprice = dbrow['quoteprice']
-            election_lastcloseuseprice = dbrow['lastcloseprice']
+            election_use_price = dbrow['quoteprice']
+            election_last_close_use_price = dbrow['lastcloseprice']
 
-        each_inme = dbrow['costbasisme']
-        each_individends = dbrow['costbasisbydividend']
-        each_inemployer = dbrow['costbasisfromemployer']
+        each_in_me = dbrow['costbasisme']
+        each_in_dividends = dbrow['costbasisbydividend']
+        each_in_employer = dbrow['costbasisfromemployer']
 
-        each_market = dbrow['shares'] * election_useprice
-        each_marketlast = dbrow['shares'] * election_lastcloseuseprice
-        each_appres = (dbrow['shares'] * election_useprice) - dbrow['costbasis']
-        each_gain = each_appres + each_individends + each_inemployer
+        each_cost_basis = dbrow['costbasis']
+        each_market = dbrow['shares'] * election_use_price
+        each_market_last = dbrow['shares'] * election_last_close_use_price
+        each_appreciation = (dbrow['shares'] * election_use_price) - each_cost_basis
+        each_gain = each_appreciation + each_in_dividends + each_in_employer
 
-        election_showquote = h_showmoney(election_useprice)
+        i_s['accounts'][parent]['elections'].append({
+            'ielectionid': dbrow['ielectionid'],
+            'ielectionname': dbrow['ielectionname'],
+            'ticker': dbrow['ticker'],
+            'shares': '{:.3f}'.format(dbrow['shares']),
+            'show_quote': h_showmoney(election_use_price),
+            'each_in_me': h_showmoney(each_in_me),
+            'each_in_dividends': h_showmoney(each_in_dividends),
+            'each_in_employer': h_showmoney(each_in_employer),
+            'each_cost_basis': h_showmoney(each_cost_basis),
+            'each_market': h_showmoney(each_market),
+            'each_appreciation': h_showmoney(each_appreciation),
+            'each_appreciation_raw': each_appreciation,
+            'each_gain': h_showmoney(each_gain),
+            'div_schedule': dbrow['divschedule']})
 
-        each_apprecclass = 'numpos'
-        if each_appres < 0:
-            each_apprecclass = 'numneg'
+        i_s['accounts'][parent]['totals']['in_me'] += each_in_me
+        i_s['accounts'][parent]['totals']['in_dividends'] += each_in_dividends
+        i_s['accounts'][parent]['totals']['in_employer'] += each_in_employer
+        i_s['accounts'][parent]['totals']['cost_basis'] += each_cost_basis
+        i_s['accounts'][parent]['totals']['market'] += each_market
+        i_s['accounts'][parent]['totals']['market_last'] += each_market_last
+        i_s['accounts'][parent]['totals']['appreciation'] += each_appreciation
+        i_s['accounts'][parent]['totals']['gain'] += each_gain
 
-        election_inme += each_inme
-        election_individends += each_individends
-        election_inemployer += each_inemployer
-        election_costbasis += dbrow['costbasis']
-        election_market += each_market
-        election_marketlast += each_marketlast
-        election_appres += each_appres
-        election_gain += each_gain
+        i_s['totals']['all_in_me'] += each_in_me
+        i_s['totals']['all_in_dividends'] += each_in_dividends
+        i_s['totals']['all_in_employer'] += each_in_employer
+        i_s['totals']['all_cost_basis'] += each_cost_basis
+        i_s['totals']['all_market'] += each_market
+        i_s['totals']['all_appreciation'] += each_appreciation
+        i_s['totals']['all_gain'] += each_gain
+        all_market_last += each_market_last
 
-        all_inme += each_inme
-        all_individends += each_individends
-        all_inemployer += each_inemployer
-        all_costbasis += dbrow['costbasis']
-        all_market += each_market
-        all_marketlast += each_marketlast
-        all_appres += each_appres
-        all_gain += each_gain
-
-        markup += '''\
-                    <tr class="highlightaccount">
-                        <td><a href="#" onClick="MW.comm.getInvGraph('%s');">%s</a></td>
-                        <td><a href="#" onClick="MW.comm.getInvElection('%s');">%s</a></td>
-                        <td style="text-align: right;">%s</td>
-                        <td style="text-align: right;">%s</td>
-                        <td style="text-align: right;"><!-- in:me -->%s</td>
-                        <td style="text-align: right;"><!-- in:dividends -->%s</td>
-                        <td style="text-align: right;"><!-- in:employer -->%s</td>
-                        <td style="text-align: right;">%s</td>
-                        <td style="text-align: right;"><!-- market value --><b>%s</b></td>
-                        <td style="text-align: right;" class="%s"><!-- appreciation -->%s</td>
-                        <td style="text-align: right;"><!-- gain -->%s</td>
-                        <td><a href="http://www.google.com/finance?q=%s" target="_blank">G</a>&nbsp;
-                        <a href="http://finance.yahoo.com/q?s=%s" target="_blank">Y</a>&nbsp;
-                        <a href="http://quotes.morningstar.com/fund/%s/f?t=%s" target="_blank">MS</a> [%s]</td>
-                    </tr>
-        ''' % (dbrow['ielectionid'], dbrow['ticker'], dbrow['ielectionid'], dbrow['ielectionname'],
-               "{:.3f}".format(dbrow['shares']), election_showquote, h_showmoney(each_inme),
-               h_showmoney(each_individends), h_showmoney(each_inemployer), h_showmoney(dbrow['costbasis']),
-               h_showmoney(each_market), each_apprecclass, h_showmoney(each_appres), h_showmoney(each_gain),
-               dbrow['ticker'], dbrow['ticker'], dbrow['ticker'], dbrow['ticker'], dbrow['divschedule'])
-
-    markup += '''\
-                    <tr>
-                        <td class="invtabletrgraytop" colspan="4">&nbsp;</td>
-                        <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;">
-                            <!-- in:me -->%s
-                        </td>
-                        <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;">
-                            <!-- in:dividends -->%s
-                        </td>
-                        <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;">
-                            <!-- in:employer -->%s
-                        </td>
-                        <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;">
-                            <!-- total cost basis -->%s
-                        </td>
-                        <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;">
-                            <!-- market value --><b>%s</b>
-                        </td>
-                        <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;">
-                            <!-- appreciation -->%s
-                        </td>
-                        <td class="invtabletrgraytop" style="text-align: right;background-color: #efefef;">
-                            <!-- gain -->%s
-                        </td>
-                        <td class="invtabletrgraytop">&nbsp;</td>
-                    </tr>
-        ''' % (
-            h_showmoney(election_inme), h_showmoney(election_individends), h_showmoney(election_inemployer),
-            h_showmoney(election_costbasis), h_showmoney(election_market), h_showmoney(election_appres),
-            h_showmoney(election_gain))
-
-    markup += '''\
-                    <tr>
-                        <td colspan="4">&nbsp;</td>
-                        <td class="invtotalsbottom"><!-- in:me -->%s</td>
-                        <td class="invtotalsbottom"><!-- in:dividends -->%s</td>
-                        <td class="invtotalsbottom"><!-- in:employer -->%s</td>
-                        <td class="invtotalsbottom"><!-- total cost basis -->%s</td>
-                        <td class="invtotalsbottom">
-                            <!-- market value --><b>%s</b>&nbsp;
-                            <input type="hidden" id="networth-investments" name="networth-investments" value="%s">
-                        </td>
-                        <td class="invtotalsbottom"><!-- appreciation -->%s</td>
-                        <td class="invtotalsbottom"><!-- gain -->%s</td>
-                        <td>&nbsp;</td>
-                    </tr>
-        ''' % (
-            h_showmoney(all_inme), h_showmoney(all_individends), h_showmoney(all_inemployer),
-            h_showmoney(all_costbasis), h_showmoney(all_market), all_market, h_showmoney(all_appres),
-            h_showmoney(all_gain))
-
-    value_change = all_market - all_marketlast
     dbcon.close()
 
-    last_fetch_markup = '''\
-         <div class="summary1heading">Investment Accounts <span class="smgraytext">
-            ( last fetch: {} <a href="#" onClick="return MW.comm.sendCommand('U.UPDATEQUOTES');">fetch</a> )</span>
-         </div>'''.format(last_fetch.strftime("%A  %B %d, %Y %r"))
+    for a in i_s['accounts']:
+        for k, v in i_s['accounts'][a]['totals'].items():
+            i_s['accounts'][a]['totals'][k] = h_showmoney(v)
 
-    return last_fetch_markup + markup + '</table>Change since last market close: <strong>' + h_showmoney(value_change) + '<strong>'
+
+    all_market_raw = i_s['totals']['all_market']
+    for k, v in i_s['totals'].items():
+        i_s['totals'][k] = h_showmoney(v)
+
+    i_s['totals']['all_market_raw'] = all_market_raw
+    i_s["last_fetch"] = i_s["last_fetch"].strftime("%A  %B %d, %Y %r")
+    i_s["value_change"] = h_showmoney(all_market_raw - all_market_last)
+
+    return i_s
 
 
 def i_election_get_transactions():
