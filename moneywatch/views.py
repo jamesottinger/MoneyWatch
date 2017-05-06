@@ -21,7 +21,8 @@ def js(file):
 @relay.route('/action/<job>', methods=['GET', 'POST'])
 def actionhandler(job):
     if job == 'I.SUMMARY.GET':
-        return moneywatchengine.i_summary()
+        return render_template('investment_summary.html',
+                               i_s=moneywatchengine.i_summary_template())
     elif job == 'I.ELECTION.GET':
         return render_template('investment_transactions.html',
                                transactions=moneywatchengine.i_election_get_transactions())
