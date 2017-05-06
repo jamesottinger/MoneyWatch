@@ -22,7 +22,7 @@ def js(file):
 def actionhandler(job):
     if job == 'I.SUMMARY.GET':
         return render_template('investment_summary.html',
-                               i_s=moneywatchengine.i_summary_template())
+                               i_s=moneywatchengine.i_summary())
     elif job == 'I.ELECTION.GET':
         return render_template('investment_transactions.html',
                                transactions=moneywatchengine.i_election_get_transactions())
