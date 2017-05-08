@@ -35,48 +35,50 @@ def i_electiontally(in_ielectionid):
     sqlstr = "SELECT * FROM moneywatch_invtransactions WHERE ielectionid=%s ORDER BY transdate,action"
     cursor.execute(sqlstr, (in_ielectionid,))
     dbrows = cursor.fetchall()
-    rtotal = 0
-    costbasis = 0
-    sharesbydividend = 0  # from dividends (shown as income)
-    sharesfromemployer = 0  # from employer match or employer direct
-    costbasisbydividend = 0
-    costbasisfromemployer = 0
-    costbasisme = 0
+
+    rtotal = Decimal('0')
+    costbasis = Decimal('0')
+    sharesbydividend = Decimal('0')  # from dividends (shown as income)
+    sharesfromemployer = Decimal('0')  # from employer match or employer direct
+    costbasisbydividend = Decimal('0')
+    costbasisfromemployer = Decimal('0')
+    costbasisme = Decimal('0')
+
 
     for dbrow in dbrows:
         if dbrow['updown'] == '+':
-            rtotal += float(dbrow['sharesamt'])
-            costbasis += float(dbrow['transprice'])
+            rtotal += dbrow['sharesamt']
+            costbasis += dbrow['transprice']
 
             if dbrow['action'] == 'REINVDIV':
-                sharesbydividend += float(dbrow['sharesamt'])
-                costbasisbydividend += float(dbrow['transprice'])
+                sharesbydividend += dbrow['sharesamt']
+                costbasisbydividend += dbrow['transprice']
             elif dbrow['action'] == 'BUYE':
-                sharesfromemployer += float(dbrow['sharesamt'])
-                costbasisfromemployer += float(dbrow['transprice'])
+                sharesfromemployer += dbrow['sharesamt']
+                costbasisfromemployer += dbrow['transprice']
             else:
-                costbasisme += float(dbrow['transprice'])
+                costbasisme += dbrow['transprice']
         else:
-            rtotal -= float(dbrow['sharesamt'])
-            costbasis -= float(dbrow['transprice'])
+            rtotal -= dbrow['sharesamt']
+            costbasis -= dbrow['transprice']
             if dbrow['action'] == 'REINVDIV':
-                sharesbydividend -= float(dbrow['sharesamt'])
+                sharesbydividend -= dbrow['sharesamt']
             elif dbrow['action'] == 'BUYE':
-                sharesfromemployer -= float(dbrow['sharesamt'])
-                costbasisfromemployer -= float(dbrow['transprice'])
+                sharesfromemployer -= dbrow['sharesamt']
+                costbasisfromemployer -= dbrow['transprice']
             else:
-                costbasisme -= float(dbrow['transprice'])
+                costbasisme -= dbrow['transprice']
 
     sqlstr = "UPDATE moneywatch_invelections SET shares=%s, costbasis=%s, sharesbydividend=%s, sharesfromemployer=%s, \
               costbasisbydividend=%s, costbasisfromemployer=%s, costbasisme=%s WHERE ielectionid=%s"
     cursor.execute(sqlstr, (
-        "{:.3f}".format(rtotal),
-        "{:.3f}".format(costbasis),
-        "{:.3f}".format(sharesbydividend),
-        "{:.3f}".format(sharesfromemployer),
-        "{:.3f}".format(costbasisbydividend),
-        "{:.3f}".format(costbasisfromemployer),
-        "{:.3f}".format(costbasisme),
+        rtotal,
+        costbasis,
+        sharesbydividend,
+        sharesfromemployer,
+        costbasisbydividend,
+        costbasisfromemployer,
+        costbasisme,
         in_ielectionid))
     dbcon.commit()
     dbcon.close()
