@@ -796,7 +796,7 @@ def b_entry_prepare_edit():
     entry = cursor.fetchone()
     dbcon.close()
 
-    entry["amt"] = "{:.2f}".format(float(entry['amt']))
+    entry["amt"] = entry['amt']
     entry["mode"] = "edit"
     entry["accounts"] = b_makeselects(bselected=entry["transferbacctid"])
     entry["autocomplete"] = b_autocomplete(entry["bacctid"])
