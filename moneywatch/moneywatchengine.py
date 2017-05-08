@@ -12,6 +12,7 @@ import locale
 import time
 import requests
 import mysql.connector  # python3-mysql.connector
+from decimal import Decimal
 from collections import OrderedDict
 from flask import request, Markup
 from moneywatch import moneywatchconfig
