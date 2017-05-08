@@ -458,6 +458,8 @@ def i_saveupdate(ticker, transdate, shares, cost, fromacct, action, ielectionid,
     else:  # BUY BUYX BUYE REINVDIV
         updown = '+'
 
+    fromacct = int(fromacct) if fromacct != "sweep" else 0
+
     # ---------  [update investment transaction]  ---------
     # 1) it wasn't bank funded before, but it is now
     # 2) it was bank funded before, but it isn't anymore
