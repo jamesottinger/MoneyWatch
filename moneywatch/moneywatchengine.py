@@ -743,13 +743,13 @@ def b_account_get_transactions():
     sqlstr = "SELECT * FROM moneywatch_banktransactions WHERE bacctid=%s ORDER BY transdate,numnote"
     cursor.execute(sqlstr, (request.args.get('bacctid'),))
     dbrows = cursor.fetchall()
-    rtotal = 0
+    rtotal = Decimal('0')
     for dbrow in dbrows:
         dbrow["showamt"] = h_showmoney(dbrow["amt"])
         if dbrow['updown'] == '+':
-            rtotal += float(dbrow['amt'])
+            rtotal += dbrow['amt']
         else:
-            rtotal -= float(dbrow['amt'])
+            rtotal -= dbrow['amt']
         dbrow["runningtotal"] = rtotal
         dbrow["showtotal"] = h_showmoney(rtotal)
         dbrow["future"] = True if h_dateinfuture(str(dbrow['transdate'])) else False
