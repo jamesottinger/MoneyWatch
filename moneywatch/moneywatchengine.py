@@ -609,25 +609,25 @@ def b_accounttally(in_bacctid):
     sqlstr = "SELECT * FROM moneywatch_banktransactions WHERE bacctid=%s ORDER BY transdate,amt"
     cursor.execute(sqlstr, (in_bacctid,))
     dbrows = cursor.fetchall()
-    ret = { 'total_all': 0, 'total_up_to_today': 0, 'total_reconciled': 0 }
+    ret = { 'total_all': Decimal('0'), 'total_up_to_today': Decimal('0'), 'total_reconciled': Decimal('0') }
 
     for dbrow in dbrows:
         if dbrow['updown'] == '+':
-            ret['total_all'] += float(dbrow['amt'])
+            ret['total_all'] += dbrow['amt']
             if dbrow['reconciled']:
-                ret['total_reconciled'] += float(dbrow['amt'])
+                ret['total_reconciled'] += dbrow['amt']
             if not h_dateinfuture(dbrow['transdate']):
-                ret['total_up_to_today'] += float(dbrow['amt'])
+                ret['total_up_to_today'] += dbrow['amt']
         else:
-            ret['total_all'] -= float(dbrow['amt'])
+            ret['total_all'] -= dbrow['amt']
             if dbrow['reconciled']:
-                ret['total_reconciled'] -= float(dbrow['amt'])
+                ret['total_reconciled'] -= dbrow['amt']
             if not h_dateinfuture(dbrow['transdate']):
-                ret['total_up_to_today'] -= float(dbrow['amt'])
+                ret['total_up_to_today'] -= dbrow['amt']
 
     sqlstr = """UPDATE moneywatch_bankaccounts SET totalall=%s, totaluptotoday=%s,
              todaywas='%s', tallytime='%s' WHERE bacctid=%s""" % (
-             "{:.2f}".format(float(ret['total_all'])), "{:.2f}".format(float(ret['total_up_to_today'])),
+             ret['total_all'], ret['total_up_to_today'],
              h_todaydateformysql(), h_todaydatetimeformysql(), str(in_bacctid)
     )
     cursor.execute(sqlstr)
