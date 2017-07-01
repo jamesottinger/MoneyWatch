@@ -800,7 +800,7 @@ def b_entry_prepare_edit():
 
     entry["amt"] = entry['amt']
     entry["mode"] = "edit"
-    entry["accounts"] = b_makeselects(bselected=entry["transferbacctid"])
+    entry["account_select"] = b_makeselects(bselected=entry["transferbacctid"])
     entry["autocomplete"] = b_autocomplete(entry["bacctid"])
     return entry
 
