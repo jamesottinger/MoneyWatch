@@ -44,7 +44,6 @@ def i_electiontally(in_ielectionid):
     costbasisfromemployer = Decimal('0')
     costbasisme = Decimal('0')
 
-
     for dbrow in dbrows:
         if dbrow['updown'] == '+':
             rtotal += dbrow['sharesamt']
@@ -139,7 +138,7 @@ def i_summary():
 
     for dbrow in dbrows:
         if dbrow['quotedate'] > i_s["last_fetch"] :
-            i_s["last_fetch"]  = dbrow['quotedate']
+            i_s["last_fetch"] = dbrow['quotedate']
 
         if dbrow['iacctname'] != parent:
             parent = dbrow['iacctname']
@@ -209,7 +208,6 @@ def i_summary():
     for a in i_s['accounts']:
         for k, v in i_s['accounts'][a]['totals'].items():
             i_s['accounts'][a]['totals'][k] = h_showmoney(v)
-
 
     all_market_raw = i_s['totals']['all_market']
     for k, v in i_s['totals'].items():
