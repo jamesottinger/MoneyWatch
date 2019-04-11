@@ -1,8 +1,8 @@
-Flask==0.10.1
-Flask-Script==2.0.5
-itsdangerous==0.24
-Jinja2==2.8
-MarkupSafe==0.23
-https://cdn.mysql.com/Downloads/Connector-Python/mysql-connector-python-2.1.5.tar.gz
-requests==2.9.1
-Werkzeug==0.11.4
+Flask
+Flask-Script
+Flask-Babel
+itsdangerous
+Jinja2
+mysql-connector-python
+requests
+Werkzeug
