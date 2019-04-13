@@ -15,10 +15,9 @@ import mysql.connector  # python3-mysql.connector
 from decimal import Decimal
 from collections import OrderedDict
 from flask import request
+from babel.numbers import format_currency
 from moneywatch import moneywatchconfig
 
-
-locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
 cgitb.enable(
     logdir=moneywatchconfig.direrrors,
     display=True,
@@ -1224,7 +1223,7 @@ def u_weathergenerate():
 
 
 def h_showmoney(in_num):
-    return locale.currency(in_num, grouping=True)
+    return format_currency(in_num, 'USD', locale='en_US')
 
 
 def h_dateclean(in_date):
