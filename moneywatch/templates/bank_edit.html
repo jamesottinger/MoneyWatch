@@ -15,16 +15,16 @@
                 </select>
             </td>
             <td>Date:<br>
-                <input type="text" name="transdate" id="beditsingle-transdate" size="10" value="{{ entry.transdate }}">
+                <input type="text" name="transdate" id="beditsingle-transdate" size="10" value="{{ entry.transdate }}" autocomplete="off">
             </td>
         </tr>
         <tr>
             <td class="tdborderright">
                 Num-Note:<br>
-                <input type="text" size="10" placeholder="Num" name="numnote" id="beditsingle-numnote" value="{{ entry.numnote }}">
+                <input type="text" size="10" placeholder="Num" name="numnote" id="beditsingle-numnote" value="{{ entry.numnote }}" autocomplete="off">
             </td>
             <td>Value:<br>
-                <nobr>$<input type="text" size="10" name="amt" id="beditsingle-amt" value="{{ entry.amt }}" onChange="MW.util.checkValueDecimals(this, 2);"></nobr>
+                <nobr>$<input type="text" size="10" name="amt" id="beditsingle-amt" value="{{ entry.amt }}" onChange="MW.util.checkValueDecimals(this, 2);" autocomplete="off"></nobr>
             </td>
         </tr>
         <tr>
@@ -40,8 +40,8 @@
         <tr>
             <td colspan="2">
                 Whom:<br>
-                <input type="text" name="whom1" value="{{ entry.whom1 }}" id="beditsingle-whom1" size="45" style="margin-bottom: 4px;"/><br>
-                <input type="text" name="whom2" value="{{ entry.whom2 }}" placeholder="Memo (optional)" size="45" />
+                <input type="text" name="whom1" value="{{ entry.whom1 }}" id="beditsingle-whom1" size="45" autocomplete="off" style="margin-bottom: 4px;"/><br>
+                <input type="text" name="whom2" value="{{ entry.whom2 }}" placeholder="Memo (optional)" size="45" autocomplete="off" />
             </td>
         </tr>
     </table>

@@ -2,7 +2,7 @@
     <table class="invtable" width="100%">
         <tr>
             <td colspan="2">
-                Date <input type="text" name="bbulkinterest-date" id="bbulkinterest-date" size="10">
+                Date <input type="text" name="bbulkinterest-date" id="bbulkinterest-date" size="10" autocomplete="off">
             </td>
         </tr>
         <tr>
@@ -17,7 +17,7 @@
         {% for account in bulkinterest %}
         <tr>
             <td>{{ account.name }}</td>
-            <td><nobr>$<input type="text" size="8" name="{{ account.id }}-amt" value="" onChange="MW.util.checkValueDecimals(this, 2);"></nobr></td>
+            <td><nobr>$<input type="text" size="8" name="{{ account.id }}-amt" value="" onChange="MW.util.checkValueDecimals(this, 2);" autocomplete="off"></nobr></td>
         </tr>
         {% endfor %}
     </table>

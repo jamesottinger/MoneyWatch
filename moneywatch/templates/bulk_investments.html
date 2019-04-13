@@ -24,7 +24,7 @@
                     <option value="0">--none--</option>
                     {{ bulkinvestments.selects|safe }}
                 </select></td>
-            <td><input type="text" name="{{ election.id }}-date" id="{{ election.id }}-date" size="10"></td>
+            <td><input type="text" name="{{ election.id }}-date" id="{{ election.id }}-date" size="10" autocomplete="off"></td>
             <td>
                 <select name="{{ election.id }}-action">
                   <option value="BUY">Buy</option>
@@ -33,8 +33,8 @@
                   <option value="SELL">Sell</option>
                 </select>
             </td>
-            <td><input type="text" size="8" name="{{ election.id }}-shares" value="" onChange="MW.util.checkValueDecimals(this, 3);"></td>
-            <td><nobr>$<input type="text" size="8" name="{{ election.id }}-cost" value="" onChange="MW.util.checkValueDecimals(this, 2);"></nobr></td>
+            <td><input type="text" size="8" name="{{ election.id }}-shares" value="" onChange="MW.util.checkValueDecimals(this, 3);" autocomplete="off"></td>
+            <td><nobr>$<input type="text" size="8" name="{{ election.id }}-cost" value="" onChange="MW.util.checkValueDecimals(this, 2);" autocomplete="off"></nobr></td>
             <td><input type="checkbox" name="{{ election.id }}-updateprice" value="yes" {% if not election.fetch %}checked{% endif %}/></td>
         </tr>
         {% endfor %}

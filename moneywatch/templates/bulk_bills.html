@@ -14,8 +14,8 @@
                 {{ bulkbills.account_select|safe }}
                 </select>
             </td>
-            <td><input type="text" name="bbulkbillsedit-{{ payee.id }}-date" id="bbulkbillsedit-{{ payee.id }}-date" size="10"></td>
-            <td><nobr>$<input type="text" size="8" name="{{ payee.id }}-amt" value="" onChange="MW.util.checkValueDecimals(this, 2);"></nobr></td>
+            <td><input type="text" name="bbulkbillsedit-{{ payee.id }}-date" id="bbulkbillsedit-{{ payee.id }}-date" size="10" autocomplete="off"></td>
+            <td><nobr>$<input type="text" size="8" name="{{ payee.id }}-amt" value="" onChange="MW.util.checkValueDecimals(this, 2);" autocomplete="off"></nobr></td>
         </tr>
         {% endfor %}
     </table>

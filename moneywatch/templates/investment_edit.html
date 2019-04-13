@@ -23,18 +23,18 @@
                 </select>
             </td>
             <td>Trade Date:<br>
-                <input type="text" name="tradedate" id="ieditsingle-tradedate" size="10" value="{{ entry.transdate }}">
+                <input type="text" name="tradedate" id="ieditsingle-tradedate" size="10" value="{{ entry.transdate }}" autocomplete="off">
             </td>
         </tr>
         <tr>
             <td class="tdborderright">
                 # Shares:<br><input type="text" size="10" id="ieditsingle-shares" name="shares"
-                value="{{ entry.shares }}" onChange="MW.util.checkValueDecimals(this, 3);">
+                value="{{ entry.shares }}" onChange="MW.util.checkValueDecimals(this, 3);" autocomplete="off">
             </td>
             <td>
                 Trade Cost:<br><nobr>
                 $<input type="text" size="8" id="ieditsingle-cost" name="cost"
-                value="{{ entry.cost }}" onChange="MW.util.checkValueDecimals(this, 2);"></nobr>
+                value="{{ entry.cost }}" onChange="MW.util.checkValueDecimals(this, 2);" autocomplete="off"></nobr>
             </td>
         </tr>
         <tr>
