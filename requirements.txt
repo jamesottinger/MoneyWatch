@@ -1,8 +1,8 @@
 Flask
-Flask-Script
 Flask-Babel
 itsdangerous
 Jinja2
 mysql-connector-python
 requests
 Werkzeug
+nose==1.3.7
