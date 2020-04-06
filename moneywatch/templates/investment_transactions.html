@@ -1,7 +1,5 @@
-{% set counter = 0 %}
 {% for t in transactions %}
-{% set counter = counter + 1 %}
-<div id="{{ t.ielectionid }}{{ t.itransid }}" class="{% if counter % 2 %}recordodd{% else %}recordeven{% endif %} {% if t.future %}future{% endif %}">
+<div id="{{ t.ielectionid }}{{ t.itransid }}" class="{% if loop.index % 2 %}recordodd{% else %}recordeven{% endif %} {% if t.future %}future{% endif %}">
     <span class="irow0">
         <button type="button" onclick="return MW.comm.sendInvDelete('{{ t.ielectionid }}', '{{ t.itransid }}');">
             <span class="glyphicon glyphicon-remove"></span>
