@@ -1,4 +1,5 @@
-from flask import current_app, Blueprint, render_template
+import logging
+from flask import Blueprint, render_template, g
 from moneywatch import moneywatchengine
 relay = Blueprint('relay', __name__, url_prefix='', static_folder='static')
 
@@ -6,6 +7,11 @@ relay = Blueprint('relay', __name__, url_prefix='', static_folder='static')
 @relay.route('/', methods=['GET', 'POST'])
 def index():
     return relay.send_static_file('moneywatch.html')
+
+
+@relay.route('/favicon.ico', methods=['GET'])
+def favicon():
+    return relay.send_static_file('favicon.ico')
 
 
 @relay.route('/css/<file>', methods=['GET'])
@@ -86,8 +92,13 @@ def actionhandler(job):
     elif job == 'U.IMPORTFILE.SAVE':
         return moneywatchengine.u_importfile_save()
     elif job == 'U.UPDATEQUOTES':
-        moneywatchengine.u_fetch_quotes()
-        return "ok"
+        if not g.get("fetching"):
+            g.fetching = True
+            fetch_response = moneywatchengine.u_fetch_quotes()
+            return fetch_response
+        else:
+            logging.warning('u_fetch_quotes: already fetching - ingnoring request')
+            return 'busy'
     elif job == 'U.UPDATEBANKTOTALS':
         moneywatchengine.u_bank_totals()
         return "ok"
