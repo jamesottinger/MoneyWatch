@@ -1,5 +1,9 @@
 <div class="summary1heading">Investment Accounts <span class="smgraytext">
-   ( last fetch: {{ i_s.last_fetch }} <a href="#" onClick="return MW.comm.sendCommand('U.UPDATEQUOTES');">fetch</a> )</span>
+   ( last market close recorded: {{ i_s.last_fetch }} )
+   {% if i_s.fetch_missing > 0  %}
+    - ( missing {{ i_s.fetch_missing }} )
+   {% endif %}
+   <a href="#" onClick="return MW.comm.sendCommand('U.UPDATEQUOTES');">fetch now</a></span>
 </div>
 <table class="invtable" align="center" width="100%">
     <tr>
