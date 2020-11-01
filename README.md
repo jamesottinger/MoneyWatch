@@ -19,13 +19,18 @@ and others it just doesn't do at all. With MoneyWatch, you'll gain control of yo
 
 MoneyWatch is a mix of HTML5, CSS3, and JavaScript on the front-end. Python3 with Flask drive the back-end with MySQL data storage.
 Frameworks used include a mix of jQuery, jQuery UI, and Bootstrap 3. HighCharts is used for the graphing pieces.
-MoneyWatch pulls stock quotes from Yahoo's Finance API.
 
 ### Installation
 * Install using the /installation/moneywatch-db.sql file to start out with an empty database.
 * Edit /cgi-bin/moneywatchconfig.py and enter the database connection information and log file locations.
 * run $ python3 ./relay
 * visit 127.0.0.1:5000
+
+### Fetching stock quotes
+
+MoneyWatch now pulls stock quotes from Alpha Vantage's free API.
+You can optain a free API key for Alpha Vantage (https://www.alphavantage.co).
+Then, add your personal API key to the moneywatchconfig.py file as alphavantage_apikey="yourkey".
 
 ### Screenshots
 
