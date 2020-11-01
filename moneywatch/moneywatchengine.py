@@ -1,6 +1,6 @@
 #!/ usr/bin/env python3
 # ===============================================================================
-# Copyright (c) 2016, James Ottinger. All rights reserved.
+# Copyright (c) 2020, James Ottinger. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 #
@@ -8,7 +8,10 @@
 # ===============================================================================
 import cgitb
 import datetime
-import locale
+from datetime import timedelta
+import logging
+import json
+import os
 import time
 import requests
 import mysql.connector  # python3-mysql.connector
@@ -1125,62 +1128,148 @@ def b_autocomplete(in_bacctid):
 
 
 def u_fetch_quotes():
-    """ U.UPDATEQUOTES - Pull stock quotes from Yahoo Finance
-        http://finance.yahoo.com/d/quotes.csv?s=LLL+VFINX&f=snl1d1cjkyr1q
-        "LLL","L-3 Communication",66.24,"12/2/2011","+0.23"
-        "VFINX","VANGUARD INDEX TR",115.07,"12/1/2011","-0.21"
-        stockstring = 'VBINX+LLL'
-        0  = Ticker
-        1  = Name
-        2  = Price
-        3  = Date of Price
-        4  = Change
-        5  = 52 week low
-        6  = (k) 52 week high
-        7  = (y) yield
-        8  = (r1) dividend date (next)
-        9  = (q) dividend date (prev)
-        10 = (p) previous close
+    """ U.UPDATEQUOTES - Pulls stock/fund quotes from AlphaVantage https://www.alphavantage.co/
+    sample GET:
+    https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=MSFT&apikey=yourkey
+
+    sample response:
+    {
+        "Meta Data": {
+            "1. Information": "Daily Prices (open, high, low, close) and Volumes",
+            "2. Symbol": "MSFT",
+            "3. Last Refreshed": "2017-11-03",
+            "4. Output Size": "Compact",
+            "5. Time Zone": "US/Eastern"
+        },
+        "Time Series (Daily)": {
+            "2017-11-03": {
+                "1. open": "84.0800",
+                "2. high": "84.5400",
+                "3. low": "83.4000",
+                "4. close": "84.1400",
+                "5. volume": "17569120"
+            },
+            "2017-11-02": {
+                "1. open": "83.3500",
+                "2. high": "84.4600",
+                "3. low": "83.1200",
+                "4. close": "84.0500",
+                "5. volume": "23822964"
+            }
+        }
+    }
     """
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
     cursor = dbcon.cursor(dictionary=True)
-    sqlstr = "SELECT DISTINCT ticker FROM moneywatch_invelections WHERE active=1 and fetchquotes=1"
+    sqlstr = "SELECT DISTINCT ticker, quotedate, lastcloseprice FROM moneywatch_invelections WHERE active=1 AND fetchquotes=1"
     cursor.execute(sqlstr)
 
     dbrows = cursor.fetchall()
-    stockstring = ""
+    need = cursor.rowcount
+    have = 0
+    fetched = 0
+    no_close_yet = 0
+    attempted = 0
+    tickers_have = []
+
+    the_now = datetime.datetime.now()
+
     for dbrow in dbrows:
-        if dbrow == dbrows[0]:
-            stockstring = dbrow['ticker']
-        else:
-            stockstring += '+' + dbrow['ticker']
 
-    # fetch from Yahoo
-    response = requests.get('http://finance.yahoo.com/d/quotes.csv?s=' + stockstring + '&f=snl1d1cjkyr1qp&e=.csv')
-    if response.status_code != 200:
-        h_logsql('There was an error fetching quotes: http://finance.yahoo.com/d/quotes.csv?s=' +
-                 stockstring + '&f=snl1d1cjkyr1qp&e=.csv')
-        return
+        # so apparently you can have the ETFs close earlier than Mutual Funds
+        # did we fetch this ticker today already?
+        if dbrow['quotedate'].date() == the_now.date():
+            logging.warning('u_fetch_quotes: [{}] already have last close (today) - skipping'.format(dbrow['ticker']))
+            tickers_have.append(dbrow['ticker'])
+            have += 1
+            continue
 
-    csvdatalines = response.text.rstrip().split('\n')
+        if dbrow['quotedate'].weekday() == 4 and the_now.weekday() in (5,6):
+            # it is Friday and today is Saturday or Sunday
+            if dbrow['quotedate'].isocalendar()[1] == the_now.isocalendar()[1]: # only skip if it is the same week
+                # it is the weekend and we have a fetch for the Friday
+                logging.warning('u_fetch_quotes: [{}] already have last close (Friday) - skipping'.format(dbrow['ticker']))
+                tickers_have.append(dbrow['ticker'])
+                have += 1
+                continue
 
-    for line in csvdatalines:
-        row = line.split(',')
-        row[0] = str(row[0].replace('"', ''))
-        row[3] = str(row[3].replace('"', ''))
-        row[4] = str(row[4].replace('"', ''))
-        row[7] = str(row[7].replace('"', ''))
-        row[8] = str(row[8].replace('"', ''))
-        row[9] = str(row[9].replace('"', ''))
-        row[10] = str(row[10].replace('"', ''))
+        # if we have yesterday's close, don't check until the market has closed for today
+        if dbrow['quotedate'].date() == (the_now - datetime.timedelta(days=1)).date():
+            if the_now.hour <= 17: # 6 PM local time
+                logging.warning('u_fetch_quotes: [{}] already have last close (yesterday), market not yet closed today - skipping'.format(dbrow['ticker']))
+                tickers_have.append(dbrow['ticker'])
+                have += 1
+                continue
 
-        sqlstr = "UPDATE moneywatch_invelections SET quoteprice=%s,lastcloseprice=%s, quotechange=%s, quotedate=%s,\
-                yield=%s, divdatenext=%s, divdateprev=%s WHERE ticker=%s"
-        cursor.execute(sqlstr, (row[2], row[10], row[4], h_todaydatetimeformysql(), row[7], row[8], row[9], row[0]))
-        # h_logsql(cursor.statement)
+
+    for dbrow in dbrows:
+        if dbrow['ticker'] not in tickers_have:
+            attempted += 1
+            request_string = ("https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&"
+                              "outputsize=compact&symbol={}&apikey={}".format(dbrow['ticker'], moneywatchconfig.alphavantage_apikey))
+            response = requests.get(request_string)
+            logging.warning('u_fetch_quotes: [{}] fetching - response[{}]'.format(dbrow['ticker'], response.status_code))
+            if response.status_code == 200:
+
+                json_data = json.loads(response.text)
+
+                if "Meta Data" not in json_data:
+                    no_close_yet += 1
+                    logging.warning('u_fetch_quotes: [{}] - feed is missing Meta Data ({})'.format(dbrow['ticker'], json_data))
+                    continue
+
+                last_feed_refresh = datetime.datetime.strptime(json_data["Meta Data"]["3. Last Refreshed"].split()[0], "%Y-%m-%d")
+                if last_feed_refresh > dbrow['quotedate']:
+                    # it may not be today but it is newer than the last fetch
+                    target_date = last_feed_refresh.strftime('%Y-%m-%d')
+                    previous_close_price = dbrow['lastcloseprice']
+                    # look for the last close before this day
+                    for days_back in range(1, 5):
+                        day_check = (last_feed_refresh - datetime.timedelta(days=days_back)).strftime('%Y-%m-%d')
+                        if day_check in json_data["Time Series (Daily)"]:
+                            # this is the previous close
+                            previous_close_price = json_data["Time Series (Daily)"][day_check]["4. close"]
+                            break
+
+                    sqlstr = ("UPDATE moneywatch_invelections SET quoteprice=%s, quotedate=%s,"
+                              " lastcloseprice=%s WHERE ticker=%s AND active=1 AND fetchquotes=1")
+                    cursor.execute(sqlstr, (json_data["Time Series (Daily)"][target_date]["4. close"],
+                                            last_feed_refresh,
+                                            previous_close_price,
+                                            dbrow['ticker']))
+                    fetched += 1
+                    logging.warning('u_fetch_quotes: [{}] new close available - updated database'.format(dbrow['ticker']))
+
+                    if need != (have + attempted):
+                        logging.warning('u_fetch_quotes: sleeping... need:{} have:{} attempted:{}'.format(need, have, attempted))
+                        time.sleep(21)  # Delay for 2 second (AV is rate limited and will respond with a {'Information': 'Please consider optimizing your API call frequency.'})
+                else:
+                    no_close_yet += 1
+                    logging.warning('u_fetch_quotes: [{}] close not yet available in feed. Last AlphaVantage refresh ({})'.format(dbrow['ticker'], json_data["Meta Data"]["3. Last Refreshed"]))
+                    if need != (have + attempted):
+                        logging.warning('u_fetch_quotes: sleeping... need:{} have:{} attempted:{}'.format(need, have, attempted))
+                        time.sleep(21)  # Delay for 2 second (AV is rate limited and will respond with a {'Information': 'Please consider optimizing your API call frequency.'})
+
+            else:
+                error_msg = "There was an error fetching quotes: code:<br>{}<br>url:{}<br>response:{}".format(
+                        response.status_code, request_string, response.text)
+                h_logsql(error_msg)
+                return error_msg
+
+    if need == have:
+        return "ok"  # not an error - Today's market close has already been recorded for all investments.
+
+    if no_close_yet > 0 and fetched > 0:
+        # we are missing some, but we fetched some too, so commit what we got so there is less for next time
         dbcon.commit()
+        dbcon.close()
+        i_electiontallyall()
+        return "The feed does not yet include all market closes for today. ({} missing, fetched {})".format(no_close_yet, fetched)
+
+    dbcon.commit()
     dbcon.close()
     i_electiontallyall()
+    return "ok"
 
 
 def u_bank_totals():

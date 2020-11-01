@@ -29,7 +29,7 @@ Frameworks used include a mix of jQuery, jQuery UI, and Bootstrap 3. HighCharts 
 ### Fetching stock quotes
 
 MoneyWatch now pulls stock quotes from Alpha Vantage's free API.
-You can optain a free API key for Alpha Vantage (https://www.alphavantage.co).
+You can optain a free API key from Alpha Vantage (https://www.alphavantage.co).
 Then, add your personal API key to the moneywatchconfig.py file as alphavantage_apikey="yourkey".
 
 ### Screenshots
