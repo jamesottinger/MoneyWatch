@@ -1,5 +1,6 @@
 Flask
 Flask-Babel
+Flask-Executor
 itsdangerous
 Jinja2
 mysql-connector-python
