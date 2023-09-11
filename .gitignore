@@ -10,4 +10,4 @@ _tools/
 __FUTUREPLANS.md
 .idea/
 .vscode/
-venv/
+venv*
