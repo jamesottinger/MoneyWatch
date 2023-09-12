@@ -93,6 +93,8 @@ def actionhandler(job):
         return moneywatchengine.u_importfile_edit()
     elif job == 'U.IMPORTFILE.SAVE':
         return moneywatchengine.u_importfile_save()
+    elif job == 'U.TICKER.LIST':
+        return jsonify(moneywatchengine.u_decide_tickers_to_fetch())
     elif job == 'U.UPDATEQUOTES':
         fetch_state = executor.futures._state('fetch_quotes')
         if fetch_state is None or fetch_state == "FINISHED":

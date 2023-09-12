@@ -1127,6 +1127,50 @@ def b_autocomplete(in_bacctid):
 # ================================================================================================================
 
 
+def u_decide_tickers_to_fetch():
+    """ Decides what Stock tickers we need to fetch for updates
+        This takes into account ones we have already fetched
+    """
+    dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
+    cursor = dbcon.cursor(dictionary=True)
+    sqlstr = "SELECT DISTINCT ticker, quotedate, lastcloseprice FROM moneywatch_invelections WHERE active=1 AND fetchquotes=1"
+    cursor.execute(sqlstr)
+
+    dbrows = cursor.fetchall()
+    tickers = []
+    tickers_have = []
+    the_now = datetime.datetime.now()
+
+    for dbrow in dbrows:
+        tickers.append(dbrow['ticker'])
+
+        # so apparently you can have the ETFs close earlier than Mutual Funds
+        # did we fetch this ticker today already?
+        if dbrow['quotedate'].date() == the_now.date():
+            logging.warning(f"u_decide_tickers_to_fetch: [{dbrow['ticker']}] already have last close (today) - skipping")
+            tickers_have.append(dbrow['ticker'])
+            continue
+
+        if dbrow['quotedate'].weekday() == 4 and the_now.weekday() in (5,6):
+            # it is Friday and today is Saturday or Sunday
+            if dbrow['quotedate'].isocalendar()[1] == the_now.isocalendar()[1]: # only skip if it is the same week
+                # it is the weekend and we have a fetch for the Friday
+                logging.warning(f"u_decide_tickers_to_fetch: [{dbrow['ticker']}] already have last close (Friday) - skipping")
+                tickers_have.append(dbrow['ticker'])
+                continue
+
+        # if we have yesterday's close, don't check until the market has closed for today
+        if dbrow['quotedate'].date() == (the_now - datetime.timedelta(days=1)).date():
+            if the_now.hour <= 17: # 6 PM local time
+                logging.warning(f"u_decide_tickers_to_fetch: [{dbrow['ticker']}] already have last close (yesterday), market not yet closed today - skipping")
+                tickers_have.append(dbrow['ticker'])
+                continue
+
+    dbcon.close()
+    return list(set(tickers) - set(tickers_have))
+
+
+
 def u_fetch_quotes():
     """ U.UPDATEQUOTES - Pulls stock/fund quotes from AlphaVantage https://www.alphavantage.co/
     sample GET:
