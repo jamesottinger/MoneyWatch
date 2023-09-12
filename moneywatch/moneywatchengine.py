@@ -1069,7 +1069,7 @@ def b_bulkbills_edit():
     """B.BULKBILLS.EDIT = generates controller data needed for "Bills Bulk Add" template"""
     dbcon = mysql.connector.connect(**moneywatchconfig.db_creds)
     cursor = dbcon.cursor(dictionary=True)
-    sqlstr = "SELECT * FROM moneywatch_bankbills ORDER BY payeename"
+    sqlstr = "SELECT * FROM moneywatch_bankbills WHERE active=1 ORDER BY payeename"
     cursor.execute(sqlstr)
     dbrows = cursor.fetchall()
 
