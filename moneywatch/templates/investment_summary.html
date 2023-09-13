@@ -3,7 +3,7 @@
    {% if i_s.fetch_missing > 0  %}
     - ( missing {{ i_s.fetch_missing }} )
    {% endif %}
-   <a href="#" onClick="return MW.comm.sendCommand('U.UPDATEQUOTES');">fetch now</a></span>
+   <a href="#" onClick="return MW.comm.sendCommand('U.TICKER.LIST');">fetch now</a></span>
 </div>
 <table class="invtable" align="center" width="100%">
     <tr>
@@ -26,7 +26,10 @@
     </tr>
         {% for election in i_s.accounts[account]['elections'] %}
         <tr class="highlightaccount">
-            <td><a href="#" onClick="MW.comm.getInvGraph('{{ election.ielectionid }}');">{{ election.ticker }}</a></td>
+            <td>
+                <span class="fetch-ticker-block"><span class="fetch-ticker-status-{{ election.ticker }}"></span></span>
+                <a href="#" onClick="MW.comm.getInvGraph('{{ election.ielectionid }}');">{{ election.ticker }}</a>
+            </td>
             <td><a href="#" onClick="MW.comm.getInvElection('{{ election.ielectionid }}');">{{ election.ielectionname }}</a></td>
             <td style="text-align: right;">{{ election.shares }}</td>
             <td style="text-align: right;">{{ election.show_quote }}</td>

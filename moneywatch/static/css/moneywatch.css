@@ -536,3 +536,8 @@ a:active  {color:#6a6aa2;}  /* selected link   */
     /* this is for JQuery UI autocomplete */
     z-index: 1051;
 }
+
+.fetch-ticker-block{
+  display:  inline-block;
+  width: 12px;
+}

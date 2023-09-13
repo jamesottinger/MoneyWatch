@@ -212,6 +212,36 @@ MW.comm = {
                 });
                 break;
             case 'U.UPDATEQUOTES':
+
+            case 'U.TICKER.LIST':
+                // asks backend for a list of stock/mutual funds that need latest close
+                // schedules fetches to abide by the stock API"s call limit
+                console.log("U.TICKER.LIST - requesting list of tickers to fetch");
+                $.ajax({
+                    url: urlpost,
+                    data: {},
+                    success: function (data) {
+                        console.log("U.TICKER.LIST - response: " + data)
+                        // returns a list of tickers to fetch 
+                        let delay = 0;
+                        for (let i=0; i < data.length; i++) {
+                            console.log(data[i] + "\n");
+                            // Alpha Vantage is rate limited at 5 API requests per minute and 500 requests per day
+                            // delay for 21 seconds (AV is rate limited and will respond with a {'Information': 'Please consider optimizing your API call frequency.'})
+
+                            $('.fetch-ticker-status-' + data[i]).html('<i class="fa fa-spinner fa-spin fa-1x fa-fw"></i>');
+                            delay = i * 21000;
+                            setTimeout(MW.comm.fetchTickerQuote, delay, data[i]);
+
+                        }
+
+                        if (delay > 0) {
+                            // pull summary 30 seconds after last ticker fetch
+                            setTimeout(MW.comm.sendCommand, delay + 30000, 'I.SUMMARY.GET');               
+                        }
+                    }
+                });
+                break;
                 $.ajax({
                     url: urlpost,
                     data: {},
