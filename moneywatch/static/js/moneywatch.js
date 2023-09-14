@@ -83,7 +83,9 @@ MW.comm = {
                     success: function(data) {
                         data = data.replace(/\n/gm, '');
                         if (data == 'ok') {
-                            $('#' + MW.activeRowId).removeClass('activeinvrow');
+                            if (MW.activeRowId !== '') {
+                                $('#' + MW.activeRowId).removeClass('activeinvrow');
+                            }
                             $.ajax({
                                 url: MW.moneyWatchURL + '/action/I.ELECTION.GET',
                                 data: {'ielectionid': ielectionid},
@@ -185,7 +187,9 @@ MW.comm = {
                     success: function(data) {
                         data = data.replace(/\n/gm, '');
                         if (data == 'ok') {
-                            $('#' + MW.activeRowId).removeClass('activebankrow');
+                            if (MW.activeRowId !== '') {
+                                $('#' + MW.activeRowId).removeClass('activebankrow');
+                            }
                             $.ajax({
                                 url: MW.moneyWatchURL + '/action/B.ACCOUNT.GET',
                                 data: {'bacctid': bacctid},
@@ -466,7 +470,9 @@ MW.comm = {
 
     cancelEdit: function (in_type, in_xacctid) {
         // unhighlight the selected row
-        $('#' + MW.activeRowId).removeClass('activeinvrow');
+        if (MW.activeRowId !== '') {
+            $('#' + MW.activeRowId).removeClass('activeinvrow');
+        }
         // unhighlight the right control box
         $('#transactionsrightedit').removeClass('activeinveditmenu');
         // reload the right side
@@ -629,7 +635,9 @@ MW.modaltransactions = {
     // ------------------------------------------------------------------
     show: function (mode) {
         // clear any previous highlights
-        $('#' + MW.activeRowId).removeClass('activeinvrow');
+        if (MW.activeRowId !== '') {
+            $('#' + MW.activeRowId).removeClass('activeinvrow');
+        }
         $('#transactionsrightedit').removeClass('activeinveditmenu');
         $('#transactionslist').html('<div style="text-align:center;padding-top:50px;">' +
                                     '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>');
