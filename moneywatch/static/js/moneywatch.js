@@ -493,7 +493,20 @@ MW.comm = {
                 }
             });
         }
+    },
 
+    fetchTickerQuote: function (in_ticker) {
+        // fetches a single investment quote
+        console.log("fetchTickerQuote requesting |" + in_ticker + "|");
+        $.ajax({
+            url: MW.moneyWatchURL + '/action/U.TICKER.FETCH',
+            data: {'ticker': in_ticker},
+            success: function(data) {
+                // update the icon next to the ticket to indicate progress
+                $('.fetch-ticker-status-' + in_ticker).html('i');
+                console.log("fetchTickerQuote returned - " + in_ticker + " " + data);
+            }
+        });
     }
 };
 
