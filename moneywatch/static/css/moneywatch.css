@@ -17,17 +17,17 @@ a:visited {color:#6a6aa2;}  /* visited link    */
 a:hover   {color:#6a6aa2;}  /* mouse over link */
 a:active  {color:#6a6aa2;}  /* selected link   */
 #header{
-    width: 1200px;
+    width: 1300px;
     height: 30px;
     background-color: #ffffff;
     margin: 0 auto;
 }
 #container{
-    width: 1200px;
+    width: 1300px;
     margin: 0 auto;
 }
 #containercenter{
-    width: 1200px;
+    width: 1300px;
     margin: 0 auto;
 }
 #leftblock{
@@ -494,7 +494,7 @@ a:active  {color:#6a6aa2;}  /* selected link   */
     border-bottom: 1px dashed #CCCCCC;
 }
 #main-nav {
-    min-width: 1200px;
+    min-width: 1300px;
 }
 .highlightaccount td {
     /* background: #E0E0E0; */
