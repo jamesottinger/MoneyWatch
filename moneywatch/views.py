@@ -1,7 +1,6 @@
 import logging
 from flask import Blueprint, render_template
 from moneywatch import moneywatchengine
-from . import executor
 
 relay = Blueprint('relay', __name__, url_prefix='', static_folder='static')
 
@@ -95,21 +94,8 @@ def actionhandler(job):
         return moneywatchengine.u_importfile_save()
     elif job == 'U.TICKER.LIST':
         return jsonify(moneywatchengine.u_decide_tickers_to_fetch())
-    elif job == 'U.UPDATEQUOTES':
-        fetch_state = executor.futures._state('fetch_quotes')
-        if fetch_state is None or fetch_state == "FINISHED":
-
-            if executor.futures.done('fetch_quotes'):
-                executor.futures.pop('fetch_quotes')
-
-            logging.warning("u_fetch_quotes: starting quote fetch")
-            executor.submit_stored('fetch_quotes', moneywatchengine.u_fetch_quotes)
-            return 'fetchstarted'    
-        else:
-            future_status = executor.futures._state('fetch_quotes')
-            logging.warning(f"u_fetch_quotes: already fetching - ignoring request ({future_status})")
-            return 'busy'
-
+    elif job == 'U.TICKER.FETCH':
+        return moneywatchengine.u_fetch_quotes([request.args.get('ticker')])    
     elif job == 'U.UPDATEBANKTOTALS':
         moneywatchengine.u_bank_totals()
         return "ok"

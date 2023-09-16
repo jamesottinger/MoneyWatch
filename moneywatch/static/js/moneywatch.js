@@ -16,7 +16,6 @@ MW = {
         MW.comm.sendCommand('B.SUMMARY.GET');
         $('#rightcontent2').hide();
         MW.comm.sendCommand('U.LINKS.GET');
-        MW.timers.startTimers();
     },
 
     calcNetWorth: function () {
@@ -215,7 +214,6 @@ MW.comm = {
                     }
                 });
                 break;
-            case 'U.UPDATEQUOTES':
 
             case 'U.TICKER.LIST':
                 // asks backend for a list of stock/mutual funds that need latest close
@@ -242,19 +240,6 @@ MW.comm = {
                         if (delay > 0) {
                             // pull summary 30 seconds after last ticker fetch
                             setTimeout(MW.comm.sendCommand, delay + 30000, 'I.SUMMARY.GET');               
-                        }
-                    }
-                });
-                break;
-                $.ajax({
-                    url: urlpost,
-                    data: {},
-                    success: function(data) {
-                        data = data.replace(/\n/gm, '');
-                        if (data == 'ok') {
-                            MW.comm.sendCommand('I.SUMMARY.GET');
-                        } else {
-                            alert(data.substr(0,500));
                         }
                     }
                 });
@@ -541,40 +526,6 @@ MW.move = {
         // MW.move.goTo(MW.move.viewcurrent);
     }
 };
-
-// ------------------------------------------------------------------
-// [== TIMER RELATED ==]
-// ------------------------------------------------------------------
-MW.timers = {
-    laststockfetch: 0,
-
-    startTimers: function () {
-        setInterval(MW.timers.stockFetchTimer, 60000); // tick every minute
-    },
-
-    stockFetchTimer: function () {
-        // fetch quotes every day at 6 PM local time
-        var getdate = new Date();
-        if (getdate.getDate() !== MW.timers.laststockfetch) { // day of the month, new day?
-            // we didn't already do the stock fetch dance today
-            if (MW.timers.laststockfetch === 0) {
-                if( getdate.getHours() >= 18) {
-                    // MW will be the one for today
-                    MW.timers.laststockfetch = getdate.getDate();
-                } else {
-                    // runs now below, but we will need to run again later today
-                    MW.timers.laststockfetch = -1;
-                }
-                MW.comm.sendCommand('U.UPDATEQUOTES');
-            } else if (getdate.getHours() >= 18) { // 6 PM local time
-                MW.timers.laststockfetch = getdate.getDate();
-                MW.comm.sendCommand('U.UPDATEQUOTES');
-            }
-        }
-    }
-};
-
-
 // ------------------------------------------------------------------
 // [== UTILITIES ==]
 // ------------------------------------------------------------------
